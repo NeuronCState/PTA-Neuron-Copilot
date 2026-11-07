@@ -10,6 +10,16 @@ function home(h){h.ctx.location.pathname='/problem-sets/dashboard';h.api.trackCa
  visit(first,'2');home(first);baseline=first.calls.length;await first.flush(first.api.loadClassCatalogue(true));assert.ok(first.calls.slice(baseline).some(c=>c.url.pathname==='/api/problem-sets'));
  // Direct entry survives a new JS realm/full navigation through session markers.
  const direct=harness({total:9,storage,session:new Map()});visit(direct,'3');let carried=new Map([[VISITS,JSON.stringify({version:1,items:[['3',Date.UTC(2026,10,7)]]})]]);const reloaded=harness({total:9,storage,session:carried});reloaded.advance(60000);await reloaded.flush(reloaded.api.loadClassCatalogue());assert.equal(reloaded.calls.length,2);assert.equal(reloaded.calls[0].url.pathname,'/api/problem-sets/3/exams');
+ // Refresh the actual editing-page realm, retaining real tab storage rather than fabricated markers.
+ const editSession=new Map(),editDisk=new Map([[KEY,initial]]),editing=harness({total:9,storage:editDisk,session:editSession});editing.advance(60000);
+ visit(editing,'4');assert.ok(editSession.has(VISITS));
+ const refresh=harness({total:9,storage:editDisk,session:editSession});refresh.advance(120000);visit(refresh,'4');
+ assert.equal(refresh.api.catalogueVisits.ids.has('4'),true);assert.equal(editDisk.get(KEY),initial);
+ home(refresh);await refresh.flush(refresh.api.loadClassCatalogue());
+ assert.equal(refresh.api.catalogueState.status,'ready');assert.equal(refresh.api.catalogueState.rows.length,9);
+ assert.equal(refresh.calls.some(c=>c.url.pathname==='/api/problem-sets'),false);
+ assert.deepEqual(refresh.calls.filter(c=>c.url.pathname.endsWith('/exams')).map(c=>c.url.pathname.split('/')[3]),['4']);
+ assert.equal(refresh.api.catalogueVisits.ids.has('4'),false);
  // A status failure retains the previous metrics/time and leaves a retry marker.
  const failed=harness({total:9,mode:'unknown',storage:new Map([[KEY,initial]]),session:new Map()});failed.advance(60000);visit(failed,'2');home(failed);await failed.flush(failed.api.loadClassCatalogue());assert.equal(failed.api.catalogueState.status,'partial');const old=failed.api.catalogueState.rows.find(r=>r.id==='2');assert.equal(old.metrics.answered,40);assert.equal(old.metricsCached,true);assert.match(old.metricsNote,/保留缓存/);assert.equal(failed.api.catalogueVisits.ids.has('2'),true);assert.equal(failed.calls.length,2);
  // Account mismatch must not reveal the prior owner's cached rows and clears old visit markers.
