@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         PTA Auto Solver Beta
+// @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
 // @version      2.0.0
-// @description  轻量、清晰的 PTA AI 辅助答题脚本
+// @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
 // @homepageURL  https://neuroncstate.github.io/PTA-Neuron-Copilot/
