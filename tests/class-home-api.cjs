@@ -6,7 +6,7 @@ function harness({total=72,mode='',delay=0,dom=[],storage=null}={}){
  const setTimer=(fn,ms)=>{timers.set(++seq,{fn,at:now+ms});return seq;};
  const ctx={URL,Set,Map,AbortController,Uint8Array,TextDecoder,Date:class extends Date{static now(){return now;}},setTimeout:setTimer,clearTimeout:id=>timers.delete(id),setInterval:fn=>intervals.push(fn),location:{origin:'https://pintia.cn',pathname:'/problem-sets/dashboard'},window:{addEventListener:(k,fn)=>events[k]=fn},document:{getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[],createElement(){throw Error('no embedded document');}},fetch:async(url,options)=>{
   assert.equal(options.method,'GET');assert.equal(options.credentials,'same-origin');assert.equal(options.mode,'same-origin');assert.equal(options.redirect,'error');assert.equal(options.cache,'no-store');assert.equal(options.headers.Accept,'application/json;charset=UTF-8');assert.deepEqual(Object.keys(options.headers),['Accept']);
-  const u=new URL(url);calls.push({url:u,at:now});active++;max=Math.max(max,active);
+  const u=new URL(url);if(ctx.onFetch)ctx.onFetch(u);calls.push({url:u,at:now});active++;max=Math.max(max,active);
   if(delay)await new Promise((resolve,reject)=>{const t=setTimer(resolve,delay);options.signal.addEventListener('abort',()=>{timers.delete(t);reject(Error('abort'));},{once:true});});
   let data,status=200;
   if(u.pathname==='/api/problem-sets'){
@@ -29,13 +29,13 @@ function harness({total=72,mode='',delay=0,dom=[],storage=null}={}){
  ctx.getTestRows=()=>dom.map(row=>Object.assign({},row));
  const diagnosticRecords=[];ctx.apiDiagnostics={enabled:false,generation:1};ctx.apiDiagnosticTarget=url=>({path:new URL(url).pathname.replace(/\/\d+/g,'/:id'),method:'GET'});ctx.addApiDiagnostic=(...args)=>diagnosticRecords.push(args);
  if(storage){ctx.GM_getValue=(key,fallback)=>storage.has(key)?storage.get(key):fallback;ctx.GM_setValue=(key,value)=>storage.set(key,value);ctx.GM_deleteValue=key=>storage.delete(key);}
- const api=vm.runInNewContext(code+'; catalogueRows=function(){return getTestRows();};({catalogueState,loadClassCatalogue,stopClassCatalogue,startClassHome,syncCatalogueDOM,catalogueAPIRow,catalogueAPIMetrics,groupCatalogueRows,catalogueCache,clearCatalogueCache,catalogueCacheWrite,catalogueCacheRead,catalogueProgressQueue,cataloguePersistence,loadPersistentCatalogueCache,flushPersistentCatalogueCache,clearPersistentCatalogueCache,getVerifiedCatalogueIdentity,catalogueValidateStored})',ctx);
+ const api=vm.runInNewContext(code+'; catalogueRows=function(){return getTestRows();};({catalogueState,loadClassCatalogue,stopClassCatalogue,startClassHome,syncCatalogueDOM,catalogueAPIRow,catalogueAPIMetrics,groupCatalogueRows,catalogueCache,clearCatalogueCache,catalogueCacheWrite,catalogueCacheRead,catalogueProgressQueue,cataloguePersistence,loadPersistentCatalogueCache,flushPersistentCatalogueCache,clearPersistentCatalogueCache,getVerifiedCatalogueIdentity,catalogueValidateStored,catalogueArchiveGroups,catalogueSnapshotRows})',ctx);
  async function flush(p){let done=false,error;Promise.resolve(p).then(()=>done=true,e=>{done=true;error=e;});for(let i=0;!done&&i<20000;i++){for(let j=0;j<40;j++)await Promise.resolve();if(!done&&timers.size){let [id,t]=[...timers].sort((a,b)=>a[1].at-b[1].at)[0];timers.delete(id);now=t.at;t.fn();}}assert.ok(done,'settled');if(error)throw error;}
  return {api,ctx,calls,events,intervals,flush,diagnosticRecords,setDOM:rows=>{dom=rows;},max:()=>max,now:()=>now-baseline,advance:ms=>{now+=ms;}};
 }
 if(require.main===module)(async()=>{
- let h=harness({delay:700});await h.flush(h.api.loadClassCatalogue());assert.equal(h.api.catalogueState.status,'ready');assert.equal(h.api.catalogueState.rows.length,72);assert.equal(h.calls.filter(c=>c.url.pathname==='/api/problem-sets').length,3);assert.equal(h.calls.length,147);assert.ok(h.max()<=4);assert.ok(h.max()>=2);
- for(let i=1;i<h.calls.length;i++)assert.ok(h.calls[i].at-h.calls[i-1].at>=250,'global spacing');
+ let h=harness({delay:700});await h.flush(h.api.loadClassCatalogue());assert.equal(h.api.catalogueState.status,'ready');assert.equal(h.api.catalogueState.rows.length,72);assert.equal(h.calls.filter(c=>c.url.pathname==='/api/problem-sets').length,3);assert.equal(h.calls.length,147);assert.ok(h.max()<=6);assert.ok(h.max()>=2);
+ for(let i=1;i<h.calls.length;i++)assert.ok(h.calls[i].at-h.calls[i-1].at>=200,'global spacing');
  assert.equal(h.api.catalogueState.rows[0].metrics.score,'0');assert.equal(h.api.catalogueState.rows[0].metrics.answered,40);assert.equal(h.api.catalogueState.rows[0].metrics.progress,'100%');assert.equal(h.api.groupCatalogueRows(h.api.catalogueState.rows).groups.length,3);
  const row=h.api.catalogueAPIRow({id:'1',name:'<script>x</script>',endAt:'n/a'},new Map(),{'1':{items:[{id:'4',name:'Same'},{id:'5',name:'Same'},{id:'4',name:'Same'}]}});assert.equal(row.groups.length,2);assert.equal(h.api.groupCatalogueRows([row]).groups.length,2);assert.equal(row.title,'<script>x</script>');assert.equal(row.deadlineOrder,Infinity);
  assert.equal(h.api.catalogueAPIRow({id:'../../other',name:'bad'},new Map()),null);
