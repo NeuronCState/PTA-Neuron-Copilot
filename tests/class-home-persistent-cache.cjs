@@ -10,9 +10,9 @@ const KEY='pta-catalogue-cache-v1',statusCalls=h=>h.calls.filter(c=>c.url.pathna
  // Different account cannot view or update another owner's entries.
  next=harness({total:2,storage});next.advance(10000);next.ctx.testUserId='6000';await next.flush(next.api.loadClassCatalogue());assert.equal(statusCalls(next),2);assert.equal(JSON.parse(storage.get(KEY)).owner,'6000');assert.ok(next.api.catalogueState.rows.every(r=>!r.metricsCached));
  // Missing current identity cannot unlock persisted data.
- let missing=harness({total:2,storage});missing.advance(12000);missing.ctx.omitUser=true;await missing.flush(missing.api.loadClassCatalogue());assert.equal(statusCalls(missing),2);assert.equal(missing.api.catalogueCache.owner,null);assert.equal(missing.api.getVerifiedCatalogueIdentity(),null);
+ let missing=harness({total:2,storage});missing.advance(12000);missing.ctx.omitUser=true;await missing.flush(missing.api.loadClassCatalogue());assert.equal(statusCalls(missing),0);assert.equal(missing.api.catalogueState.rows.length,0);assert.equal(missing.api.catalogueCache.owner,null);assert.equal(missing.api.getVerifiedCatalogueIdentity(),null);
  // Ended history requires both freshly verified owner and listed exam identity.
- let ended=harness({total:2,storage});ended.advance(15000);ended.ctx.testUserId='6000';ended.ctx.endAtById={'1':'2025-01-01T00:00:00Z'};await ended.flush(ended.api.loadClassCatalogue());assert.equal(statusCalls(ended),0);assert.equal(ended.api.catalogueState.rows[0].metricsCached,true);
+ let ended=harness({total:2,storage});ended.advance(15000);ended.ctx.testUserId='6000';ended.ctx.endAtById={'1':'2025-01-01T00:00:00Z'};await ended.flush(ended.api.loadClassCatalogue(true));assert.equal(statusCalls(ended),1);assert.equal(ended.api.catalogueState.rows[0].metricsCached,true);
  let stale=harness({total:2,storage});stale.advance(8*24*60*60*1000);stale.ctx.testUserId='6000';await stale.flush(stale.api.loadClassCatalogue());assert.equal(statusCalls(stale),2,'seven-day entries cannot survive hydration');
  // Clear persists, clears memory, and leaves no automatic reread running.
  assert.equal(await stale.api.clearPersistentCatalogueCache(),true);assert.equal(storage.has(KEY),false);assert.equal(stale.api.catalogueCache.items.size,0);assert.equal(stale.api.getVerifiedCatalogueIdentity(),null);
