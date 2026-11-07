@@ -47,3 +47,5 @@ Sample DOM regression: install `linkedom` in a separate test environment, then r
 ### Real DOM sample extraction
 
 `function-samples-dom.cjs` uses `linkedom` (test-only, not a userscript runtime dependency). Install that package in your test environment or set `PTA_DOM_MODULE` to its absolute module directory, then run `node tests/function-samples-dom.cjs`. The extraction test runs real cleaning and prompt construction on synthetic DOM, preserving exact sample whitespace. Private catalogue fixtures additionally require `PTA_DIAGNOSTIC_DIR` / `PTA_API_DIAGNOSTIC_DIR`; without private inputs those fixture checks explicitly skip and must not be reported as passed.
+
+`class-home-order.cjs` additionally checks future deadlines ascending, expired items last, unknown dates not reclassified, and the active query queue matching visible order. `review-full-diagnostics.cjs` requires linkedom (`NODE_PATH`), exercises live form/code values, credential exclusion and size bounds; it is not live PTA API verification.
