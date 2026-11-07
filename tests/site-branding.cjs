@@ -3,7 +3,7 @@ const {parseHTML}=require('linkedom');
 const fixed='https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js';
 for(const name of fs.readdirSync('docs').filter(x=>x.endsWith('.html'))){
  const file=path.join('docs',name),src=fs.readFileSync(file,'utf8'),{document}=parseHTML(src);
- assert.match(document.title,/PTA Neuron Copilot/);assert.ok(!src.includes('PTA Auto Solver'));
+ assert.match(document.title,/PTA Neuron Copilot/);assert.ok(!src.includes('PTA Auto Solver'));assert.ok(!src.includes('raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/'));
  assert.match(document.querySelector('.brand').textContent,/PTA Neuron Copilot/);
  assert.match(document.querySelector('.release-notice').textContent,/安装链接提供 2\.0\.0/);
  assert.match(document.querySelector('link[rel=canonical]').getAttribute('href'),/^https:\/\/neuroncstate.github.io\/PTA-Neuron-Copilot\//);
