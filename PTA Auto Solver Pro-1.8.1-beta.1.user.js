@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PTA Auto Solver Beta
 // @namespace    https://pintia.cn/
-// @version      1.8.1-beta.17
+// @version      1.8.1-beta.18
 // @description  轻量、清晰的 PTA AI 辅助答题脚本
 // @author       NeuronCState
 // @match        https://pintia.cn/*
@@ -2578,15 +2578,17 @@ return module.exports; } catch (unavailable) { return null; } })();
     .pta-platform-link{color:var(--pta-text);font-weight:600;font-size:11px;text-align:right;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:2px}.pta-platform-link:hover{color:var(--pta-accent)}.pta-platform-link:focus-visible{outline:2px solid var(--pta-accent);outline-offset:3px;border-radius:2px}
     /* The answer controls stay mounted below an independent pull-down catalogue. */
     #pta-root .pta-expanded.pta-answer-home-host{position:relative;padding-top:46px}
-    #pta-home-pull{position:absolute;left:0;right:0;top:0;z-index:12;pointer-events:none}
+    #pta-home-pull{--pta-pull-surface:#fff;--pta-pull-handle:#f8f9fc;position:absolute;left:0;right:0;top:var(--pta-header-rule-y,62px);bottom:0;z-index:12;display:flex;flex-direction:column;pointer-events:none}
+    html.pta-theme-dark #pta-home-pull{--pta-pull-surface:#18181a;--pta-pull-handle:#242428}
+    #pta-shell.collapsed #pta-home-pull{visibility:hidden;pointer-events:none}
     #pta-home-pull[hidden]{display:none!important}
-    #pta-home-pull .pta-home-pull-fold{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;transition:grid-template-rows .3s cubic-bezier(.2,.8,.2,1),opacity .2s ease,visibility 0s linear .3s;pointer-events:none}
-    #pta-home-pull.open .pta-home-pull-fold{grid-template-rows:1fr;opacity:1;visibility:visible;transition-delay:0s;pointer-events:auto}
-    #pta-home-pull .pta-home-pull-inner{min-height:0;overflow:hidden;background:var(--pta-bg);border-radius:0 0 14px 14px;box-shadow:0 10px 18px #0002}
-    #pta-home-pull #pta-class-home{height:min(360px,calc(100vh - 200px));min-height:0;max-height:calc(100vh - 140px);overflow:auto;padding:12px 14px;overscroll-behavior:contain}
-    #pta-root #pta-home-pull-handle{position:relative;display:block;width:120px;height:32px;margin:-1px auto 0;padding:0;border:0;background:transparent;color:var(--pta-text);font:600 11px/1 sans-serif;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 3px 3px #0002)}
+    #pta-home-pull .pta-home-pull-fold{display:grid;grid-template-rows:0fr;height:0;min-height:0;flex:none;opacity:0;visibility:hidden;transition:height .3s cubic-bezier(.2,.8,.2,1),grid-template-rows .3s cubic-bezier(.2,.8,.2,1),opacity .2s ease,visibility 0s linear .3s;pointer-events:none}
+    #pta-home-pull.open .pta-home-pull-fold{grid-template-rows:1fr;height:calc(100% - 31px);opacity:1;visibility:visible;transition-delay:0s;pointer-events:auto}
+    #pta-home-pull .pta-home-pull-inner{height:100%;min-height:0;overflow:hidden;background:var(--pta-pull-surface);border-radius:0 0 14px 14px;box-shadow:0 10px 18px #0002}
+    #pta-home-pull #pta-class-home{height:100%;min-height:0;max-height:none;background:var(--pta-pull-surface);overflow:auto;padding:12px 14px;overscroll-behavior:contain}
+    #pta-root #pta-home-pull-handle{position:relative;display:block;width:120px;height:32px;flex:none;margin:-1px auto 0;padding:0;border:0;background:transparent;color:var(--pta-text);font:600 11px/1 sans-serif;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 3px 3px #0002)}
     #pta-home-pull-handle svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-    #pta-home-pull-handle path{fill:var(--pta-panel);stroke:var(--pta-line);stroke-width:1}
+    #pta-home-pull-handle path{fill:var(--pta-pull-handle);stroke:var(--pta-line);stroke-width:1}
     #pta-home-pull-handle span{position:relative;display:block;padding-bottom:3px}
     #pta-root #pta-home-pull-handle:focus-visible{outline:2px solid var(--pta-accent);outline-offset:2px;border-radius:8px}
     #pta-root #pta-home-pull-handle:hover path{fill:var(--pta-accent-soft)}
@@ -2737,7 +2739,10 @@ return module.exports; } catch (unavailable) { return null; } })();
             var caption=document.createElement('span');caption.textContent='班级题集 ▾';button.appendChild(caption);
             button.addEventListener('click',function(){setHomePull(!homePull.open);});
             host.addEventListener('keydown',function(event){if(event.key==='Escape'&&homePull.open){event.preventDefault();setHomePull(false);button.focus();}});
-            host.appendChild(fold);host.appendChild(button);expanded.insertBefore(host,expanded.firstChild);
+            host.appendChild(fold);host.appendChild(button);
+            // Anchor to the shell, not the scrolling answer content. The handle
+            // remains reachable at the panel bottom even after answer-area scroll.
+            var shell=document.getElementById('pta-shell');(shell||expanded).appendChild(host);
             homePull.host=host;homePull.fold=fold;homePull.button=button;homePull.inner=inner;
         }
         if(homePull.path&&homePull.path!==location.pathname){homePull.open=false;homePull.host.classList.remove('open');homePull.button.setAttribute('aria-expanded','false');homePull.button.setAttribute('aria-label','展开班级题集');homePull.button.querySelector('span').textContent='班级题集 ▾';homePull.fold.inert=true;homePull.fold.setAttribute('aria-hidden','true');}
