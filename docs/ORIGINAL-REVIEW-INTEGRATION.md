@@ -14,3 +14,13 @@ Exports `startOriginalReview(setId)` and `stopOriginalReview()`. No boot, route,
 Tests: `NODE_PATH=/tmp/pta-dom-test/node_modules PTA_REVIEW_DIAGNOSTIC_DIR=../pta-review-inspect node tests/review-original-ui.cjs`. Private fixture validates 34 original question cards. These are offline DOM tests, not a real PTA browser or model run.
 
 Each mounted panel includes an explicit 退出复习 button. It calls the parent-provided `exitReviewMode()` (which must clear session review intent and stop hub work), falling back to `stopOriginalReview()` only when no integration function exists. This avoids a guard trapping users inside review mode.
+
+## Editable local practice fallback
+
+A cached question with the same verified set and numeric question ID now receives local controls even if strict normalized cache/DOM statement or option comparison fails. The fallback uses the current original-page options and blank count; it does not apply or overwrite cached answers. A currently visible accepted platform answer or explicit binary wrong verdict may still support local comparison, clearly labeled. No AI answer is persisted from a mismatched card. This prevents text-rendering differences from silently leaving the original readonly controls as the only interface.
+
+Actual renderer regression demonstrates one failure mechanism: Markdown with two paragraphs produces concatenated text in the local renderer while PTA paragraph DOM can retain a newline. This is a reproducible compatibility failure, not proof of the user's latest live-page cause. Private original DOM fixtures still exercise 34 cards.
+
+Local controls are explicitly enabled, disassociated from any official form, and Enter in an input invokes only local checking. If an original ancestor is disabled fieldset/inert, the local section is inserted immediately outside that ancestor instead of enabling the official controls. No root form, official input, save or submission handler is modified. Large questions receive a local editable scratch textarea; it is not cached or submitted and is cleared on exit.
+
+A fixed review status/exit bar appears during verification and when no cards have mounted. It distinguishes waiting, original type-page navigation, unmatched cards after 15 seconds, and mounted editable cards. Parent still owns route/identity cancellation and persistent review preference.
