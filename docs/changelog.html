@@ -3,41 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PTA Auto Solver 更新记录｜PTA脚本版本历史</title>
-  <meta name="description" content="PTA Auto Solver 更新记录：查看 PTA自动答题脚本 1.6.0 的模型、编程语言、评分闭环、深色模式和 WebGL 网站更新。">
-  <meta name="keywords" content="PTA Auto Solver更新, PTA脚本版本, PTA自动答题脚本1.6.0, PTA脚本更新记录">
+  <title>PTA Neuron Copilot 更新记录｜PTA脚本版本历史</title>
+  <meta name="description" content="PTA Neuron Copilot 更新记录：查看 2.0.0 的品牌、兼容升级、隐藏功能及历史版本变化。">
+  <meta name="keywords" content="PTA Neuron Copilot更新, PTA脚本版本, PTA Neuron Copilot 2.0.0, PTA脚本更新记录">
   <meta name="author" content="NeuronCState">
   <meta name="robots" content="index, follow">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:title" content="PTA Auto Solver 更新记录｜PTA脚本版本历史">
+  <meta property="og:title" content="PTA Neuron Copilot 更新记录｜PTA脚本版本历史">
   <meta property="og:description" content="查看 PTA自动答题脚本的版本更新、功能变化和网站更新。">
-  <link rel="canonical" href="https://neuroncstate.github.io/PTA-Auto-Solver/changelog.html">
-  <link rel="stylesheet" href="styles.css?v=20260801-seo-v2-webgl-r185">
+  <link rel="canonical" href="https://neuroncstate.github.io/PTA-Neuron-Copilot/changelog.html">
+  <link rel="stylesheet" href="styles.css?v=2.0.0-candidate">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "PTA Auto Solver 更新记录",
+      "headline": "PTA Neuron Copilot 更新记录",
       "description": "PTA自动答题脚本版本历史。",
       "dateModified": "2026-08-01",
       "author": { "@type": "Person", "name": "NeuronCState" },
-      "mainEntityOfPage": "https://neuroncstate.github.io/PTA-Auto-Solver/changelog.html"
+      "mainEntityOfPage": "https://neuroncstate.github.io/PTA-Neuron-Copilot/changelog.html"
     }
   </script>
 </head>
 <body class="article-page">
   <div class="page-noise" aria-hidden="true"></div>
-  <header class="nav shell"><a class="brand" href="./" aria-label="PTA Auto Solver 首页">PTA Auto Solver</a><nav class="nav-links" aria-label="主导航"><a href="features.html">功能</a><a href="guide.html">安装教程</a><a href="faq.html">FAQ</a><a href="./">首页</a></nav></header>
+  <header class="nav shell"><a class="brand" href="./" aria-label="PTA Neuron Copilot 首页">PTA Neuron Copilot</a><nav class="nav-links" aria-label="主导航"><a href="features.html">功能</a><a href="guide.html">安装教程</a><a href="faq.html">FAQ</a><a href="./">首页</a></nav></header>
+  <aside class="release-notice shell" aria-label="版本状态"><strong>PTA Neuron Copilot · 2.0.0</strong><p>仓库已更名为 PTA-Neuron-Copilot，安装链接提供 2.0.0。旧脚本归档与升级身份保留。新版暂隐藏复习与开发者诊断入口，不启动相关后台功能。</p></aside>
   <main class="article shell">
-    <p class="breadcrumb"><a href="./">PTA Auto Solver</a><span>/</span>更新记录</p>
-    <header class="article-hero"><p class="eyebrow">CHANGELOG · PTA SCRIPT</p><h1>PTA Auto Solver<br><em>版本更新记录。</em></h1><p class="article-lede">记录 PTA自动答题脚本和项目网站的主要变化。最新版本和安装入口始终以 GitHub 主仓库为准。</p></header>
+    <p class="breadcrumb"><a href="./">PTA Neuron Copilot</a><span>/</span>更新记录</p>
+    <header class="article-hero"><p class="eyebrow">CHANGELOG · PTA SCRIPT</p><h1>PTA Neuron Copilot<br><em>版本更新记录。</em></h1><p class="article-lede">记录 PTA自动答题脚本和项目网站的主要变化。最新版本和安装入口始终以 GitHub 主仓库为准。</p></header>
     <div class="release-list">
-      <article class="release-item glass-card"><div class="release-meta"><span>v1.6.0</span><time datetime="2026-08-06">2026.08.06</time></div><h2>接入 OpenCode Free 本地代理</h2><ul><li>新增 OpenCode Free 供应商，自动探测本机 <code>127.0.0.1:8788</code>。</li><li>检测到代理后动态读取其 `/v1/models`，仅提供代理返回的 Free 模型。</li><li>支持本地 AUTH_TOKEN；未设置时 Token 可以留空。</li><li>继续保留 DeepSeek、MiMo、OpenRouter 以及原有题目提取、提交评分和连续答题流程。</li></ul></article>
+      <article class="release-item glass-card"><div class="release-meta"><span>v2.0.0</span></div><h2>PTA Neuron Copilot（PNC）</h2><ul><li>统一页面、网站和文档品牌；管理器旧安装身份与存储键保留，避免更名导致配置隔离。</li><li>复习与开发者诊断入口暂隐藏，相关自动工作暂停；不删除既有持久缓存。</li><li>仓库更名为 PTA-Neuron-Copilot；安装地址和网页版本信息统一更新。</li></ul></article>
+      <article class="release-item glass-card"><div class="release-meta"><span>v1.6.0</span><time datetime="2026-08-06">2026.08.06</time></div><h2>接入 OpenCode Free 本地代理</h2><ul><li>新增 OpenCode Free 供应商，自动探测本机 <code>127.0.0.1:8788</code>。</li><li>检测到代理后动态读取其 `/v1/models`，仅提供代理返回的 Free 模型。</li><li>支持本地 AUTH_TOKEN；未设置时 Token 可以留空。</li><li>继续保留 DeepSeek、MiMo、OpenCode Zen 以及原有题目提取、提交评分和连续答题流程。</li></ul></article>
       <article class="release-item glass-card"><div class="release-meta"><span>Website</span><time datetime="2026-08-01">2026.08.01</time></div><h2>网站 SEO 与 WebGL 稳定性</h2><ul><li>增加 PTA脚本安装教程、功能说明、FAQ 和版本记录页面。</li><li>补充 sitemap、canonical、结构化数据和页面互链。</li><li>网站首页使用 Three.js R185 WebGL2 轨道动画。</li><li>增加 WebGL 上下文恢复、页面隐藏停帧和 Retina 2× 输出。</li></ul></article>
     </div>
-    <section class="article-section article-next"><h2>安装最新版本</h2><div class="article-link-grid"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/PTA%20Auto%20Solver%20Pro-1.6.0.user.js"><span>DOWNLOAD</span><strong>安装 PTA Auto Solver v1.6.0 ↗</strong></a><a href="https://github.com/NeuronCState/PTA-Auto-Solver/commits/main" target="_blank" rel="noreferrer"><span>GITHUB</span><strong>查看完整提交记录 ↗</strong></a></div></section>
+    <section class="article-section article-next"><h2>当前版本</h2><div class="article-link-grid"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js"><span>DOWNLOAD</span><strong>安装 2.0.0 ↗</strong></a><a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/commits/main" target="_blank" rel="noreferrer"><span>GITHUB</span><strong>查看完整提交记录 ↗</strong></a></div></section>
   </main>
-  <footer class="footer shell"><span>© 2026 NeuronCState</span><span>PTA Auto Solver</span><a href="https://github.com/NeuronCState/PTA-Auto-Solver" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+  <footer class="footer shell"><span>© 2026 NeuronCState</span><span>PTA Neuron Copilot</span><a href="https://github.com/NeuronCState/PTA-Neuron-Copilot" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
 </body>
 </html>

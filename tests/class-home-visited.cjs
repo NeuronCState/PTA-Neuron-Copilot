@@ -1,0 +1,39 @@
+const assert=require('node:assert/strict'),{harness}=require('./class-home-api.cjs');
+const KEY='pta-catalogue-cache-v1',VISITS='pta-catalogue-visits-v1';
+function visit(h,id){h.ctx.location.pathname='/problem-sets/'+id+'/exam/problems/type/1';h.api.trackCatalogueVisit();}
+function home(h){h.ctx.location.pathname='/problem-sets/dashboard';h.api.trackCatalogueVisit();}
+(async()=>{
+ const storage=new Map(),session=new Map(),first=harness({total:9,storage,session});await first.flush(first.api.loadClassCatalogue());const initial=storage.get(KEY),stamp=JSON.parse(initial).snapshot.at;
+ visit(first,'2');visit(first,'2');visit(first,'5');assert.equal(first.api.catalogueVisits.ids.size,2);home(first);let baseline=first.calls.length;
+ await first.flush(first.api.loadClassCatalogue());let requests=first.calls.slice(baseline);assert.equal(requests.length,4);assert.equal(requests.filter(c=>c.url.pathname==='/api/problem-sets').length,0);assert.deepEqual(requests.filter(c=>c.url.pathname.endsWith('/exams')).map(c=>c.url.pathname.split('/')[3]).sort(),['2','5']);assert.equal(first.api.catalogueState.rows.length,9);assert.equal(first.api.catalogueState.status,'ready');assert.match(first.api.catalogueState.rows.find(r=>r.id==='1').metricsNote,/本次未刷新/);assert.equal(first.api.catalogueVisits.ids.size,0);assert.equal(JSON.parse(storage.get(KEY)).snapshot.at,stamp);
+ // Revisit is dirty again; manual full reread remains full, never selective.
+ visit(first,'2');home(first);baseline=first.calls.length;await first.flush(first.api.loadClassCatalogue(true));assert.ok(first.calls.slice(baseline).some(c=>c.url.pathname==='/api/problem-sets'));
+ // Direct entry survives a new JS realm/full navigation through session markers.
+ const direct=harness({total:9,storage,session:new Map()});visit(direct,'3');let carried=new Map([[VISITS,JSON.stringify({version:1,items:[['3',Date.UTC(2026,10,7)]]})]]);const reloaded=harness({total:9,storage,session:carried});reloaded.advance(60000);await reloaded.flush(reloaded.api.loadClassCatalogue());assert.equal(reloaded.calls.length,2);assert.equal(reloaded.calls[0].url.pathname,'/api/problem-sets/3/exams');
+ // Refresh the actual editing-page realm, retaining real tab storage rather than fabricated markers.
+ const editSession=new Map(),editDisk=new Map([[KEY,initial]]),editing=harness({total:9,storage:editDisk,session:editSession});editing.advance(60000);
+ visit(editing,'4');assert.ok(editSession.has(VISITS));
+ const refresh=harness({total:9,storage:editDisk,session:editSession});refresh.advance(120000);visit(refresh,'4');
+ assert.equal(refresh.api.catalogueVisits.ids.has('4'),true);assert.equal(editDisk.get(KEY),initial);
+ home(refresh);await refresh.flush(refresh.api.loadClassCatalogue());
+ assert.equal(refresh.api.catalogueState.status,'ready');assert.equal(refresh.api.catalogueState.rows.length,9);
+ assert.equal(refresh.calls.some(c=>c.url.pathname==='/api/problem-sets'),false);
+ assert.deepEqual(refresh.calls.filter(c=>c.url.pathname.endsWith('/exams')).map(c=>c.url.pathname.split('/')[3]),['4']);
+ assert.equal(refresh.api.catalogueVisits.ids.has('4'),false);
+ // A status failure retains the previous metrics/time and leaves a retry marker.
+ const failed=harness({total:9,mode:'unknown',storage:new Map([[KEY,initial]]),session:new Map()});failed.advance(60000);visit(failed,'2');home(failed);await failed.flush(failed.api.loadClassCatalogue());assert.equal(failed.api.catalogueState.status,'partial');const old=failed.api.catalogueState.rows.find(r=>r.id==='2');assert.equal(old.metrics.answered,40);assert.equal(old.metricsCached,true);assert.match(old.metricsNote,/保留缓存/);assert.equal(failed.api.catalogueVisits.ids.has('2'),true);assert.equal(failed.calls.length,2);
+ // Account mismatch must not reveal the prior owner's cached rows and clears old visit markers.
+ const switched=harness({total:9,storage:new Map([[KEY,initial]]),session:new Map()});switched.advance(60000);visit(switched,'2');home(switched);switched.ctx.testUserId='6000';let sourceAtList;switched.ctx.onFetch=url=>{if(url.pathname==='/api/problem-sets')sourceAtList=switched.api.catalogueState.source;};await switched.flush(switched.api.loadClassCatalogue());assert.equal(sourceAtList,'dom');assert.equal(switched.api.catalogueCache.owner,'6000');assert.equal(switched.api.catalogueVisits.ids.size,0);
+ // Failed identity request keeps disk intact and does not fan out to other sets.
+ const deniedStorage=new Map([[KEY,initial]]),denied=harness({total:9,mode:'exam403',storage:deniedStorage,session:new Map()});denied.advance(60000);visit(denied,'1');home(denied);await denied.flush(denied.api.loadClassCatalogue());assert.equal(denied.calls.length,1);assert.equal(denied.api.catalogueState.status,'partial');assert.equal(denied.api.catalogueState.rows.length,0);assert.equal(deniedStorage.get(KEY),initial);
+ // Missing/expired/incomplete directory requires normal full discovery.
+ for(const variant of ['expired','incomplete','missing-id']){const v=JSON.parse(initial);if(variant==='expired')v.snapshot.at-=25*3600000;if(variant==='incomplete')v.snapshot.complete=false;const h=harness({total:9,storage:new Map([[KEY,JSON.stringify(v)]]),session:new Map()});h.advance(60000);visit(h,variant==='missing-id'?'99':'2');home(h);await h.flush(h.api.loadClassCatalogue());assert.ok(h.calls.some(c=>c.url.pathname==='/api/problem-sets'),variant);}
+ // Ended visited sets only verify the existing exam, never fetch new status.
+ const endedValue=JSON.parse(initial);endedValue.snapshot.rows.find(r=>r.id==='2').endTime=Date.UTC(2025,0,1);
+ const ended=harness({total:9,storage:new Map([[KEY,JSON.stringify(endedValue)]]),session:new Map()});ended.advance(60000);visit(ended,'2');home(ended);await ended.flush(ended.api.loadClassCatalogue());assert.equal(ended.calls.length,1);assert.equal(ended.api.catalogueVisits.ids.size,0);assert.equal(ended.api.catalogueState.rows.find(r=>r.id==='2').metrics.answered,40);
+ // A route exit cancels before late status data can overwrite cache/consume markers.
+ const cancelled=harness({total:9,storage:new Map([[KEY,initial]]),session:new Map()});cancelled.advance(60000);visit(cancelled,'2');home(cancelled);let aborted=false;
+ cancelled.ctx.onFetch=url=>{if(url.pathname.endsWith('/problem-status')){aborted=true;cancelled.ctx.location.pathname='/problem-sets/3/exam';cancelled.api.trackCatalogueVisit();cancelled.api.stopClassCatalogue();}};
+ await cancelled.flush(cancelled.api.loadClassCatalogue());assert.equal(aborted,true);assert.equal(cancelled.api.catalogueState.status,'idle');assert.equal(cancelled.api.catalogueVisits.ids.has('2'),true);assert.equal(cancelled.api.catalogueVisits.ids.has('3'),true);
+ console.log('PASS: only visited sets refresh, stable full cached groups, direct/SPA/revisit markers, persisted navigation, manual reread, account isolation and failure retention');
+})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="350" viewBox="0 0 1200 350" role="img" aria-labelledby="title desc">
-  <title id="title">PTA Auto Solver 解题流程</title>
+  <title id="title">PTA Neuron Copilot 解题流程</title>
   <desc id="desc">四个连续步骤：进入具体题目，选择模型并开始，提取题干并写入答案，提交后读取评分。四张卡片采用相同宽度，均完整保留在画布安全边距内。</desc>
   <rect width="1200" height="350" rx="28" fill="#111111"/>
   <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif">

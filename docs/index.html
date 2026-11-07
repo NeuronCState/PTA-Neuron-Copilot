@@ -3,36 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PTA自动答题脚本｜PTA脚本｜拼题A AI工具 - PTA Auto Solver</title>
-  <meta name="description" content="PTA Auto Solver 是面向拼题A的 PTA自动答题脚本与 Tampermonkey PTA脚本，支持 DeepSeek、MiMo、OpenRouter、动态模型、代码写入和评分追踪。">
-  <meta name="keywords" content="PTA自动答题, PTA脚本, PTA自动刷题, 拼题A脚本, PTA AI答题, Tampermonkey PTA脚本, PTA Auto Solver">
+  <title>PTA自动答题脚本｜PTA脚本｜拼题A AI工具 - PTA Neuron Copilot</title>
+  <meta name="description" content="PTA Neuron Copilot 是面向拼题A的 PTA自动答题脚本与 Tampermonkey PTA脚本，支持 DeepSeek、MiMo、OpenCode Zen、动态模型、代码写入和评分追踪。">
+  <meta name="keywords" content="PTA自动答题, PTA脚本, PTA自动刷题, 拼题A脚本, PTA AI答题, Tampermonkey PTA脚本, PTA Neuron Copilot">
   <meta name="author" content="NeuronCState">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:site_name" content="PTA Auto Solver">
+  <meta property="og:site_name" content="PTA Neuron Copilot">
   <meta property="og:title" content="PTA自动答题脚本｜PTA脚本｜拼题A AI工具">
   <meta property="og:description" content="面向拼题A的 Tampermonkey PTA脚本，支持动态模型、代码写入、提交评分与连续答题控制。">
-  <meta property="og:url" content="https://neuroncstate.github.io/PTA-Auto-Solver/">
+  <meta property="og:url" content="https://neuroncstate.github.io/PTA-Neuron-Copilot/">
   <meta property="og:image" content="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/main-page.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0b0b0d">
-  <link rel="canonical" href="https://neuroncstate.github.io/PTA-Auto-Solver/">
-  <link rel="stylesheet" href="styles.css?v=20260801-seo-v2-webgl-r185">
+  <link rel="canonical" href="https://neuroncstate.github.io/PTA-Neuron-Copilot/">
+  <link rel="stylesheet" href="styles.css?v=2.0.0-candidate">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": ["SoftwareApplication", "WebApplication"],
-      "name": "PTA Auto Solver",
+      "name": "PTA Neuron Copilot",
       "applicationCategory": "BrowserApplication",
       "operatingSystem": "Chrome, Edge, Firefox",
       "description": "面向拼题A的 PTA自动答题脚本与 Tampermonkey PTA脚本，可读取题目、生成作答建议、写入编辑器并跟踪评分。",
-      "url": "https://neuroncstate.github.io/PTA-Auto-Solver/",
-      "downloadUrl": "https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/PTA%20Auto%20Solver%20Pro-1.6.0.user.js",
-      "softwareVersion": "1.6.0",
+      "url": "https://neuroncstate.github.io/PTA-Neuron-Copilot/",
+      "downloadUrl": "https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js",
+      "softwareVersion": "2.0.0",
       "inLanguage": "zh-CN",
       "author": { "@type": "Person", "name": "NeuronCState" },
-      "sameAs": ["https://github.com/NeuronCState/PTA-Auto-Solver"],
+      "sameAs": ["https://github.com/NeuronCState/PTA-Neuron-Copilot"],
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
     }
   </script>
@@ -40,26 +40,27 @@
 <body>
   <div class="page-noise" aria-hidden="true"></div>
   <header class="nav shell" data-reveal>
-    <a class="brand" href="./" aria-label="PTA Auto Solver 首页">
-      <span>PTA Auto Solver</span>
+    <a class="brand" href="./" aria-label="PTA Neuron Copilot 首页">
+      <span>PTA Neuron Copilot</span>
     </a>
     <nav class="nav-links" aria-label="主导航">
       <a href="features.html">功能</a>
       <a href="guide.html">安装教程</a>
       <a href="faq.html">FAQ</a>
-      <a href="https://github.com/NeuronCState/PTA-Auto-Solver" target="_blank" rel="noreferrer">GitHub ↗</a>
+      <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot" target="_blank" rel="noreferrer">GitHub ↗</a>
     </nav>
   </header>
 
+<aside class="release-notice shell" aria-label="版本状态"><strong>PTA Neuron Copilot · 2.0.0</strong><p>仓库已更名为 PTA-Neuron-Copilot，安装链接提供 2.0.0。旧脚本归档与升级身份保留。新版暂隐藏复习与开发者诊断入口，不启动相关后台功能。</p></aside>
   <main>
     <section class="hero shell">
       <div class="hero-copy" data-reveal>
-        <p class="eyebrow"><span class="status-dot"></span> OPEN SOURCE · v1.6.0</p>
+        <p class="eyebrow"><span class="status-dot"></span> OPEN SOURCE · v2.0.0 候选</p>
         <h1>PTA自动答题脚本，<br><em>清晰、可控、少一点重复。</em></h1>
-        <p class="hero-text">PTA Auto Solver 是一个面向拼题A的 PTA脚本与 AI答题工具。它可动态读取模型、提取真实题干、生成作答建议、写入编辑器并等待评分。</p>
+        <p class="hero-text">PTA Neuron Copilot 是一个面向拼题A的 PTA脚本与 AI答题工具。它可动态读取模型、提取真实题干、生成作答建议、写入编辑器并等待评分。</p>
         <div class="hero-actions">
-          <a class="button button-dark" href="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/PTA%20Auto%20Solver%20Pro-1.6.0.user.js">安装 / 更新脚本 <span>↗</span></a>
-          <a class="button button-light" href="https://github.com/NeuronCState/PTA-Auto-Solver" target="_blank" rel="noreferrer">查看源代码</a>
+          <a class="button button-dark" href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js">安装 2.0.0 <span>↗</span></a>
+          <a class="button button-light" href="https://github.com/NeuronCState/PTA-Neuron-Copilot" target="_blank" rel="noreferrer">查看源代码</a>
         </div>
         <p class="microcopy">安装 Tampermonkey 后点击即可导入。查看<a class="text-link" href="guide.html"> PTA脚本安装教程</a>了解完整配置。</p>
       </div>
@@ -79,26 +80,26 @@
     <section id="features" class="section shell">
       <div class="section-heading" data-reveal><p class="eyebrow">WHAT IT DOES</p><h2>把重复操作交给流程，<br>把控制权留给你。</h2></div>
       <div class="feature-grid">
-        <article class="feature-card glass-card" data-reveal><span class="feature-index">01</span><h3>动态模型</h3><p>填写 API Key 后读取供应商真实模型列表，手动选择，不把模型名称写死在脚本里；OpenRouter 的 Free 模型自动置顶。</p><span class="feature-tag">DEEPSEEK / MIMO / OPENROUTER</span></article>
+        <article class="feature-card glass-card" data-reveal><span class="feature-index">01</span><h3>动态模型</h3><p>填写 API Key 后读取供应商真实模型列表，手动选择，不把模型名称写死在脚本里；OpenCode Zen 的 Free 模型自动置顶。</p><span class="feature-tag">DEEPSEEK / MIMO / OPENROUTER</span></article>
         <article class="feature-card glass-card" data-reveal><span class="feature-index">02</span><h3>真实评分闭环</h3><p>提交本题作答，等待程序打分；不是满分时最多自动重答一次，满分后才进入下一题。</p><span class="feature-tag">SUBMIT → SCORE → NEXT</span></article>
         <article class="feature-card glass-card" data-reveal><span class="feature-index">03</span><h3>可见的控制</h3><p>进度、运行记录、Key 错误和模型错误都显示在面板内。首页直接选择编程语言。</p><span class="feature-tag">VISIBLE STATE</span></article>
       </div>
     </section>
 
     <section id="preview" class="section shell preview-section">
-      <div class="section-heading inline-heading" data-reveal><div><p class="eyebrow">INTERFACE</p><h2>黑白玻璃，安静但不隐身。</h2></div><a class="text-link" href="https://github.com/NeuronCState/PTA-Auto-Solver/tree/main/screenshots" target="_blank" rel="noreferrer">查看全部截图 ↗</a></div>
+      <div class="section-heading inline-heading" data-reveal><div><p class="eyebrow">INTERFACE</p><h2>黑白玻璃，安静但不隐身。</h2></div><a class="text-link" href="https://github.com/NeuronCState/PTA-Neuron-Copilot/tree/main/screenshots" target="_blank" rel="noreferrer">查看全部截图 ↗</a></div>
       <div class="preview-grid">
-        <figure class="preview-card preview-card-large" data-reveal><img src="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/main-page.png?v=20260731-2" alt="PTA Auto Solver 主页面" loading="lazy"><figcaption><span>MAIN PANEL</span><strong>首页与进度</strong></figcaption></figure>
-        <figure class="preview-card" data-reveal><img src="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/dark-mode-main-page.png?v=20260731-2" alt="PTA Auto Solver 深色模式" loading="lazy"><figcaption><span>DARK MODE</span><strong>深色 / 浅色同步</strong></figcaption></figure>
-        <figure class="preview-card" data-reveal><img src="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/model-settings.png?v=20260731-2" alt="PTA Auto Solver 模型配置" loading="lazy"><figcaption><span>MODEL SETTINGS</span><strong>模型与图片输入</strong></figcaption></figure>
+        <figure class="preview-card preview-card-large" data-reveal><img src="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/main-page.png?v=20260731-2" alt="PTA Neuron Copilot 主页面" loading="lazy"><figcaption><span>MAIN PANEL</span><strong>首页与进度</strong></figcaption></figure>
+        <figure class="preview-card" data-reveal><img src="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/dark-mode-main-page.png?v=20260731-2" alt="PTA Neuron Copilot 深色模式" loading="lazy"><figcaption><span>DARK MODE</span><strong>深色 / 浅色同步</strong></figcaption></figure>
+        <figure class="preview-card" data-reveal><img src="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/screenshots/model-settings.png?v=20260731-2" alt="PTA Neuron Copilot 模型配置" loading="lazy"><figcaption><span>MODEL SETTINGS</span><strong>模型与图片输入</strong></figcaption></figure>
       </div>
     </section>
 
     <section id="faq" class="section shell seo-section">
       <div class="section-heading" data-reveal><p class="eyebrow">PTA SCRIPT GUIDE</p><h2>关于 PTA 自动刷题、<br>PTA 脚本与自动答题。</h2></div>
       <div class="seo-grid">
-        <article class="seo-card glass-card" data-reveal><h3>这是 PTA 自动刷题工具吗？</h3><p>PTA Auto Solver 是在拼题 A 页面运行的 PTA 脚本，可把读题、调用 AI、填入编辑器与读取评分等重复步骤串成可见、可停止的流程。每次提交仍会留下 PTA 的真实记录。</p></article>
-        <article class="seo-card glass-card" data-reveal><h3>如何安装 PTA 脚本？</h3><p>先安装 Tampermonkey，再从本页导入 PTA Auto Solver。进入具体题目页后配置自己的 AI API Key，选择模型与语言即可使用。</p></article>
+        <article class="seo-card glass-card" data-reveal><h3>这是 PTA 自动刷题工具吗？</h3><p>PTA Neuron Copilot 是在拼题 A 页面运行的 PTA 脚本，可把读题、调用 AI、填入编辑器与读取评分等重复步骤串成可见、可停止的流程。每次提交仍会留下 PTA 的真实记录。</p></article>
+        <article class="seo-card glass-card" data-reveal><h3>如何安装 PTA 脚本？</h3><p>先安装 Tampermonkey，再从本页导入 PTA Neuron Copilot。进入具体题目页后配置自己的 AI API Key，选择模型与语言即可使用。</p></article>
         <article class="seo-card glass-card" data-reveal><h3>PTA 自动答题如何保持可控？</h3><p>脚本展示题目进度、运行记录和评分结果；首次使用建议关闭连续答题，核对生成的作答与评分后再决定是否继续。请遵守课程、竞赛和 PTA 的使用规则。</p></article>
       </div>
     </section>
@@ -107,7 +108,7 @@
       <div class="setup-panel glass-card" data-reveal>
         <div><p class="eyebrow">QUICK START</p><h2>三步开始。</h2></div>
         <div class="steps"><div class="step"><b>01</b><span>安装 Tampermonkey</span></div><div class="step"><b>02</b><span>填写 Key，选择模型</span></div><div class="step"><b>03</b><span>打开 PTA 题目并开始</span></div></div>
-        <a class="button button-dark" href="https://raw.githubusercontent.com/NeuronCState/PTA-Auto-Solver/main/PTA%20Auto%20Solver%20Pro-1.6.0.user.js">获取 v1.6.0 <span>↗</span></a>
+        <a class="button button-dark" href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js">安装 2.0.0 <span>↗</span></a>
       </div>
     </section>
 
@@ -121,7 +122,7 @@
     </section>
   </main>
 
-  <footer class="footer shell"><span>© 2026 NeuronCState</span><span>PTA Auto Solver</span><span><a href="changelog.html">更新记录</a> · <a href="https://github.com/NeuronCState/PTA-Auto-Solver/issues" target="_blank" rel="noreferrer">反馈问题 ↗</a></span></footer>
+  <footer class="footer shell"><span>© 2026 NeuronCState</span><span>PTA Neuron Copilot</span><span><a href="changelog.html">更新记录</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/issues" target="_blank" rel="noreferrer">反馈问题 ↗</a></span></footer>
   <script>
     const root = document.documentElement;
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -437,7 +438,7 @@
       } catch (error) {
         setWebglState('error');
         stopAnimation();
-        console.error('PTA Auto Solver WebGL render paused:', error);
+        console.error('PTA Neuron Copilot WebGL render paused:', error);
         return;
       }
       if (running && !reduced) animationFrame = requestAnimationFrame(animate);

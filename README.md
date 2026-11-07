@@ -1,25 +1,34 @@
-# PTA Auto Solver
+# PTA Neuron Copilot
 
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="PTA Auto Solver：在 PTA 页面读取题目、调用所选 AI 模型、写入答案并跟踪评分。">
+  <img src="./assets/readme/hero.svg" width="100%" alt="PTA Neuron Copilot：在 PTA 页面读取题目、调用所选 AI 模型、写入答案并跟踪评分。">
 </p>
 
 <p align="center">
-  <a href="https://neuroncstate.github.io/PTA-Auto-Solver/">项目主页</a> ·
-  <a href="https://scriptcat.org/zh-CN/script-show-page/7287">安装脚本</a> ·
-  <a href="https://github.com/NeuronCState/PTA-Auto-Solver/issues">反馈问题</a>
+  <a href="https://neuroncstate.github.io/PTA-Neuron-Copilot/">项目主页</a> ·
+  <a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js">安装 2.0.0</a> ·
+  <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/issues">反馈问题</a>
 </p>
 
-PTA Auto Solver 是运行在 [拼题 A（PTA）](https://pintia.cn/) 页面上的 Tampermonkey AI 辅助答题脚本，也可作为 PTA 脚本、PTA 自动答题或 PTA 自动刷题工具被检索。它读取当前题目上下文，调用你选择的 AI 供应商，把结果写入 PTA 编辑器，并在提交后读取评分。
+PTA Neuron Copilot 是运行在 [拼题 A（PTA）](https://pintia.cn/) 页面上的 Tampermonkey AI 辅助答题脚本，也可作为 PTA 脚本、PTA 自动答题或 PTA 自动刷题工具被检索。它读取当前题目上下文，调用你选择的 AI 供应商，把结果写入 PTA 编辑器，并在提交后读取评分。
 
-> 当前版本：`1.8.0` · 作者：`NeuronCState` · 仅匹配 `https://pintia.cn/*`
+> 当前版本：`2.0.0` · 产品名称：**PTA Neuron Copilot（PNC）** · 仅匹配 `https://pintia.cn/*`
+> 仓库现为 `PTA-Neuron-Copilot`，安装链接指向 2.0.0；旧版完整归档见文末。
+
+## 班级题集界面
+
+以下为用户提供的 beta.20 实际截图，展示 PNC 班级分组、进度及剩余天数；图中复习开关属于旧版，2.0.0 已隐藏，不能将此图当作 2.0.0 的最终界面验收。
+
+<img src="./screenshots/pnc-class-catalogue-beta20.png" width="420" alt="用户提供的 PTA Neuron Copilot beta.20 班级题集界面；包含班级分组、保存进度、分数和剩余天数环。">
 
 ## 先看界面
 
+以下为历史版本截图，可能仍显示旧名称或旧控件，不代表 2.0.0 已完成视觉验收。
+
 <p align="center">
-  <img src="./screenshots/main-page.png" width="31%" alt="PTA Auto Solver 主页面，包含进度、语言选择、跳过已作答、连续下一题和开始解题按钮。">
-  <img src="./screenshots/dark-mode-main-page.png" width="31%" alt="PTA Auto Solver 深色模式主页面。">
-  <img src="./screenshots/model-settings.png" width="31%" alt="PTA Auto Solver 的模型配置页面。">
+  <img src="./screenshots/main-page.png" width="31%" alt="PTA Neuron Copilot 主页面，包含进度、语言选择、跳过已作答、连续下一题和开始解题按钮。">
+  <img src="./screenshots/dark-mode-main-page.png" width="31%" alt="PTA Neuron Copilot 深色模式主页面。">
+  <img src="./screenshots/model-settings.png" width="31%" alt="PTA Neuron Copilot 的模型配置页面。">
 </p>
 
 ## 它能做什么
@@ -30,12 +39,12 @@ PTA Auto Solver 是运行在 [拼题 A（PTA）](https://pintia.cn/) 页面上�
 - 非满分时最多自动重答 1 次；开启“连续答题”后，满分会进入下一题。
 - 提供自动检测、C、C++、Python、Java、Pascal 五种语言选择。
 - 统一控制脚本面板与 PTA 页面的浅色 / 深色主题，并展示真实题目进度与运行记录。
-- 支持最小化为 58px PAS 悬浮胶囊，带有首字母连续形变位移动效；任务执行期间提供柔和的中轴自转混色流光与文字处理状态指示。
+- 支持最小化为 58px PNC 悬浮胶囊，保留彩色运行光效；任务执行期间提供柔和的中轴自转混色流光与文字处理状态指示。
 
 ## 解题流程
 
 <p align="center">
-  <img src="./assets/readme/workflow.svg" width="100%" alt="PTA Auto Solver 工作流：进入具体题目，选择模型并开始，提取题干并写入答案，提交后读取评分。">
+  <img src="./assets/readme/workflow.svg" width="100%" alt="PTA Neuron Copilot 工作流：进入具体题目，选择模型并开始，提取题干并写入答案，提交后读取评分。">
 </p>
 
 自动提交会在 PTA 中留下真实提交记录。首次使用建议关闭“连续答题”，先检查生成的代码和评分，再决定是否连续处理。
@@ -43,7 +52,7 @@ PTA Auto Solver 是运行在 [拼题 A（PTA）](https://pintia.cn/) 页面上�
 ## 3 分钟开始使用
 
 1. 安装浏览器扩展 [Tampermonkey](https://www.tampermonkey.net/)。
-2. 打开 [ScriptCat 脚本主页](https://scriptcat.org/zh-CN/script-show-page/7287) 点击“安装脚本”，或直接打开 [PTA Auto Solver Pro-1.8.0.user.js](./PTA%20Auto%20Solver%20Pro-1.8.0.user.js)。
+2. 打开[已发布 beta.20 固定版本](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js)，核对管理器显示版本后安装。2.0.0 发布前，不把此链接当作新版安装入口。
 3. 在 Tampermonkey 确认安装，刷新 PTA 页面。
 4. 登录 PTA 并进入**具体题目页面**；右下角会出现脚本面板。
 5. 点击面板右上角设置，选择供应商、填写 API Key、等待模型列表加载（设置项实时自动保存，无需手动保存），然后点击“测试”。
@@ -120,12 +129,35 @@ API Key 仅保存在当前浏览器的本地配置中；脚本不将 Key 上传�
 脚本使用 `GM_xmlhttpRequest` 请求模型列表和聊天接口，使用 `GM_setClipboard` 在编辑器无法直接写入时复制答案到剪贴板；仅允许连接 `api.deepseek.com`、`api.xiaomimimo.com`、`opencode.ai` 以及本地代理 `127.0.0.1:8788`（localhost）。
 
 - JavaScript 语法检查已通过。
-- 已在真实 PTA 函数题页验证：代码写入、提交、等待评分、读取 `20 / 20`，以及满分后进入下一题。
+- 当前 2.0.0 以离线回归为准；尚未进行真实 PTA、收费模型和脚本管理器升级验收。历史版本的单题成功结果不代表本版或其他题目必然正确。
 
 ## 项目主页与更新
 
-`docs/` 是 GitHub Pages 的静态源文件，发布地址为 <https://neuroncstate.github.io/PTA-Auto-Solver/>。仓库设置中选择 **Settings → Pages → Deploy from a branch → `main` / `/docs`** 即可启用。
+`docs/` 是 GitHub Pages 的静态源文件，发布地址为 <https://neuroncstate.github.io/PTA-Neuron-Copilot/>。仓库设置中选择 **Settings → Pages → Deploy from a branch → `main` / `/docs`** 即可启用。
 
 如果 Pages 当前选择的是 `main` / `/(root)`，仓库根目录也提供了入口，会自动跳转到 `docs/`。若仍显示 404，请在 **Settings → Pages** 确认已经选择发布源；仅提交网页文件不会自动开启 GitHub Pages。
 
 脚本元数据已配置 `@updateURL` 和 `@downloadURL`；发布新版本后，Tampermonkey 可以从仓库原始脚本地址检查更新。
+
+
+## 2.0.0 升级与兼容说明
+
+- **显示名称**为 PTA Neuron Copilot，缩写 PNC。为保留既有 Beta 安装身份，管理器 `@name`、`@namespace`、原脚本文件名和存储键暂不更改；管理器显示旧名属于预期。不要另装一份新身份脚本与旧版并行运行。
+- **复习功能暂隐藏、暂停**：不显示开关、题集入口或本地复习控件，不自动后台获取复习题目；不删除已有持久复习缓存。不是“复习已完成并正式上线”。
+- **开发者选项暂隐藏、暂停**：不显示诊断开关或导出入口，不继续页面/API 诊断采集。已有内存诊断数据并非持久缓存，本来就会随刷新消失，不能承诺跨刷新保留。
+- API Key、题集缓存与 AI 解答缓存沿用原设置和身份；未保存的 PTA 页面代码、输入和临时本地草稿不在自动恢复保证范围内。
+- 从 Beta 升级前，确认只启用一份脚本，并记录自己需要保留的设置；更新后先在普通练习页检查供应商配置、历史缓存和版本，再进行实际作答。测试不等于真实 PTA 全流程验收。
+- 旧正式版与 Beta 可能是不同管理器安装身份。不能承诺把旧正式版的所有 GM 存储无损转入 Beta；不要通过更改 `@name` 强行迁移。
+
+## 仓库和网站迁移
+
+仓库已更名为 `PTA-Neuron-Copilot`。当前安装、反馈、canonical 和 sitemap 统一使用新地址，Pages 地址为 <https://neuroncstate.github.io/PTA-Neuron-Copilot/>。旧仓库跳转与旧 raw 更新路径需要分别核验，不能把仓库重定向当作 Pages 重定向。
+
+GitHub [官方重命名说明](https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository)明确：项目 Pages URL 不会自动重定向。请更新网页书签；不要重新创建同名旧仓库，否则旧仓库重定向会失效。网站源文件仍为 `docs/`，根入口跳转到 `docs/`；真实 Pages 发布源和构建状态应以仓库设置为准。
+
+## 旧脚本保留与回退
+
+- 原有 `PTA Auto Solver Pro-1.4.2.user.js`、`1.6.0`、`1.8.0` 历史文件原样保留。
+- 新增 [beta.20 完整归档](./legacy/PTA-Auto-Solver-Beta-1.8.1-beta.20.user.js)，与已发布提交 `e8739cfcc2553d637791fd351d80f67c4f00c344` 的脚本逐字节相同，未删减代码或改写元数据。
+- 旧路径 `PTA Auto Solver Pro-1.8.1-beta.1.user.js` 是现有 Beta 的更新通道，提供 2.0.0；不是永久冻结的旧版副本。旧版已另存到上述归档，Git 历史也保留。
+- 升级优先在原管理器条目检查更新，不卸载、不同时运行两份。若手动回退 beta.20，它原样保留的更新地址仍会指向更新通道；想固定旧版，需在脚本管理器关闭该条目的自动更新。管理器对降级可能提示确认；尚未实际验收。

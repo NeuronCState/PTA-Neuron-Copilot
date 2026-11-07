@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PTA自动答题常见问题｜PTA脚本 FAQ - PTA Auto Solver</title>
+  <title>PTA自动答题常见问题｜PTA脚本 FAQ - PTA Neuron Copilot</title>
   <meta name="description" content="PTA自动答题和 PTA脚本常见问题：模型列表为空、API Key 错误、题干提取失败、返回不是有效 JSON、编程语言选择和评分重试。">
   <meta name="keywords" content="PTA自动答题常见问题, PTA脚本FAQ, PTA Key错误, PTA题干提取, PTA模型列表, PTA返回JSON错误">
   <meta name="author" content="NeuronCState">
@@ -11,15 +11,15 @@
   <meta property="og:type" content="article">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:title" content="PTA自动答题常见问题｜PTA脚本 FAQ">
-  <meta property="og:description" content="解决 PTA Auto Solver 配置、模型、题干、JSON 和评分流程中的常见问题。">
-  <link rel="canonical" href="https://neuroncstate.github.io/PTA-Auto-Solver/faq.html">
-  <link rel="stylesheet" href="styles.css?v=20260801-seo-v2-webgl-r185">
+  <meta property="og:description" content="解决 PTA Neuron Copilot 配置、模型、题干、JSON 和评分流程中的常见问题。">
+  <link rel="canonical" href="https://neuroncstate.github.io/PTA-Neuron-Copilot/faq.html">
+  <link rel="stylesheet" href="styles.css?v=2.0.0-candidate">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "name": "PTA自动答题常见问题",
-      "url": "https://neuroncstate.github.io/PTA-Auto-Solver/faq.html",
+      "url": "https://neuroncstate.github.io/PTA-Neuron-Copilot/faq.html",
       "inLanguage": "zh-CN",
       "mainEntity": [
         { "@type": "Question", "name": "为什么 API Key 无法使用？", "acceptedAnswer": { "@type": "Answer", "text": "请确认供应商、Base URL 和 API Key 匹配，并使用获取模型列表按钮验证。错误信息会显示在脚本面板内。" } },
@@ -32,9 +32,10 @@
 </head>
 <body class="article-page">
   <div class="page-noise" aria-hidden="true"></div>
-  <header class="nav shell"><a class="brand" href="./" aria-label="PTA Auto Solver 首页">PTA Auto Solver</a><nav class="nav-links" aria-label="主导航"><a href="features.html">功能</a><a href="guide.html">安装教程</a><a href="faq.html" aria-current="page">FAQ</a><a href="./">首页</a></nav></header>
+  <header class="nav shell"><a class="brand" href="./" aria-label="PTA Neuron Copilot 首页">PTA Neuron Copilot</a><nav class="nav-links" aria-label="主导航"><a href="features.html">功能</a><a href="guide.html">安装教程</a><a href="faq.html" aria-current="page">FAQ</a><a href="./">首页</a></nav></header>
+  <aside class="release-notice shell" aria-label="版本状态"><strong>PTA Neuron Copilot · 2.0.0</strong><p>仓库已更名为 PTA-Neuron-Copilot，安装链接提供 2.0.0。旧脚本归档与升级身份保留。新版暂隐藏复习与开发者诊断入口，不启动相关后台功能。</p></aside>
   <main class="article shell">
-    <p class="breadcrumb"><a href="./">PTA Auto Solver</a><span>/</span>常见问题</p>
+    <p class="breadcrumb"><a href="./">PTA Neuron Copilot</a><span>/</span>常见问题</p>
     <header class="article-hero"><p class="eyebrow">PTA AUTO ANSWER FAQ</p><h1>PTA自动答题常见问题<br><em>先看运行记录，再处理错误。</em></h1><p class="article-lede">这里整理 PTA脚本使用过程中的常见问题。错误信息会显示在面板中，优先按照具体提示检查供应商、模型、题干和 PTA 页面状态。</p></header>
     <div class="faq-list">
       <details open><summary>为什么 API Key 错误不能获取模型？</summary><p>请确认 Key 没有多余空格、供应商选项与 Key 来源一致、Base URL 正确且账户仍有额度。点击“获取模型列表”后，脚本会把错误显示在面板中。</p></details>
@@ -46,8 +47,8 @@
       <details><summary>为什么没有自动进入下一题？</summary><p>连续答题模式下，只有当前题得分达到满分才会点击下一题。未满分时脚本最多重新作答一次；第二次仍未满分时会停止，避免无限提交。</p></details>
       <details><summary>可以把 API Key 发布到 GitHub 吗？</summary><p>不可以。API Key 只能填写在本地脚本配置中，不能提交到代码、截图、Issue 或 README。若 Key 已经泄露，请立即在供应商后台撤销并重新生成。</p></details>
     </div>
-    <section class="article-section article-next"><h2>仍然无法解决？</h2><div class="article-link-grid"><a href="guide.html"><span>安装配置</span><strong>重新检查 PTA脚本配置 →</strong></a><a href="https://github.com/NeuronCState/PTA-Auto-Solver/issues" target="_blank" rel="noreferrer"><span>反馈问题</span><strong>前往 GitHub Issues →</strong></a></div></section>
+    <section class="article-section article-next"><h2>仍然无法解决？</h2><div class="article-link-grid"><a href="guide.html"><span>安装配置</span><strong>重新检查 PTA脚本配置 →</strong></a><a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/issues" target="_blank" rel="noreferrer"><span>反馈问题</span><strong>前往 GitHub Issues →</strong></a></div></section>
   </main>
-  <footer class="footer shell"><span>© 2026 NeuronCState</span><span>PTA Auto Solver</span><a href="https://github.com/NeuronCState/PTA-Auto-Solver" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+  <footer class="footer shell"><span>© 2026 NeuronCState</span><span>PTA Neuron Copilot</span><a href="https://github.com/NeuronCState/PTA-Neuron-Copilot" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
 </body>
 </html>
