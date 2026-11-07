@@ -19,3 +19,6 @@ const readme=fs.readFileSync('README.md','utf8');assert.match(readme,/^# PTA Neu
 for(const file of ['hero.svg','workflow.svg'])assert.match(fs.readFileSync(path.join('assets/readme',file),'utf8'),/PTA Neuron Copilot/);
 const entry=fs.readFileSync('index.html','utf8');assert.ok(entry.includes('url=docs/'));assert.ok(entry.includes('PTA Neuron Copilot'));
 console.log('PASS static PNC branding, candidate disclosure, fixed beta install identity, local links, JSON-LD and classic JS syntax');
+const home=parseHTML(fs.readFileSync('docs/index.html','utf8')).document;
+assert.equal(home.querySelector('#faq'),null);assert.equal(home.querySelector('#features'),null);assert.equal(home.querySelector('.setup-section'),null);assert.equal(home.querySelector('.seo-links-section'),null);
+assert.equal(home.querySelectorAll('#preview img').length,4);assert.ok(home.querySelector('.compact-notes'));assert.ok(home.querySelector('a[href*="2.0.0.user.js"]'));
