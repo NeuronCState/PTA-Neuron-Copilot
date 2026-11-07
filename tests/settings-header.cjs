@@ -1,0 +1,11 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const src=fs.readFileSync('PTA Auto Solver Pro-1.8.1-beta.1.user.js','utf8');
+assert.ok(src.includes('#pta-root{--pta-header-rule-y:62px}'));
+assert.ok(src.includes('#pta-root .pta-top{height:var(--pta-header-rule-y)'));
+assert.ok(src.includes('#pta-root .pta-drawer-head{height:var(--pta-header-rule-y);min-height:var(--pta-header-rule-y);flex:0 0 var(--pta-header-rule-y);padding:0 14px;min-width:0}'));
+assert.ok(src.includes('top:calc(var(--pta-header-rule-y) - 1px)'));
+assert.ok(!src.includes('min-height:74px'));
+assert.ok(!src.includes('padding:12px 14px 0'));
+assert.ok(src.includes('#pta-root .pta-drawer{background:#fff}'));
+assert.ok(src.includes('html.pta-theme-dark #pta-root .pta-drawer{background:#18181a}'));
+console.log('PASS settings header: shared 62px height and separator, no extra top offset, opaque light/dark drawer (static CSS, not visual geometry)');
