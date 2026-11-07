@@ -13,4 +13,10 @@ assert.equal(shape.problemSetProblem.problemConfig.answerVisible,true);assert.eq
 assert.equal(shape.problemSetProblem.content,'[string]');assert.equal(shape.problemSetProblem.problemConfig.multipleChoiceProblemConfig.options.arrayLength,1);
 const encoded=JSON.stringify(shape);for(const bad of ['PRIVATE','SECRET','123456789123456','authorization'])assert.ok(!encoded.includes(bad),bad);
 assert.equal(shape.problemSetProblem.problemConfig.multipleChoiceProblemConfig.answer.samples[0],'[number]');
+// The newly supplied capture contains an empty server list, not redacted questions.
+// Ensure shape projection retains that distinction, including a nonempty control.
+const empty=ctx.apiDiagnosticShape({total:0,problemSetProblems:[],examLabelByProblemSetProblemId:{}});
+assert.equal(empty.total,0);assert.equal(empty.problemSetProblems.arrayLength,0);
+const nonempty=ctx.apiDiagnosticShape({total:1,problemSetProblems:[{id:'1',content:'Question'}]});
+assert.equal(nonempty.total,1);assert.equal(nonempty.problemSetProblems.arrayLength,1);
 console.log('PASS: review endpoints passive GET only; canonical IDs; bounded enum type; visibility booleans and shape only, no answers/content/credentials');
