@@ -69,3 +69,6 @@ h1 em { color:var(--muted); font-style:normal; }
 .release-notice p{margin:6px 0 0;color:var(--muted)}
 .brand{min-width:0;overflow-wrap:anywhere}.nav{gap:20px}.nav-links{flex-wrap:wrap}
 @media(max-width:600px){.nav{flex-wrap:wrap;justify-content:flex-start;padding:18px 0;gap:12px}.brand{font-size:13px}.nav-links{gap:14px}.release-notice{font-size:11px}}
+
+/* Compact home: overview, screenshots and one short safety note. */
+.home-compact .hero{min-height:0;padding:44px 0 56px;gap:48px}.home-compact .section{padding-top:30px;padding-bottom:36px}.home-compact .preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-compact .preview-card img{height:360px;aspect-ratio:auto;object-fit:contain}.home-compact .compact-notes{color:var(--muted);font-size:13px}.home-compact .release-notice{margin-top:16px}@media(max-width:800px){.home-compact .hero{padding:32px 0;gap:24px}.home-compact .preview-grid{grid-template-columns:1fr}.home-compact .nav-links a:nth-child(-n+2){display:inline}.home-compact .preview-card img{height:auto;max-height:440px;object-fit:contain}}
