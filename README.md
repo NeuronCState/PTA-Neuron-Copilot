@@ -2,7 +2,7 @@
 
 **PNC · 2.0.0**：面向[拼题 A（PTA）](https://pintia.cn/) 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 
-[安装 2.0.0](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js) · [项目主页](https://neuroncstate.github.io/PTA-Neuron-Copilot/) · [使用指南](https://neuroncstate.github.io/PTA-Neuron-Copilot/guide.html) · [反馈问题](https://github.com/NeuronCState/PTA-Neuron-Copilot/issues)
+[脚本猫安装（当前 1.8.0）](https://scriptcat.org/zh-CN/script-show-page/7287) · [GitHub 2.0.0](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js) · [项目主页](https://neuroncstate.github.io/PTA-Neuron-Copilot/) · [使用指南](https://neuroncstate.github.io/PTA-Neuron-Copilot/guide.html) · [反馈问题](https://github.com/NeuronCState/PTA-Neuron-Copilot/issues)
 
 需要 [Tampermonkey](https://www.tampermonkey.net/) 等用户脚本管理器，仅运行于 `https://pintia.cn/*`。仓库已更名为 `PTA-Neuron-Copilot`，请使用上方新主页。
 
