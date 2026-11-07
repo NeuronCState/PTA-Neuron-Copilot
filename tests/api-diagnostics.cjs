@@ -20,7 +20,7 @@ const state=()=>vm.runInContext('apiDiagnostics',context);
 const wait=async()=>{for(let i=0;i<15;i++)await new Promise(r=>setImmediate(r));};
 (async()=>{
  assert.equal(state().enabled,false);assert.equal(realm.fetch,originalFetch);
- for(const u of ['https://other.test/api/problem-sets','https://pintia.cn.evil/api/problem-sets','https://u:p@pintia.cn/api/problem-sets','/api/u/current','/api/exams/1/submissions','/api/problem-sets/1/exam-problems/2'])assert.equal(api.apiDiagnosticTarget(u,'GET'),null);
+ for(const u of ['https://other.test/api/problem-sets','https://pintia.cn.evil/api/problem-sets','https://u:p@pintia.cn/api/problem-sets','/api/u/current','/api/exams/1/submissions','/api/problem-sets/1/exam-problems/2/submissions'])assert.equal(api.apiDiagnosticTarget(u,'GET'),null);
  assert.equal(api.apiDiagnosticTarget(endpoint,'POST'),null);
  const target=api.apiDiagnosticTarget(endpoint,'GET');assert.equal(target.path,'/api/problem-sets');assert.equal(target.page,2);assert.equal(target.limit,30);assert.ok(!JSON.stringify(target).includes('SECRET'));
  assert.equal(api.apiDiagnosticTarget('/api/exams/123/problem-sets/456/problem-status','GET').path,'/api/exams/:id/problem-sets/:id/problem-status');
