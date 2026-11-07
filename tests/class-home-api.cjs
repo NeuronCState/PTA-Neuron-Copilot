@@ -34,7 +34,7 @@ function harness({total=72,mode='',delay=0,dom=[],storage=null}={}){
  return {api,ctx,calls,events,intervals,flush,diagnosticRecords,setDOM:rows=>{dom=rows;},max:()=>max,now:()=>now-baseline,advance:ms=>{now+=ms;}};
 }
 if(require.main===module)(async()=>{
- let h=harness({delay:700});await h.flush(h.api.loadClassCatalogue());assert.equal(h.api.catalogueState.status,'ready');assert.equal(h.api.catalogueState.rows.length,72);assert.equal(h.calls.filter(c=>c.url.pathname==='/api/problem-sets').length,3);assert.equal(h.calls.length,147);assert.ok(h.max()<=6);assert.ok(h.max()>=2);
+ let h=harness({delay:700});await h.flush(h.api.loadClassCatalogue());assert.equal(h.api.catalogueState.status,'ready');assert.equal(h.api.catalogueState.rows.length,72);assert.equal(h.calls.filter(c=>c.url.pathname==='/api/problem-sets').length,3);assert.equal(h.calls.length,147);assert.ok(h.max()<=5);assert.ok(h.max()>=2);
  for(let i=1;i<h.calls.length;i++)assert.ok(h.calls[i].at-h.calls[i-1].at>=200,'global spacing');
  assert.equal(h.api.catalogueState.rows[0].metrics.score,'0');assert.equal(h.api.catalogueState.rows[0].metrics.answered,40);assert.equal(h.api.catalogueState.rows[0].metrics.progress,'100%');assert.equal(h.api.groupCatalogueRows(h.api.catalogueState.rows).groups.length,3);
  const row=h.api.catalogueAPIRow({id:'1',name:'<script>x</script>',endAt:'n/a'},new Map(),{'1':{items:[{id:'4',name:'Same'},{id:'5',name:'Same'},{id:'4',name:'Same'}]}});assert.equal(row.groups.length,2);assert.equal(h.api.groupCatalogueRows([row]).groups.length,2);assert.equal(row.title,'<script>x</script>');assert.equal(row.deadlineOrder,Infinity);
