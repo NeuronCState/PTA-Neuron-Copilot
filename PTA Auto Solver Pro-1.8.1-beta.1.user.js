@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PTA Auto Solver Beta
 // @namespace    https://pintia.cn/
-// @version      1.8.1-beta.18
+// @version      1.8.1-beta.19
 // @description  轻量、清晰的 PTA AI 辅助答题脚本
 // @author       NeuronCState
 // @match        https://pintia.cn/*
@@ -1617,7 +1617,7 @@ return module.exports; } catch (unavailable) { return null; } })();
             var count = document.getElementById('pta-log-count');
             if (count) count.textContent = box.children.length;
         }
-        console.log('[PTA Neuro Copilot] ' + message);
+        console.log('[PTA Neuron Copilot] ' + message);
     }
 
     function escapeHtml(value) { return String(value).replace(/[&<>"']/g, function (char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]; }); }
@@ -3142,23 +3142,29 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
     async function tryVisitedCatalogue(job){
         catalogueLoadVisits();
-        if(job.forceRefresh||!catalogueVisits.ids.size)return false;
+        if(job.forceRefresh){job.cacheMissReason='手动重新读取';return false;}
         var stored=cataloguePersistence.stored,snapshot=(stored&&stored.snapshot)||catalogueCache.snapshot,owner=stored&&stored.owner||catalogueCache.owner;
-        if(!snapshot||!snapshot.complete||snapshot.at>Date.now()||Date.now()-snapshot.at>24*60*60*1000)return false;
+        if(!snapshot||!snapshot.complete){job.cacheMissReason='目录缓存缺失或不完整';return false;}
+        if(snapshot.at>Date.now()||Date.now()-snapshot.at>24*60*60*1000){job.cacheMissReason='目录缓存已过期';return false;}
         var rows=catalogueSnapshotRows(snapshot),visits=new Map(catalogueVisits.ids);
-        if(!rows.length||Array.from(visits.keys()).some(function(id){return !rows.some(function(row){return row.id===id;});}))return false;
+        if(!rows.length||Array.from(visits.keys()).some(function(id){return !rows.some(function(row){return row.id===id;});})){job.cacheMissReason='访问的题集未在完整缓存中';return false;}
         var queue=[],seen=new Set();groupCatalogueRows(rows).groups.forEach(function(group){group.items.forEach(function(item){if(visits.has(item.id)&&!seen.has(item.id)){seen.add(item.id);queue.push(item);}});});
-        if(!queue.length)return false;
-        // This is one of the visited sets, not an unrelated identity probe.
+        // Even a homepage-only reload needs a fresh account proof before disk
+        // data can be shown. This single GET is not a progress/directory refresh.
+        var candidate=queue[0]||catalogueProgressQueue(rows)[0]||rows.find(function(row){return typeof row.listedExamId==='string';});
+        if(!candidate){job.selectiveHandled=true;job.selectiveFailures=1;catalogueState.message='缓存目录暂无法核验账号，本地数据保留；可手动重新读取。';return true;}
         var proof;
-        try{proof=await catalogueAPI(job,'/api/problem-sets/'+queue[0].id+'/exams');}
+        try{proof=await catalogueAPI(job,'/api/problem-sets/'+candidate.id+'/exams');}
         catch(error){if(['login','rate-limit','cancelled','deadline'].indexOf(error.catalogueCode)>=0)throw error;job.selectiveHandled=true;job.selectiveFailures=1;catalogueState.message='未能核验当前账号，未显示旧目录；本地缓存保留，请重试。';return true;}
         catalogueAlive(job);
-        if(!proof.exam||proof.exam.problemSetId!==queue[0].id||!catalogueCacheOwner(job,proof.exam))return false;
-        if(job.userId!==owner||(catalogueVisits.owner&&catalogueVisits.owner!==job.userId)){catalogueVisits.ids.clear();catalogueVisits.owner=job.userId;catalogueSaveVisits();return false;}
+        if(!proof.exam||proof.exam.problemSetId!==candidate.id||!catalogueCacheOwner(job,proof.exam)){job.selectiveHandled=true;job.selectiveFailures=1;catalogueState.message='未能核验当前账号，未显示旧目录；本地缓存保留，可重试。';return true;}
+        if(job.userId!==owner||(catalogueVisits.owner&&catalogueVisits.owner!==job.userId)){job.cacheMissReason='账号已变化';catalogueVisits.ids.clear();catalogueVisits.owner=job.userId;catalogueSaveVisits();return false;}
         catalogueVisits.owner=job.userId;catalogueSaveVisits();
         catalogueState.rows=rows;catalogueState.total=rows.length;catalogueState.source='cache';catalogueState.directoryComplete=true;catalogueState.cacheVerified=true;catalogueState.snapshotAt=snapshot.at;
         rows.forEach(function(row){row.metricsState='unavailable';row.metricsNote='无可用历史缓存';catalogueReturnMetric(job,row);});
+        // A changed probe exam cannot authenticate the old per-set metric.
+        if(proof.exam.id!==candidate.listedExamId){var probedRow=rows.find(function(row){return row.id===candidate.id;});delete probedRow.metrics;probedRow.metricsState='unavailable';probedRow.metricsNote='场次已变化，旧进度暂不显示';}
+        if(!queue.length){job.selectiveHandled=true;job.selectiveFailures=0;catalogueState.message='已使用完整缓存目录（'+new Date(snapshot.at).toLocaleString('zh-CN',{hour12:false})+'）；仅核验账号，未刷新题集进度。';refreshClassHome();return true;}
         catalogueState.message='使用缓存目录，仅更新访问过的 '+queue.length+' 个题集…';refreshClassHome();
         var index=0,updated=0,failed=0;job.forceRefresh=true;
         async function worker(){
@@ -3203,7 +3209,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         catalogueLoadVisits();var visitMarks=new Map(catalogueVisits.ids);
         var job={controller:new AbortController(),deadline:Date.now()+5*60*1000,timer:null,run:catalogueState.run,userId:null,forceRefresh:force===true||!!(force&&force.type==='click'),pauseUntil:0,rateRetries:0,probedExams:new Map()};catalogueState.job=job;
         job.timer=setTimeout(function(){job.controller.abort();},5*60*1000);
-        catalogueState.status='loading';catalogueState.message='后台读取题集目录…';refreshClassHome();
+        catalogueState.status='loading';catalogueState.message=job.forceRefresh?'重新读取全部题集目录…':'检查本地目录缓存与账号…';refreshClassHome();
         var complete=false,failure='',seen=new Set(),apiRows=[],apiTotal=null;
         try{
             await loadPersistentCatalogueCache();catalogueAlive(job);
@@ -3274,7 +3280,7 @@ return module.exports; } catch (unavailable) { return null; } })();
                 catalogueState.rows.forEach(function(row){if(row.metricsState==='pending'||row.metricsState==='loading')row.metricsState='unavailable';});
                 var unknownGroups=catalogueState.rows.filter(function(row){return row.group==='班级待确认';}).length;
                 catalogueState.status=complete&&!failure&&!job.selectiveFailures?'ready':'partial';catalogueState.failure=failure;
-                if(!job.selectiveHandled)catalogueState.message=(complete?'目录已读取 '+catalogueState.rows.length+' 个。':'目录仅读取 '+catalogueState.rows.length+'/'+(catalogueState.total===null?'未知':catalogueState.total)+' 个。')+(failure?failure+'。':'')+(catalogueState.rows.filter(function(row){return row.lifecycle==='active';}).length>200?'仅刷新前200个未结束题集。':'')+(unknownGroups?unknownGroups+' 个题集的班级关系待确认。':'');
+                if(!job.selectiveHandled)catalogueState.message=(job.cacheMissReason?'全量读取（'+job.cacheMissReason+'）。':'')+(complete?'目录已读取 '+catalogueState.rows.length+' 个。':'目录仅读取 '+catalogueState.rows.length+'/'+(catalogueState.total===null?'未知':catalogueState.total)+' 个。')+(failure?failure+'。':'')+(catalogueState.rows.filter(function(row){return row.lifecycle==='active';}).length>200?'仅刷新前200个未结束题集。':'')+(unknownGroups?unknownGroups+' 个题集的班级关系待确认。':'');
                 if(catalogueState.source==='dom')syncCatalogueDOM();
                 if(catalogueState.source==='cache'&&!job.selectiveHandled)catalogueState.message='保留完整缓存（'+new Date(catalogueState.snapshotAt).toLocaleString('zh-CN',{hour12:false})+'）。'+(failure?failure+'。':'');
                 flushPersistentCatalogueCache().then(function(){
@@ -3869,7 +3875,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         root.innerHTML = `
             <span id="pta-diagnostic-badge" hidden style="position:absolute;bottom:100%;right:0;white-space:nowrap;background:#b42318;color:white;padding:4px 8px;border-radius:6px">页面诊断正在记录</span><span id="pta-api-diagnostic-badge" hidden style="position:absolute;bottom:calc(100% + 32px);right:0;white-space:nowrap;background:#b42318;color:white;padding:4px 8px;border-radius:6px">接口诊断正在记录</span><div id="pta-shell">
                 <div class="pta-top">
-                    <div class="pta-brand"><div class="pta-brand-copy"><div class="pta-brand-title" id="pta-brand-title" aria-label="PTA Neuro Copilot"><span class="pta-pas-letter pta-pas-p">P</span><span class="pta-pas-rest">TA</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-a">N</span><span class="pta-pas-rest">euro</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-s">C</span><span class="pta-pas-rest">opilot</span></div><div class="pta-brand-meta" id="pta-meta">未配置 AI</div></div></div>
+                    <div class="pta-brand"><div class="pta-brand-copy"><div class="pta-brand-title" id="pta-brand-title" aria-label="PTA Neuron Copilot"><span class="pta-pas-letter pta-pas-p">P</span><span class="pta-pas-rest">TA</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-a">N</span><span class="pta-pas-rest">euron</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-s">C</span><span class="pta-pas-rest">opilot</span></div><div class="pta-brand-meta" id="pta-meta">未配置 AI</div></div></div>
                     <div class="pta-top-actions"><button class="pta-icon-btn" id="pta-theme-toggle" title="切换深色" aria-label="切换深色">☾</button><button class="pta-icon-btn" id="pta-settings" title="设置">⚙</button><button class="pta-icon-btn" id="pta-collapse" title="收起">×</button></div>
                 </div>
                 <div class="pta-expanded">
@@ -4790,7 +4796,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
 
     function boot() {
-        if(document.getElementById('pta-root')){console.warn('[PTA Neuro Copilot] 检测到已运行的旧版或另一份脚本，请仅启用一份；本副本不启动。');return;}
+        if(document.getElementById('pta-root')){console.warn('[PTA Neuron Copilot] 检测到已运行的旧版或另一份脚本，请仅启用一份；本副本不启动。');return;}
         loadState(); render(); apiDiagnosticStatus(); installSPAGuards(); startClassHome(); startReviewLifecycle();
         detectOpenCode(false);
         localMonitorTimer = setInterval(function () { detectOpenCode(true); }, 15000);
