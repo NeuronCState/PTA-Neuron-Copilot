@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PTA Auto Solver Beta
 // @namespace    https://pintia.cn/
-// @version      1.8.1-beta.14
+// @version      1.8.1-beta.15
 // @description  轻量、清晰的 PTA AI 辅助答题脚本
 // @author       NeuronCState
 // @match        https://pintia.cn/*
@@ -2400,7 +2400,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     #pta-shell:not(.collapsed)>.pta-top{flex:0 0 auto}
     #pta-root .pta-expanded{flex:1 1 auto;min-height:0;min-width:0;width:100%;max-width:100%;padding:14px;overflow-y:auto;overflow-x:hidden}
     /* Reflow content before suppressing incidental horizontal overflow. */
-    #pta-root .pta-drawer-head{height:auto;min-height:74px;flex:0 0 auto;padding:12px 14px 0;min-width:0}
+    #pta-root .pta-drawer-head{height:var(--pta-header-rule-y);min-height:var(--pta-header-rule-y);flex:0 0 var(--pta-header-rule-y);padding:0 14px;min-width:0}
     #pta-root .pta-drawer-title{min-width:0;overflow-wrap:anywhere}
     #pta-root .pta-save-hint{flex:none;white-space:normal;text-align:right}
     #pta-root .pta-drawer-body{flex:1 1 auto;min-height:0;min-width:0;max-width:100%;overflow-y:auto;overflow-x:hidden}
@@ -2477,6 +2477,11 @@ return module.exports; } catch (unavailable) { return null; } })();
     @keyframes pta-orb-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
     @keyframes pta-orb-morph{0%{filter:blur(13px) hue-rotate(0deg)}50%{filter:blur(16px) hue-rotate(75deg)}100%{filter:blur(13px) hue-rotate(150deg)}}
     @keyframes pta-ambient-breathe{0%{opacity:.3;transform:scale(.92)}100%{opacity:.65;transform:scale(1.08)}}
+    /* Answer panel: no outer scrollbar; retain scrolling for short/zoomed viewports.
+       The log keeps its own visible scrollbar. Catalogue and settings are excluded. */
+    #pta-root .pta-expanded.pta-catalog-mode{display:flex;flex-direction:column;overflow:hidden}
+    #pta-root .pta-expanded:not(.pta-catalog-mode){scrollbar-width:none}
+    #pta-root .pta-expanded:not(.pta-catalog-mode)::-webkit-scrollbar{display:none;width:0;height:0}
     #pta-shell.collapsed .pta-top{height:58px;padding:0;border-bottom:0;background:transparent}#pta-shell.collapsed .pta-expanded{opacity:0;pointer-events:none;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .28s}#pta-shell.collapsed .pta-brand{padding:0;justify-content:center;align-items:center;gap:0;width:100%;height:100%}#pta-shell.collapsed .pta-brand-copy{align-items:center;justify-content:center;width:100%;height:100%;text-align:center}#pta-shell.collapsed .pta-brand-meta{display:none;opacity:0;max-height:0}#pta-shell.collapsed .pta-top-actions{display:none}
     .pta-top{height:62px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--pta-line);background:linear-gradient(135deg,#fff 0%,#f7f7ff 100%);transition:padding .72s cubic-bezier(.16,1,.3,1),height .72s cubic-bezier(.16,1,.3,1)}.pta-brand{display:flex;align-items:center;gap:0;flex:1;min-width:0;height:100%;transition:all .72s cubic-bezier(.16,1,.3,1)}.pta-brand-copy{min-width:0;display:flex;flex-direction:column;justify-content:center;transition:all .72s cubic-bezier(.16,1,.3,1)}.pta-brand-title{font-weight:700;font-size:13px;letter-spacing:-.2px;color:var(--pta-text);display:flex;align-items:center;white-space:nowrap;line-height:1.2;transition:font-size .72s cubic-bezier(.16,1,.3,1),font-weight .72s ease,letter-spacing .72s ease,transform .25s ease}#pta-shell.collapsed .pta-brand-title{font-size:14px;font-weight:800;letter-spacing:1px;justify-content:center}#pta-shell.collapsed:hover .pta-brand-title{transform:scale(1.08)}.pta-pas-letter{display:inline-block;font-weight:inherit;font-size:inherit;transition:all .72s cubic-bezier(.16,1,.3,1)}.pta-pas-rest{display:inline-block;max-width:55px;opacity:1;overflow:hidden;white-space:nowrap;vertical-align:bottom;transition:max-width .72s cubic-bezier(.16,1,.3,1),opacity .38s ease}#pta-shell.collapsed .pta-pas-rest{max-width:0;opacity:0;margin:0;padding:0}.pta-pas-space{display:inline-block;width:3px;max-width:3px;overflow:hidden;transition:all .72s cubic-bezier(.16,1,.3,1)}#pta-shell.collapsed .pta-pas-space{width:0;max-width:0;opacity:0}.pta-brand-meta{font-size:11px;color:var(--pta-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;max-height:18px;transition:opacity .28s ease,max-height .72s cubic-bezier(.16,1,.3,1)}.pta-top-actions{display:flex;gap:5px}.pta-icon-btn,.pta-link-btn{border:0;background:transparent;color:var(--pta-muted);cursor:pointer;border-radius:8px;padding:7px;transition:transform .2s ease,background .2s ease,color .2s ease}.pta-icon-btn:hover,.pta-link-btn:hover{background:var(--pta-accent-soft);color:var(--pta-accent);transform:translateY(-1px)}
     .pta-expanded{width:390px;padding:14px;opacity:1;transition:opacity .38s ease .18s}.pta-status{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:12px;background:var(--pta-panel);border:1px solid var(--pta-line);margin-bottom:12px}.pta-status-dot{width:8px;height:8px;border-radius:50%;background:var(--pta-muted)}.pta-status-dot.live{background:var(--pta-accent);box-shadow:0 0 0 5px var(--pta-accent-soft);animation:pta-breathe 1.8s ease-in-out infinite}.pta-status-dot.ok{background:var(--pta-success)}.pta-status-text{flex:1}.pta-status-label{font-weight:600}.pta-status-sub{font-size:11px;color:var(--pta-muted);margin-top:1px}.pta-progress{margin:12px 2px 15px}.pta-progress-head{display:flex;justify-content:space-between;color:var(--pta-muted);font-size:11px;margin-bottom:7px}.pta-progress-head strong{color:var(--pta-text);font-weight:600}.pta-progress-track{height:5px;border-radius:99px;background:#eceef3;overflow:hidden}.pta-progress-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#8178ff,#5149dc);transition:width .38s ease}.pta-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:13px}.pta-check{display:flex;align-items:center;gap:7px;color:var(--pta-muted);font-size:12px;cursor:pointer}.pta-check input{accent-color:var(--pta-accent)}.pta-primary{width:100%;height:42px;border:0;border-radius:11px;background:var(--pta-accent);color:#fff;font:600 13px inherit;cursor:pointer;box-shadow:0 7px 16px rgba(99,91,255,.23);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}.pta-primary:hover{transform:translateY(-1px);box-shadow:0 10px 19px rgba(99,91,255,.28)}.pta-primary:active{transform:scale(.98)}.pta-primary.stop{background:#d84c5b;box-shadow:0 7px 16px rgba(216,76,91,.2)}.pta-log-head{display:flex;align-items:center;margin:16px 1px 7px;color:var(--pta-muted);font-size:11px}.pta-log-head strong{color:var(--pta-text);font-weight:600;margin-right:5px}.pta-log-clear{margin-left:auto;padding:0}.pta-log{height:108px;border-top:1px solid var(--pta-line);padding-top:5px;overflow:auto;scrollbar-width:thin}.pta-log-item{display:flex;align-items:flex-start;gap:7px;padding:4px 2px;color:var(--pta-muted);font-size:11px;animation:pta-rise .25s ease both}.pta-log-item.success{color:var(--pta-success)}.pta-log-item.warning{color:var(--pta-warn)}.pta-log-dot{width:5px;height:5px;border-radius:50%;background:currentColor;margin-top:6px;flex:0 0 auto}.pta-empty{color:#a4a8b0;padding:10px 2px}.pta-drawer{position:absolute;inset:0;background:var(--pta-bg);transform:translateX(104%);transition:transform .55s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}.pta-drawer.open{transform:translateX(0)}.pta-drawer-head{height:62px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--pta-line)}.pta-drawer-title{font-weight:700;flex:1}.pta-drawer-body{padding:14px;overflow:auto}.pta-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--pta-panel);border-radius:10px;padding:3px;margin-bottom:15px}.pta-tab{border:0;background:transparent;color:var(--pta-muted);border-radius:8px;padding:8px;cursor:pointer;font:600 12px inherit}.pta-tab.active{background:#fff;color:var(--pta-text);box-shadow:0 1px 4px rgba(22,24,40,.1)}.pta-pane{display:none}.pta-pane.active{display:block;animation:pta-rise .25s ease both}.pta-provider{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.pta-provider-card{padding:11px;border:1px solid var(--pta-line);border-radius:11px;text-align:left;background:#fff;cursor:pointer;transition:border .2s ease,background .2s ease,transform .2s ease}.pta-provider-card:hover{transform:translateY(-1px)}.pta-provider-card.active{border-color:var(--pta-accent);background:var(--pta-accent-soft)}.pta-provider-name{font-weight:700}.pta-provider-hint{display:block;color:var(--pta-muted);font-size:10px;margin-top:3px}.pta-field{margin:12px 0}.pta-field label{display:block;font-size:11px;font-weight:600;color:var(--pta-muted);margin-bottom:6px}.pta-field input,.pta-field select{width:100%;height:36px;border:1px solid var(--pta-line);border-radius:9px;padding:0 10px;outline:none;background:#fff;color:var(--pta-text);font:12px inherit}.pta-field input:focus,.pta-field select:focus{border-color:var(--pta-accent);box-shadow:0 0 0 3px var(--pta-accent-soft)}.pta-fixed{display:flex;align-items:center;justify-content:space-between;padding:10px 11px;border-radius:10px;background:var(--pta-panel);color:var(--pta-muted);font-size:11px}.pta-fixed strong{color:var(--pta-text);font-weight:600}.pta-save-hint{font-size:11px;color:var(--pta-muted);user-select:none;transition:all .2s ease}.pta-save-hint.saved{color:var(--pta-success);font-weight:600}.pta-provider-desc{font-size:11px;line-height:1.5;color:var(--pta-muted);padding:2px 2px 10px;margin-top:-6px;transition:color .2s ease}.pta-help{font-size:11px;line-height:1.7;color:var(--pta-muted);margin:12px 1px}.pta-switch-row{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--pta-line);border-radius:11px}.pta-switch{position:relative;width:38px;height:22px}.pta-switch input{opacity:0;width:0;height:0}.pta-slider{position:absolute;inset:0;border-radius:99px;background:#d9dce4;cursor:pointer;transition:.2s}.pta-slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}.pta-switch input:checked+.pta-slider{background:var(--pta-accent)}.pta-switch input:checked+.pta-slider:before{transform:translateX(16px)}.pta-toast{position:fixed;right:22px;bottom:92px;z-index:2147483001;padding:10px 13px;border-radius:10px;background:#1b1d23;color:#fff;box-shadow:0 8px 25px rgba(0,0,0,.18);animation:pta-toast-in .25s ease both}.pta-toast.out{animation:pta-toast-out .25s ease both}@keyframes pta-breathe{50%{opacity:.55;transform:scale(.85)}}@keyframes pta-rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}@keyframes pta-toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes pta-toast-out{to{opacity:0;transform:translateY(8px)}}
@@ -2488,6 +2493,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     .pta-primary{background:#111;box-shadow:0 8px 18px rgba(0,0,0,.16)}.pta-progress-fill{background:#111}.pta-primary.stop{background:#444;box-shadow:0 8px 18px rgba(0,0,0,.12)}
     .pta-status{border-color:rgba(0,0,0,.1)}.pta-status-dot.live{background:#111;box-shadow:0 0 0 5px rgba(0,0,0,.08)}
     .pta-provider-card{background:rgba(255,255,255,.4);border-color:rgba(0,0,0,.12);transition:border-color .2s ease,background .2s ease,transform .2s cubic-bezier(.22,1,.36,1)}.pta-provider-card.active{border-color:#111;background:rgba(0,0,0,.06)}.pta-home-language{margin:0 1px 13px;padding:10px 11px;border:1px solid rgba(0,0,0,.1);border-radius:11px;background:rgba(245,245,245,.52)}.pta-home-language-head{display:flex;align-items:center;justify-content:space-between;color:#555;font-size:11px;font-weight:600}.pta-home-language-head span:last-child{color:#888;font-weight:500}.pta-home-language .pta-model-select{margin-top:7px}
+    #pta-root .pta-drawer{background:#fff}html.pta-theme-dark #pta-root .pta-drawer{background:#18181a}
     html.pta-theme-dark{color-scheme:dark;background:#101114}html.pta-theme-dark body{background:#101114!important;color:#ededed!important}html.pta-theme-dark body>*:not(#pta-root){filter:invert(1) hue-rotate(180deg)}html.pta-theme-dark body>*:not(#pta-root) img,html.pta-theme-dark body>*:not(#pta-root) video{filter:invert(1) hue-rotate(180deg)}html.pta-theme-dark #pta-root{--pta-bg:rgba(24,24,26,.9);--pta-panel:rgba(42,42,45,.76);--pta-text:#f5f5f5;--pta-muted:#a5a5aa;--pta-line:rgba(255,255,255,.15);--pta-accent:#f5f5f5;--pta-accent-soft:rgba(255,255,255,.1);--pta-success:#f5f5f5;--pta-warn:#d4d4d4}html.pta-theme-dark #pta-shell,html.pta-theme-dark .pta-drawer{background:var(--pta-bg);color:var(--pta-text)}html.pta-theme-dark .pta-top{background:rgba(28,28,30,.72);border-bottom-color:var(--pta-line)}html.pta-theme-dark .pta-status,html.pta-theme-dark .pta-fixed{background:rgba(42,42,45,.64);border-color:var(--pta-line)}html.pta-theme-dark .pta-select-trigger{background:rgba(38,38,41,.78);color:var(--pta-text);border-color:var(--pta-line)}html.pta-theme-dark .pta-select-trigger:hover,html.pta-theme-dark .pta-model-select.open .pta-select-trigger{background:#303034;border-color:#f5f5f5}html.pta-theme-dark .pta-select-menu{background:rgba(32,32,35,.96);border-color:var(--pta-line)}html.pta-theme-dark .pta-select-option{color:#d4d4d8}html.pta-theme-dark .pta-select-option:hover,html.pta-theme-dark .pta-select-option.active{background:#f5f5f5;color:#111}
     html.pta-theme-dark .pta-field input,html.pta-theme-dark .pta-field select{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.16);color:#f5f5f5;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}html.pta-theme-dark .pta-field input::placeholder{color:#8f8f96}html.pta-theme-dark .pta-field input:focus,html.pta-theme-dark .pta-field select:focus{background:rgba(255,255,255,.1);border-color:#f5f5f5;box-shadow:0 0 0 3px rgba(255,255,255,.1),inset 0 1px 0 rgba(255,255,255,.06)}html.pta-theme-dark .pta-select-trigger{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}html.pta-theme-dark .pta-select-trigger:hover,html.pta-theme-dark .pta-model-select.open .pta-select-trigger{background:rgba(255,255,255,.12);border-color:#f5f5f5;box-shadow:0 0 0 3px rgba(255,255,255,.1),inset 0 1px 0 rgba(255,255,255,.06)}html.pta-theme-dark .pta-select-menu{background:rgba(26,26,29,.97);border-color:rgba(255,255,255,.16);box-shadow:0 18px 38px rgba(0,0,0,.38)}html.pta-theme-dark .pta-select-option{color:#d9d9de}html.pta-theme-dark .pta-select-option:hover,html.pta-theme-dark .pta-select-option.active{background:#f5f5f5;color:#111}html.pta-theme-dark .pta-select-option[aria-disabled="true"]{color:#77777f}html.pta-theme-dark .pta-provider-card{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.14);color:#f5f5f5}html.pta-theme-dark .pta-provider-card.active{background:rgba(255,255,255,.13);border-color:#f5f5f5}html.pta-theme-dark .pta-tabs{background:rgba(255,255,255,.07)}html.pta-theme-dark .pta-tab{color:#aaaab2}html.pta-theme-dark .pta-tab.active{background:#f5f5f5;color:#111;box-shadow:0 1px 6px rgba(0,0,0,.28)}html.pta-theme-dark .pta-save-hint{color:#8c909c}html.pta-theme-dark .pta-save-hint.saved{color:#3dd68c}html.pta-theme-dark .pta-provider-desc{color:#8c909c}html.pta-theme-dark .pta-secondary{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:#f5f5f5}html.pta-theme-dark .pta-secondary:hover{background:#f5f5f5;color:#111}html.pta-theme-dark .pta-home-language{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.14)}html.pta-theme-dark .pta-home-language-head{color:#d0d0d5}html.pta-theme-dark .pta-home-language-head span:last-child{color:#9999a2}
     .pta-check,.pta-image-option{position:relative;display:flex;align-items:center;justify-content:center;gap:7px;min-height:32px;padding:0 12px;border:1px solid var(--pta-line);border-radius:999px;background:rgba(255,255,255,.48);color:var(--pta-muted);font-size:11px;line-height:1;cursor:pointer;user-select:none;white-space:nowrap;transition:background .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease,transform .2s ease}.pta-check:hover,.pta-image-option:hover{transform:translateY(-1px);border-color:var(--pta-text);color:var(--pta-text)}.pta-check input,.pta-image-option input{position:absolute;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}.pta-check:has(input:checked),.pta-image-option:has(input:checked){background:var(--pta-text);border-color:var(--pta-text);color:var(--pta-bg);box-shadow:0 5px 14px rgba(0,0,0,.12)}.pta-check:has(input:focus-visible),.pta-image-option:has(input:focus-visible){outline:2px solid var(--pta-text);outline-offset:2px}.pta-check:has(input:disabled),.pta-image-option:has(input:disabled){cursor:not-allowed;opacity:.48;transform:none}.pta-image-option{justify-content:flex-start}.pta-image-option:has(input:checked){background:var(--pta-text);color:var(--pta-bg)}html.pta-theme-dark .pta-range-badge{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:#f5f5f5}
@@ -2504,6 +2510,16 @@ return module.exports; } catch (unavailable) { return null; } })();
     .pta-range-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
     .pta-range-head label{display:block;font-size:11px;font-weight:600;color:var(--pta-muted);margin:0}
     .pta-range-badge{font-size:11px;font-weight:600;color:var(--pta-text);background:rgba(0,0,0,.05);padding:2px 7px;border-radius:6px;border:1px solid var(--pta-line);white-space:nowrap}
+    #pta-class-home .pta-catalog-item{display:grid;grid-template-columns:minmax(0,1fr)64px;align-items:center;gap:10px}
+    #pta-class-home .pta-catalog-item-copy{min-width:0}
+    #pta-class-home .pta-catalog-time-ring{position:relative;width:64px;height:64px;color:var(--pta-text)}
+    #pta-class-home .pta-catalog-time-ring svg{display:block;width:100%;height:100%}
+    #pta-class-home .pta-catalog-ring-track{stroke:var(--pta-line)}
+    #pta-class-home .pta-catalog-ring-arc{stroke:var(--pta-text);stroke-linecap:round}
+    #pta-class-home .pta-catalog-time-ring.unknown .pta-catalog-ring-arc{stroke:var(--pta-muted);opacity:.5}
+    #pta-class-home .pta-catalog-ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
+    #pta-class-home .pta-catalog-ring-center strong{font-size:12px;line-height:1.3}
+    #pta-class-home .pta-catalog-ring-center small{font-size:9px;color:var(--pta-muted);line-height:1.3}
     #pta-class-home .pta-catalog-group{padding:0}
     #pta-class-home .pta-catalog-group > summary{display:flex;align-items:center;gap:8px;box-sizing:border-box;width:100%;min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;min-height:44px;padding:10px;list-style:none;cursor:pointer}
     #pta-class-home .pta-catalog-group > summary::-webkit-details-marker{display:none}
@@ -2649,7 +2665,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
     // Read-only same-origin API adapter. No iframe, credentials inspection,
     // POST/PUT, exam creation, visible navigation or model requests.
-    var catalogueState={rows:[],status:'idle',message:'',run:0,suspended:false,job:null,total:null,source:'dom',domSignature:'',failure:''};
+    var catalogueState={rows:[],status:'idle',message:'',run:0,suspended:false,job:null,total:null,source:'dom',domSignature:'',failure:'',directoryComplete:false,cacheVerified:false,snapshotAt:null};
     var catalogueNextStart=0;
     function catalogueFailure(code) {var e=new Error(code);e.catalogueCode=code;return e;}
     function catalogueAlive(job) {
@@ -2659,7 +2675,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
     function stopClassCatalogue() {
         if(catalogueState.job){catalogueState.job.controller.abort();clearTimeout(catalogueState.job.timer);}
-        catalogueState.job=null;catalogueState.run++;catalogueState.rows=[];catalogueState.status='idle';catalogueState.message='';catalogueState.total=null;catalogueState.source='dom';catalogueState.domSignature='';catalogueState.failure='';
+        catalogueState.job=null;catalogueState.run++;catalogueState.rows=[];catalogueState.status='idle';catalogueState.message='';catalogueState.total=null;catalogueState.source='dom';catalogueState.domSignature='';catalogueState.failure='';catalogueState.directoryComplete=false;catalogueState.cacheVerified=false;catalogueState.snapshotAt=null;
     }
     function syncCatalogueDOM() {
         if(catalogueState.source!=='dom' || catalogueState.suspended || !catalogueRoute(location.pathname))return;
@@ -2691,7 +2707,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         if(!row||typeof row.id!=='string'||!/^\d{1,25}$/.test(row.id)||typeof row.title!=='string')return null;
         var groups=[];
         if(Array.isArray(row.groups))row.groups.slice(0,20).forEach(function(g){if(g&&typeof g.id==='string'&&/^\d{1,25}$/.test(g.id)&&typeof g.name==='string')groups.push({id:g.id,name:g.name.slice(0,200)});});
-        return {id:row.id,title:row.title.slice(0,300),groups:groups,deadlineOrder:Number.isFinite(row.deadlineOrder)?row.deadlineOrder:null};
+        return {id:row.id,title:row.title.slice(0,300),groups:groups,groupsVerified:row.groupsVerified===true&&Array.isArray(row.groups)&&groups.length===row.groups.length,listedExamId:typeof row.listedExamId==='string'&&/^\d{1,25}$/.test(row.listedExamId)?row.listedExamId:null,deadlineOrder:Number.isFinite(row.deadlineOrder)?row.deadlineOrder:null,startTime:Number.isFinite(row.startTime)?row.startTime:null,endTime:Number.isFinite(row.endTime)?row.endTime:null};
     }
     function catalogueStorageBytes(raw){return typeof TextEncoder==='function'?new TextEncoder().encode(raw).length:raw.length*3;}
     function catalogueValidateStored(raw){
@@ -2704,7 +2720,10 @@ return module.exports; } catch (unavailable) { return null; } })();
             var metrics=catalogueStoredMetrics(entry.metrics);if(!metrics)return;seen.add(entry.id);entries.push({id:entry.id,examId:entry.examId,at:entry.at,metrics:metrics});
         });
         var snapshot=null;
-        if(value.snapshot&&Number.isFinite(value.snapshot.at)&&value.snapshot.at<=now&&now-value.snapshot.at<=24*60*60*1000&&Array.isArray(value.snapshot.rows)&&value.snapshot.rows.length<=500)snapshot={at:value.snapshot.at,rows:value.snapshot.rows.map(catalogueStoredMetadata).filter(Boolean)};
+        if(value.snapshot&&Number.isFinite(value.snapshot.at)&&value.snapshot.at<=now&&now-value.snapshot.at<=24*60*60*1000&&Array.isArray(value.snapshot.rows)&&value.snapshot.rows.length<=500){
+            var snapshotRows=value.snapshot.rows.map(catalogueStoredMetadata).filter(Boolean);
+            snapshot={at:value.snapshot.at,rows:snapshotRows,complete:value.snapshot.complete===true&&Number.isInteger(value.snapshot.total)&&value.snapshot.total===snapshotRows.length&&snapshotRows.length===value.snapshot.rows.length&&new Set(snapshotRows.map(function(row){return row.id;})).size===snapshotRows.length&&snapshotRows.every(function(row){return row.groupsVerified;}),total:snapshotRows.length};
+        }
         return {version:1,owner:value.owner,entries:entries,snapshot:snapshot};
     }
     async function loadPersistentCatalogueCache(){
@@ -2794,7 +2813,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         for(var attempt=0;attempt<2;attempt++){
             try{return await catalogueAPIRequest(job,path);}
             catch(error){
-                if(error.catalogueCode==='login')clearCatalogueCache();
+                if(error.catalogueCode==='login'){clearCatalogueCache();if(catalogueState.source==='cache'){catalogueState.source='dom';catalogueState.cacheVerified=false;catalogueState.snapshotAt=null;catalogueState.rows=[];syncCatalogueDOM();}}
                 if(error.catalogueCode!=='rate-limit' || attempt===1 || job.rateRetries>=3)throw error;
                 catalogueAlive(job);job.rateRetries++;
                 var pause=Math.max(Date.now()+5000*Math.pow(2,job.rateRetries-1),error.retryAt||0);
@@ -2812,7 +2831,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         while(true){
             catalogueAlive(job);var start=Math.max(Date.now(),catalogueNextStart,job.pauseUntil);
             if(start>Date.now()){await catalogueWait(job,start-Date.now());continue;}
-            catalogueNextStart=Date.now()+250;break;
+            catalogueNextStart=Date.now()+200;break;
         }
         catalogueAlive(job);
         var controller=new AbortController(),abort=function(){controller.abort();};job.controller.signal.addEventListener('abort',abort,{once:true});
@@ -2851,7 +2870,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         var relation=groupMap&&Object.prototype.hasOwnProperty.call(groupMap,raw.id)?groupMap[raw.id]:null,memberships=[],groupIds=new Set();
         if(relation && Array.isArray(relation.items))relation.items.forEach(function(group){if(group&&typeof group.id==='string'&&/^\d{1,25}$/.test(group.id)&&typeof group.name==='string'&&group.name.trim()&&!groupIds.has(group.id)){groupIds.add(group.id);memberships.push({id:group.id,name:group.name.trim().slice(0,200)});}});
         var groupName=memberships.length?memberships[0].name:relation&&Array.isArray(relation.items)&&relation.items.length===0?'未标注班级':knownGroups.get(raw.id)||'班级待确认';
-        return {id:raw.id,listedExamId:examMap&&Object.prototype.hasOwnProperty.call(examMap,raw.id)&&typeof examMap[raw.id]==='string'&&/^\d{1,25}$/.test(examMap[raw.id])?examMap[raw.id]:null,title:raw.name.trim().slice(0,300),group:groupName,groups:memberships,groupsVerified:!!(relation&&Array.isArray(relation.items)&&memberships.length===relation.items.length),deadline:Number.isFinite(end)?new Date(end).toLocaleString('zh-CN',{hour12:false}):'',deadlineOrder:Number.isFinite(end)?end:Infinity,lifecycle:Number.isFinite(end)&&end<=Date.now()?'ended':Number.isFinite(start)&&start>Date.now()?'upcoming':Number.isFinite(end)&&end>Date.now()?'active':'unknown',status:Number.isFinite(start)&&start>Date.now()?'未开放':Number.isFinite(end)&&end<=Date.now()?'已关闭':Number.isFinite(start)?'已开放':'状态未提供',href:'https://pintia.cn/problem-sets/'+raw.id+'/exam',metricsState:'pending'};
+        return {id:raw.id,listedExamId:examMap&&Object.prototype.hasOwnProperty.call(examMap,raw.id)&&typeof examMap[raw.id]==='string'&&/^\d{1,25}$/.test(examMap[raw.id])?examMap[raw.id]:null,title:raw.name.trim().slice(0,300),group:groupName,groups:memberships,groupsVerified:!!(relation&&Array.isArray(relation.items)&&memberships.length===relation.items.length),deadline:Number.isFinite(end)?new Date(end).toLocaleString('zh-CN',{hour12:false}):'',deadlineOrder:Number.isFinite(end)?end:Infinity,startTime:Number.isFinite(start)?start:null,endTime:Number.isFinite(end)?end:null,lifecycle:Number.isFinite(end)&&end<=Date.now()?'ended':Number.isFinite(start)&&start>Date.now()?'upcoming':Number.isFinite(end)&&end>Date.now()?'active':'unknown',status:Number.isFinite(start)&&start>Date.now()?'未开放':Number.isFinite(end)&&end<=Date.now()?'已关闭':Number.isFinite(start)?'已开放':'状态未提供',href:'https://pintia.cn/problem-sets/'+raw.id+'/exam',metricsState:'pending'};
     }
     function catalogueAPIMetrics(examData,statusData) {
         var exam=examData&&examData.exam,score=exam&&typeof exam.score==='number'&&Number.isFinite(exam.score)&&exam.score>=0?String(exam.score):null;
@@ -2872,17 +2891,44 @@ return module.exports; } catch (unavailable) { return null; } })();
     function catalogueErrorText(code) {
         return {'account-changed':'账号发生变化，已清空缓存',login:'登录状态失效，已停止读取',permission:'没有读取权限', 'rate-limit':'平台限流，已停止读取',deadline:'达到读取时限',cancelled:'读取已取消',timeout:'读取超时',network:'网络或登录跳转阻止读取','invalid-data':'接口结构不符合已验证格式','invalid-json':'接口返回非JSON（可开启接口诊断后重新读取）','html-response':'接口返回网页（可开启接口诊断后重新读取）','empty-response':'接口返回空内容','too-large':'响应超过大小限制',pagination:'目录分页变化或重复，未宣称完整'}[code]||'未能读取';
     }
+    function catalogueSnapshotRows(snapshot){
+        if(!snapshot||!snapshot.complete||!Array.isArray(snapshot.rows))return [];
+        return snapshot.rows.map(function(meta){
+            var groups={};groups[meta.id]={items:meta.groups};var exams={};if(meta.listedExamId)exams[meta.id]=meta.listedExamId;
+            return catalogueAPIRow({id:meta.id,name:meta.title,startAt:Number.isFinite(meta.startTime)?new Date(meta.startTime).toISOString():'',endAt:Number.isFinite(meta.endTime)?new Date(meta.endTime).toISOString():''},new Map(),groups,exams);
+        }).filter(Boolean);
+    }
+    async function showVerifiedCatalogueSnapshot(job){
+        var stored=cataloguePersistence.stored,snapshot=stored&&stored.snapshot;
+        if(!snapshot||!snapshot.complete||snapshot.at>Date.now()||Date.now()-snapshot.at>24*60*60*1000)return;
+        var rows=catalogueSnapshotRows(snapshot),candidate=catalogueProgressQueue(rows)[0];
+        // A cached owner is not authentication. Probe only a set whose cached
+        // dates explicitly say it has not ended, never an archived/unknown set.
+        if(!candidate)return;
+        var exam;
+        try{exam=await catalogueAPI(job,'/api/problem-sets/'+candidate.id+'/exams');}
+        catch(error){if(['login','rate-limit','cancelled','deadline'].indexOf(error.catalogueCode)>=0)throw error;return;}
+        catalogueAlive(job);
+        if(!exam.exam||exam.exam.problemSetId!==candidate.id||!catalogueCacheOwner(job,exam.exam))return;
+        job.probedExams.set(candidate.id,exam);
+        if(job.userId!==stored.owner || catalogueCache.owner!==stored.owner)return;
+        catalogueState.rows=rows;catalogueState.total=rows.length;catalogueState.source='cache';catalogueState.cacheVerified=true;catalogueState.snapshotAt=snapshot.at;
+        rows.forEach(function(row){row.metricsState='unavailable';row.metricsNote='缓存目录；进度等待本次场次核验';});
+        if(exam.exam.id===candidate.listedExamId)catalogueCacheRead(job,rows.find(function(row){return row.id===candidate.id;}),exam.exam,false);
+        catalogueState.message='已显示完整缓存（'+new Date(snapshot.at).toLocaleString('zh-CN',{hour12:false})+'），后台更新中…';refreshClassHome();
+    }
     async function loadClassCatalogue(force) {
         stopClassCatalogue();
         if(catalogueState.suspended || !catalogueRoute(location.pathname))return;
         syncCatalogueDOM();
         var knownGroups=new Map();catalogueState.rows.forEach(function(row){if(row.group!=='未标注班级')knownGroups.set(row.id,row.group);});
-        var job={controller:new AbortController(),deadline:Date.now()+5*60*1000,timer:null,run:catalogueState.run,userId:null,forceRefresh:force===true||!!(force&&force.type==='click'),pauseUntil:0,rateRetries:0};catalogueState.job=job;
+        var job={controller:new AbortController(),deadline:Date.now()+5*60*1000,timer:null,run:catalogueState.run,userId:null,forceRefresh:force===true||!!(force&&force.type==='click'),pauseUntil:0,rateRetries:0,probedExams:new Map()};catalogueState.job=job;
         job.timer=setTimeout(function(){job.controller.abort();},5*60*1000);
         catalogueState.status='loading';catalogueState.message='后台读取题集目录…';refreshClassHome();
         var complete=false,failure='',seen=new Set(),apiRows=[],apiTotal=null;
         try{
             await loadPersistentCatalogueCache();catalogueAlive(job);
+            await showVerifiedCatalogueSnapshot(job);catalogueAlive(job);
             for(var page=0;page<50;page++){
                 var data=await catalogueAPI(job,'/api/problem-sets?filter=%7B%7D&page='+page+'&limit=30');
                 catalogueAlive(job);
@@ -2894,11 +2940,13 @@ return module.exports; } catch (unavailable) { return null; } })();
                     pageIds.add(row.id);pageRows.push(row);
                 }
                 pageRows.forEach(function(row){seen.add(row.id);apiRows.push(row);});
-                catalogueState.source='api';catalogueState.rows=apiRows;catalogueState.total=apiTotal;
-                catalogueState.message='目录 '+catalogueState.rows.length+'/'+data.total+'，正在后台读取…';refreshClassHome();
-                if(catalogueState.rows.length===data.total){complete=true;break;}
-                if(catalogueState.rows.length>data.total || !data.problemSets.length)throw catalogueFailure('pagination');
+                catalogueState.message=(catalogueState.source==='cache'?'完整缓存已显示；':'')+'后台目录 '+apiRows.length+'/'+data.total+'…';refreshClassHome();
+                if(apiRows.length===data.total){complete=true;break;}
+                if(apiRows.length>data.total || !data.problemSets.length)throw catalogueFailure('pagination');
             }
+            if(!complete&&catalogueState.source==='cache')throw catalogueFailure('pagination');
+            catalogueState.source='api';catalogueState.rows=apiRows;catalogueState.total=apiTotal;catalogueState.directoryComplete=complete;catalogueState.cacheVerified=false;
+            refreshClassHome();
             // The complete directory remains available for archive classification;
             // only explicitly active sets are candidates for overview refresh.
             catalogueState.rows.forEach(function(item){if(item.lifecycle!=='active'){item.metricsState='unavailable';item.metricsNote=item.lifecycle==='ended'?'已结束，无可用缓存':item.lifecycle==='upcoming'?'尚未开放，未读取概览':'截止时间未知，未刷新概览';}});
@@ -2908,7 +2956,8 @@ return module.exports; } catch (unavailable) { return null; } })();
                 while(index<queue.length){
                     catalogueAlive(job);var item=queue[index++];item.metricsState='loading';
                     try{
-                        var exam=await catalogueAPI(job,'/api/problem-sets/'+item.id+'/exams');
+                        var exam=job.probedExams.get(item.id);
+                        if(exam)job.probedExams.delete(item.id);else exam=await catalogueAPI(job,'/api/problem-sets/'+item.id+'/exams');
                         catalogueAlive(job);
                         if(exam.exam && exam.exam.problemSetId!==undefined && exam.exam.problemSetId!==item.id)throw catalogueFailure('invalid-data');
                         catalogueCacheOwner(job,exam.exam);
@@ -2933,19 +2982,21 @@ return module.exports; } catch (unavailable) { return null; } })();
                     catalogueAlive(job);completed++;catalogueState.message='目录 '+catalogueState.rows.length+'/'+catalogueState.total+'；概览 '+completed+'/'+queue.length+'（本次已保存数据）';refreshClassHome();
                 }
             }
-            await Promise.all([worker(),worker(),worker(),worker()]);
+            await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
             catalogueState.rows.forEach(function(item){if(item.lifecycle==='ended')catalogueCacheRead(job,item,null,true);});
-            if(complete&&job.userId&&catalogueCache.owner===job.userId){catalogueCache.snapshot={at:Date.now(),rows:catalogueState.rows.slice(0,500).map(catalogueStoredMetadata).filter(Boolean)};schedulePersistentCatalogueCache();}
+            if(complete&&job.userId&&catalogueCache.owner===job.userId){catalogueCache.snapshot={at:Date.now(),total:catalogueState.rows.length,complete:catalogueState.rows.length<=500&&catalogueState.rows.every(function(row){return row.groupsVerified===true;}),rows:catalogueState.rows.slice(0,500).map(catalogueStoredMetadata).filter(Boolean)};schedulePersistentCatalogueCache();}
         }catch(e){if(!failure)failure=catalogueErrorText(e.catalogueCode);}
         finally{
             clearTimeout(job.timer);
             if(catalogueState.job===job){
+                if(catalogueState.source==='dom'&&apiRows.length){catalogueState.source='api';catalogueState.rows=apiRows;catalogueState.total=apiTotal;}
                 job.controller.abort();catalogueState.job=null;
                 catalogueState.rows.forEach(function(row){if(row.metricsState==='pending'||row.metricsState==='loading')row.metricsState='unavailable';});
                 var unknownGroups=catalogueState.rows.filter(function(row){return row.group==='班级待确认';}).length;
                 catalogueState.status=complete&&!failure?'ready':'partial';catalogueState.failure=failure;
                 catalogueState.message=(complete?'目录已读取 '+catalogueState.rows.length+' 个。':'目录仅读取 '+catalogueState.rows.length+'/'+(catalogueState.total===null?'未知':catalogueState.total)+' 个。')+(failure?failure+'。':'')+(catalogueState.rows.filter(function(row){return row.lifecycle==='active';}).length>200?'仅刷新前200个未结束题集。':'')+(unknownGroups?unknownGroups+' 个题集的班级关系待确认。':'');
                 if(catalogueState.source==='dom')syncCatalogueDOM();
+                if(catalogueState.source==='cache')catalogueState.message='保留完整缓存（'+new Date(catalogueState.snapshotAt).toLocaleString('zh-CN',{hour12:false})+'）。'+(failure?failure+'。':'');
                 flushPersistentCatalogueCache().then(function(){
                     if(catalogueState.run!==job.run)return;
                     if(cataloguePersistence.status==='unavailable')catalogueState.message+='本地缓存暂不可用。';
@@ -2955,8 +3006,36 @@ return module.exports; } catch (unavailable) { return null; } })();
             }
         }
     }
+    function catalogueTimeRing(item, now) {
+        var end=item.endTime,start=item.startTime;
+        if(!Number.isFinite(end))return {days:'—',caption:'截止未知',ratio:null,label:'截止时间未知，无法计算剩余天数'};
+        if(end<=now)return {days:'0天',caption:'已截止',ratio:0,label:'已截止，剩余0天'};
+        var days=Math.ceil((end-now)/86400000),valid=Number.isFinite(start)&&start<end;
+        var ratio=valid?Math.max(0,Math.min(1,(end-now)/(end-start))):null;
+        return {days:days+'天',caption:valid&&now<start?'未开始':'剩余',ratio:ratio,label:'距截止剩余'+days+'天（不足一天按一天计）'+(ratio===null?'；缺少有效开始时间，环形比例未知':now<start?'；尚未开始':'；环形表示剩余时间占总时段比例')};
+    }
+    function renderCatalogueTimeRing(item) {
+        var value=catalogueTimeRing(item,Date.now()),ring=document.createElement('div');
+        ring.className='pta-catalog-time-ring';ring.setAttribute('role','img');ring.setAttribute('aria-label',value.label);ring.title=value.label;
+        var ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 56 56');svg.setAttribute('aria-hidden','true');
+        function circle(cls){var el=document.createElementNS(ns,'circle');el.setAttribute('cx','28');el.setAttribute('cy','28');el.setAttribute('r','24');el.setAttribute('class',cls);el.setAttribute('fill','none');el.setAttribute('stroke-width','3');svg.appendChild(el);return el;}
+        circle('pta-catalog-ring-track');var arc=circle('pta-catalog-ring-arc'),length=2*Math.PI*24;
+        arc.setAttribute('transform','rotate(-90 28 28)');
+        if(value.ratio===null){arc.setAttribute('stroke-dasharray','3 5');ring.classList.add('unknown');}
+        else{arc.setAttribute('stroke-dasharray',String(length));arc.setAttribute('stroke-dashoffset',String(length*(1-value.ratio)));}
+        var center=document.createElement('span');center.className='pta-catalog-ring-center';
+        var days=document.createElement('strong');days.textContent=value.days;
+        var caption=document.createElement('small');caption.textContent=value.caption;
+        center.appendChild(days);center.appendChild(caption);ring.appendChild(svg);ring.appendChild(center);return ring;
+    }
+    function catalogueVisibleMetricNote(note) {
+        if(/^更新于 /.test(note||''))return '';
+        if(/^进度缓存于 /.test(note||''))return '进度来自缓存';
+        if(/^缓存于 /.test(note||''))return '历史缓存';
+        return note||'';
+    }
     function catalogueArchiveGroups(data) {
-        var rows=catalogueState.rows, trusted=catalogueState.source==='api' && catalogueState.status==='ready' &&
+        var rows=catalogueState.rows, trusted=((catalogueState.source==='api'&&(catalogueState.directoryComplete===true||catalogueState.status==='ready')) || (catalogueState.source==='cache'&&catalogueState.cacheVerified===true&&catalogueIdentity&&catalogueCache.owner===catalogueIdentity.userId&&Number.isFinite(catalogueState.snapshotAt)&&Date.now()>=catalogueState.snapshotAt&&Date.now()-catalogueState.snapshotAt<=24*60*60*1000)) &&
             Number.isInteger(catalogueState.total) && rows.length===catalogueState.total &&
             new Set(rows.map(function(row){return row.id;})).size===rows.length &&
             rows.every(function(row){return row.groupsVerified===true;});
@@ -2992,7 +3071,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         var active=catalogueRoute(location.pathname);
         expanded.classList.toggle('pta-catalog-mode',active); view.hidden=!active;
         if (!active) { if (catalogueSignature) view.replaceChildren(); catalogueSignature=''; if(catalogueState.status!=='idle') stopClassCatalogue(); return; }
-        var data=groupCatalogueRows(catalogueState.rows), partition=catalogueArchiveGroups(data), signature=location.href+'|'+catalogueState.status+'|'+catalogueState.message+'|'+JSON.stringify(data)+'|'+JSON.stringify(partition);
+        var data=groupCatalogueRows(catalogueState.rows), partition=catalogueArchiveGroups(data), signature=location.href+'|'+catalogueState.status+'|'+catalogueState.message+'|'+JSON.stringify(data)+'|'+JSON.stringify(partition)+'|'+Math.floor(Date.now()/60000);
         if (signature===catalogueSignature) return;
         catalogueSignature=signature;
         var opened=new Set(), scrollPositions=new Map(), outerScroll=view.scrollTop;
@@ -3019,10 +3098,10 @@ return module.exports; } catch (unavailable) { return null; } })();
             list.tabIndex=0;list.setAttribute('aria-label',group.name+' 题集');
             summary.addEventListener('click',function(event){event.preventDefault();toggleCatalogueGroup(section,body,summary);});
             group.items.forEach(function (item) {
-                var li=node('li'), link=node('a',item.title);link.href=item.href;li.appendChild(link);
-                li.appendChild(node('div','截止 '+(item.deadline || '未提供')+' · '+item.status,'pta-catalog-meta'));
+                var li=node('li'),content=node('div',undefined,'pta-catalog-item-copy'),link=node('a',item.title);li.className='pta-catalog-item';link.href=item.href;content.appendChild(link);if(item.metricsNote)li.title=item.metricsNote;
+                content.appendChild(node('div','截止 '+(item.deadline || '未提供')+' · '+item.status,'pta-catalog-meta'));
                 var m=item.metrics;
-                li.appendChild(node('div',m ? '已作答 '+(m.answered===null?'未提供':m.answered+'/'+m.total)+' · 进度 '+(m.progress===null?'未提供':m.progress)+' · 分数 '+(m.score===null?'未提供':m.score) : '进度 / 分数：'+(item.metricsState==='unavailable'?'未能读取':item.metricsState==='loading'?'读取中…':'等待读取…'),'pta-catalog-meta'));if(item.metricsNote)li.appendChild(node('div',item.metricsNote,'pta-catalog-meta'));list.appendChild(li);
+                content.appendChild(node('div',m ? '已作答 '+(m.answered===null?'未提供':m.answered+'/'+m.total)+' · 进度 '+(m.progress===null?'未提供':m.progress)+' · 分数 '+(m.score===null?'未提供':m.score) : '进度 / 分数：'+(item.metricsState==='unavailable'?'未能读取':item.metricsState==='loading'?'读取中…':'等待读取…'),'pta-catalog-meta'));var note=catalogueVisibleMetricNote(item.metricsNote);if(note)content.appendChild(node('div',note,'pta-catalog-meta'));li.appendChild(content);li.appendChild(renderCatalogueTimeRing(item));list.appendChild(li);
             });
             body.appendChild(list);section.appendChild(body);return section;
         }
@@ -3059,7 +3138,7 @@ return module.exports; } catch (unavailable) { return null; } })();
 
     function render() {
         if (document.getElementById('pta-root')) return;
-        var style = document.createElement('style'); style.id = 'pta-style'; style.textContent = CSS + '\n    .pta-expanded.pta-catalog-mode > :not(#pta-class-home){display:none!important}\n    #pta-class-home{padding:0 2px 10px;max-height:min(420px,calc(100vh - 140px));overflow:auto;color:inherit;text-align:left}\n    #pta-class-home[hidden]{display:none!important}\n    .pta-catalog-title{font-size:15px}.pta-catalog-nav{display:flex;gap:12px;margin:10px 0}\n    .pta-catalog-nav a,.pta-catalog-group a{color:inherit;text-decoration:underline;text-underline-offset:3px}\n    .pta-catalog-note,.pta-catalog-meta{font-size:11px;opacity:.7;line-height:1.55}\n    .pta-catalog-group{border:1px solid rgba(128,128,128,.25);border-radius:10px;margin:10px 0;padding:10px}\n    .pta-catalog-group summary{cursor:pointer;font-size:12px;font-weight:700;overflow-wrap:anywhere}\n    .pta-catalog-group ul{list-style:none;padding:0;margin:0}.pta-catalog-group li{border-top:1px solid rgba(128,128,128,.2);padding-top:8px;margin-top:8px;overflow-wrap:anywhere}\n    .pta-catalog-group li a{font-size:12px;line-height:1.5;display:block}.pta-catalog-meta{margin-top:4px}\n'; document.head.appendChild(style);
+        var style = document.createElement('style'); style.id = 'pta-style'; style.textContent = CSS + '\n    .pta-expanded.pta-catalog-mode > :not(#pta-class-home){display:none!important}\n    #pta-class-home{padding:0 2px;flex:1 1 auto;min-height:0;max-height:100%;overflow:auto;color:inherit;text-align:left}\n    #pta-class-home[hidden]{display:none!important}\n    .pta-catalog-title{font-size:15px}.pta-catalog-nav{display:flex;gap:12px;margin:10px 0}\n    .pta-catalog-nav a,.pta-catalog-group a{color:inherit;text-decoration:underline;text-underline-offset:3px}\n    .pta-catalog-note,.pta-catalog-meta{font-size:11px;opacity:.7;line-height:1.55}\n    .pta-catalog-group{border:1px solid rgba(128,128,128,.25);border-radius:10px;margin:10px 0;padding:10px}\n    .pta-catalog-group summary{cursor:pointer;font-size:12px;font-weight:700;overflow-wrap:anywhere}\n    .pta-catalog-group ul{list-style:none;padding:0;margin:0}.pta-catalog-group li{border-top:1px solid rgba(128,128,128,.2);padding-top:8px;margin-top:8px;overflow-wrap:anywhere}\n    .pta-catalog-group li a{font-size:12px;line-height:1.5;display:block}.pta-catalog-meta{margin-top:4px}\n'; document.head.appendChild(style);
         var root = document.createElement('div'); root.id = 'pta-root';
         root.innerHTML = `
             <span id="pta-diagnostic-badge" hidden style="position:absolute;bottom:100%;right:0;white-space:nowrap;background:#b42318;color:white;padding:4px 8px;border-radius:6px">页面诊断正在记录</span><span id="pta-api-diagnostic-badge" hidden style="position:absolute;bottom:calc(100% + 32px);right:0;white-space:nowrap;background:#b42318;color:white;padding:4px 8px;border-radius:6px">接口诊断正在记录</span><div id="pta-shell">
