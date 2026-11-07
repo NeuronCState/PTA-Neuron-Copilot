@@ -5,5 +5,5 @@ for(const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
  const selector=match[1].trim();if(selector.startsWith('@'))continue;assert.match(selector,/:is\(#pta-root,#pta-class-home,/,selector);assert.ok(!selector.includes('body'));
 }
 assert.ok(!/scrollbar-width\s*:\s*none|display\s*:\s*none|opacity\s*:\s*0/.test(css));
-assert.match(src,/#pta-root\{--pta-header-rule-y:62px\}/);assert.match(src,/#pta-root \.pta-top\{height:var\(--pta-header-rule-y\)/);assert.match(src,/#pta-root \.pta-drawer-head::after\{[^}]*top:calc\(var\(--pta-header-rule-y\) - 1px\)/);assert.match(src,/#pta-root \.pta-drawer-head\{height:auto;min-height:74px;flex:0 0 auto;padding:12px 14px 0/);
+assert.match(src,/#pta-root\{--pta-header-rule-y:62px\}/);assert.match(src,/#pta-root \.pta-top\{height:var\(--pta-header-rule-y\)/);assert.match(src,/#pta-root \.pta-drawer-head::after\{[^}]*top:calc\(var\(--pta-header-rule-y\) - 1px\)/);assert.match(src,/#pta-root \.pta-drawer-head\{height:var\(--pta-header-rule-y\);min-height:var\(--pta-header-rule-y\);flex:0 0 var\(--pta-header-rule-y\);padding:0 14px/);
 console.log('PASS transparent scoped scrollbar tracks, visible themed thumbs, standard/WebKit fallback, forced colors, shared header separator and retained text offset');
