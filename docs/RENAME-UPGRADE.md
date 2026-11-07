@@ -1,6 +1,6 @@
-# PTA Copilot 显示名与兼容升级
+# PTA Neuro Copilot 显示名与兼容升级
 
-本版将面板品牌和日志名称改为 PTA Copilot，收起时显示 PC。为了保留 Tampermonkey/Violentmonkey 的既有安装身份，脚本元数据 `@name` 暂保留 `PTA Auto Solver Beta`。这是有意的兼容处理，管理器列表仍可能显示旧名。
+本版将面板品牌和日志名称改为 PTA Neuro Copilot，收起时显示 PNC。为了保留 Tampermonkey/Violentmonkey 的既有安装身份，脚本元数据 `@name` 暂保留 `PTA Auto Solver Beta`。这是有意的兼容处理，管理器列表仍可能显示旧名。
 
 以下保持不变：`@namespace`、`@updateURL`、`@downloadURL`、仓库 `.user.js` 文件路径、API Key/设置键 `pta-auto-solver-v1`、GM缓存键 `pta-ai-answer-cache-v2` 和 `pta-catalogue-cache-v1`。不做数据搬运、清除或跨脚本读取。
 
