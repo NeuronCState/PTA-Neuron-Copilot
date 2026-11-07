@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PTA Auto Solver Beta
 // @namespace    https://pintia.cn/
-// @version      1.8.1-beta.15
+// @version      1.8.1-beta.16
 // @description  轻量、清晰的 PTA AI 辅助答题脚本
 // @author       NeuronCState
 // @match        https://pintia.cn/*
@@ -1504,7 +1504,7 @@ return module.exports; } catch (unavailable) { return null; } })();
             var count = document.getElementById('pta-log-count');
             if (count) count.textContent = box.children.length;
         }
-        console.log('[PTA Auto Solver] ' + message);
+        console.log('[PTA Copilot] ' + message);
     }
 
     function escapeHtml(value) { return String(value).replace(/[&<>"']/g, function (char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]; }); }
@@ -2610,8 +2610,18 @@ return module.exports; } catch (unavailable) { return null; } })();
             var memberships=row.groups&&row.groups.length?row.groups:[{id:'',name:row.group}];
             memberships.forEach(function(group){var key=group.id?'id:'+group.id:'name:'+group.name;if(!groups.has(key))groups.set(key,{key:key,name:group.name,items:[]});groups.get(key).items.push(row);});
         });
-        var result=Array.from(groups.values());
-        result.forEach(function(group){group.items.sort(function(a,b){return a.deadlineOrder-b.deadlineOrder || a.title.localeCompare(b.title);});});
+        var result=Array.from(groups.values()),now=Date.now();
+        function order(row){
+            var deadline=Number.isFinite(row.endTime)?row.endTime:row.deadlineOrder;
+            if(Number.isFinite(deadline)&&deadline>0)return {rank:deadline<=now?2:0,deadline:deadline};
+            // Unknown dates are not closed. Explicit ended evidence can still
+            // place an undated row last, without inventing a countdown.
+            return {rank:row.lifecycle==='ended'?2:1,deadline:Infinity};
+        }
+        result.forEach(function(group){group.items.sort(function(a,b){
+            var x=order(a),y=order(b);
+            return x.rank-y.rank || (x.deadline===y.deadline?0:x.deadline-y.deadline) || a.title.localeCompare(b.title);
+        });});
         result.sort(function(a,b){return /^(未标注班级|班级待确认)$/.test(a.name)?1:/^(未标注班级|班级待确认)$/.test(b.name)?-1:a.name.localeCompare(b.name);});
         return {count:rows.length,groups:result};
     }
@@ -2982,7 +2992,7 @@ return module.exports; } catch (unavailable) { return null; } })();
                     catalogueAlive(job);completed++;catalogueState.message='目录 '+catalogueState.rows.length+'/'+catalogueState.total+'；概览 '+completed+'/'+queue.length+'（本次已保存数据）';refreshClassHome();
                 }
             }
-            await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
+            await Promise.all([worker(),worker(),worker(),worker(),worker()]);
             catalogueState.rows.forEach(function(item){if(item.lifecycle==='ended')catalogueCacheRead(job,item,null,true);});
             if(complete&&job.userId&&catalogueCache.owner===job.userId){catalogueCache.snapshot={at:Date.now(),total:catalogueState.rows.length,complete:catalogueState.rows.length<=500&&catalogueState.rows.every(function(row){return row.groupsVerified===true;}),rows:catalogueState.rows.slice(0,500).map(catalogueStoredMetadata).filter(Boolean)};schedulePersistentCatalogueCache();}
         }catch(e){if(!failure)failure=catalogueErrorText(e.catalogueCode);}
@@ -3007,12 +3017,16 @@ return module.exports; } catch (unavailable) { return null; } })();
         }
     }
     function catalogueTimeRing(item, now) {
-        var end=item.endTime,start=item.startTime;
-        if(!Number.isFinite(end))return {days:'—',caption:'截止未知',ratio:null,label:'截止时间未知，无法计算剩余天数'};
-        if(end<=now)return {days:'0天',caption:'已截止',ratio:0,label:'已截止，剩余0天'};
-        var days=Math.ceil((end-now)/86400000),valid=Number.isFinite(start)&&start<end;
-        var ratio=valid?Math.max(0,Math.min(1,(end-now)/(end-start))):null;
-        return {days:days+'天',caption:valid&&now<start?'未开始':'剩余',ratio:ratio,label:'距截止剩余'+days+'天（不足一天按一天计）'+(ratio===null?'；缺少有效开始时间，环形比例未知':now<start?'；尚未开始':'；环形表示剩余时间占总时段比例')};
+        var end=item.endTime,start=item.startTime,m=item.metrics;
+        var valid=m && Number.isInteger(m.answered) && Number.isInteger(m.total) && m.total>0 && m.answered>=0 && m.answered<=m.total;
+        var ratio=valid?m.answered/m.total:null,days='—',caption='截止未知',timeLabel='截止时间未知';
+        if(Number.isFinite(end)){
+            if(end<=now){days='0天';caption='已截止';timeLabel='已截止，剩余0天';}
+            else{days=Math.ceil((end-now)/86400000)+'天';caption=Number.isFinite(start)&&start<end&&now<start?'未开始':'剩余';timeLabel='距截止剩余'+days+'（不足一天按一天计）';}
+        }
+        var progressLabel=valid?'已保存作答 '+m.answered+'/'+m.total+'，完成度 '+Math.round(ratio*1000)/10+'%':'已保存完成度未知';
+        if(item.metricsCached)progressLabel+='（缓存）';
+        return {days:days,caption:caption,ratio:ratio,label:timeLabel+'；环形表示'+progressLabel};
     }
     function renderCatalogueTimeRing(item) {
         var value=catalogueTimeRing(item,Date.now()),ring=document.createElement('div');
@@ -3143,7 +3157,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         root.innerHTML = `
             <span id="pta-diagnostic-badge" hidden style="position:absolute;bottom:100%;right:0;white-space:nowrap;background:#b42318;color:white;padding:4px 8px;border-radius:6px">页面诊断正在记录</span><span id="pta-api-diagnostic-badge" hidden style="position:absolute;bottom:calc(100% + 32px);right:0;white-space:nowrap;background:#b42318;color:white;padding:4px 8px;border-radius:6px">接口诊断正在记录</span><div id="pta-shell">
                 <div class="pta-top">
-                    <div class="pta-brand"><div class="pta-brand-copy"><div class="pta-brand-title" id="pta-brand-title"><span class="pta-pas-letter pta-pas-p">P</span><span class="pta-pas-rest">TA</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-a">A</span><span class="pta-pas-rest">uto</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-s">S</span><span class="pta-pas-rest">olver</span></div><div class="pta-brand-meta" id="pta-meta">未配置 AI</div></div></div>
+                    <div class="pta-brand"><div class="pta-brand-copy"><div class="pta-brand-title" id="pta-brand-title" aria-label="PTA Copilot"><span class="pta-pas-letter pta-pas-p">P</span><span class="pta-pas-rest">TA</span><span class="pta-pas-space">&nbsp;</span><span class="pta-pas-letter pta-pas-a">C</span><span class="pta-pas-rest">opilot</span></div><div class="pta-brand-meta" id="pta-meta">未配置 AI</div></div></div>
                     <div class="pta-top-actions"><button class="pta-icon-btn" id="pta-theme-toggle" title="切换深色" aria-label="切换深色">☾</button><button class="pta-icon-btn" id="pta-settings" title="设置">⚙</button><button class="pta-icon-btn" id="pta-collapse" title="收起">×</button></div>
                 </div>
                 <div class="pta-expanded">
@@ -3656,8 +3670,10 @@ return module.exports; } catch (unavailable) { return null; } })();
         var u;try {u=new URL(value,'https://pintia.cn');}catch(_){return null;}
         if(u.origin!=='https://pintia.cn' || u.username || u.password) return null;
         var path=u.pathname;
-        if(!/^\/api\/problem-sets(?:\/\d+\/(?:exams|exam-problem-types|exam-problem-status))?$/.test(path) && !/^\/api\/exams\/\d+\/problem-sets\/\d+\/problem-status$/.test(path)) return null;
+        if(!/^\/api\/problem-sets(?:\/\d+\/(?:exams|exam-problem-types|exam-problem-status|exam-problem-list|exam-problems\/\d+))?$/.test(path) && !/^\/api\/exams\/\d+\/problem-sets\/\d+\/problem-status$/.test(path)) return null;
         var result={path:path.replace(/\/\d+/g,'/:id'),method:'GET'};
+        var problemType=u.searchParams.get('problem_type');
+        if(/^(TRUE_OR_FALSE|MULTIPLE_CHOICE|MULTIPLE_CHOICE_MORE_THAN_ONE|MULTIPLE_CHOICE_ONE_ANSWER|MULTIPLE_CHOICE_MULTIPLE_ANSWERS|FILL_IN_THE_BLANK|FILL_IN_THE_BLANK_FOR_PROGRAMMING|CODE_COMPLETION|PROGRAMMING|MULTIPLE_FILE|SUBJECTIVE)$/.test(problemType||''))result.problemType=problemType;
         ['page','limit'].forEach(function(k){var v=u.searchParams.get(k);if(v!==null && /^\d{1,5}$/.test(v))result[k]=Number(v);});
         return result;
     }
@@ -3666,7 +3682,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         // belongs to a fixed domain vocabulary. Arbitrary names, dictionary
         // keys and credential-shaped keys must not escape via schema discovery.
         if(typeof key!=='string' || !/^[a-z][a-zA-Z_]{0,79}$/.test(key) || /password|passwd|token|secret|auth|cookie|credential|session|csrf|api.?key|access.?key|refresh.?key/i.test(key))return false;
-        var vocabulary=new Set(('problem problems set sets user users group groups id ids to by for of from map maps mapping mappings list lists source sources owner owners organization organizations tenant tenants class classes association associations relation relations membership memberships name names title titles label labels type types status statuses count counts total totals permission permissions collaborator collaborators manageable config configuration scoring rule rules time start end create update at duration stage feature index pool pools summary summaries statistics stats score scores full answered accepted submitted unsubmitted answer answers submission submissions progress percentage number numbers num nums size length pagination page pages limit offset next previous has more result results data items value values key keys is enabled ended started finished exists completed not expired available active joined ongoing pending exam exams info information metadata collection collections access visibility order sort filter filters description announcement').split(' '));
+        var vocabulary=new Set(('problem problems set sets user users group groups id ids to by for of from map maps mapping mappings list lists source sources owner owners organization organizations tenant tenants class classes association associations relation relations membership memberships name names title titles label labels type types status statuses count counts total totals permission permissions collaborator collaborators manageable config configuration scoring rule rules time start end create update at duration stage feature index pool pools summary summaries statistics stats score scores full answered accepted submitted unsubmitted answer answers submission submissions progress percentage number numbers num nums size length pagination page pages limit offset next previous has more result results data items value values key keys is enabled ended started finished exists completed not expired available active joined ongoing pending exam exams info information metadata collection collections access visibility order sort filter filters description announcement visible solution solutions content option options choice choices blank blanks fill programming code completion true false more than one multiple single example examples test tests input output compiler compilers last detail details correct').split(' '));
         var words=key.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/([A-Z])([A-Z][a-z])/g,'$1 $2').toLowerCase().split(/[ _]+/);
         return words.length<=12 && words.every(function(word){return vocabulary.has(word);});
     }
@@ -3695,7 +3711,7 @@ return module.exports; } catch (unavailable) { return null; } })();
             if(typeof v==='string' && /^(status|problemSubmissionStatus|problemType|type)$/.test(key) && (enums.has(v) || (key==='problemType' && keys.has(v) && /^[A-Z_]+$/.test(v))))return v;
             if(typeof v==='string')return /^\d{4}-\d\d-\d\d[T ]/.test(v)?'[date-time string]':'[string]';
             if(typeof v==='number')return numeric.has(key)&&Number.isFinite(v)&&Math.abs(v)<=1000000?v:'[number]';
-            if(typeof v==='boolean')return /^(ended|isEnded|isStarted|hasExam|finished|existsSubmissionsNotCompleted)$/.test(key)?v:'[boolean]';
+            if(typeof v==='boolean')return /^(ended|isEnded|isStarted|hasExam|finished|existsSubmissionsNotCompleted|answerVisible|solutionVisible)$/.test(key)?v:'[boolean]';
             if(Array.isArray(v)){
                 var arrayShape={arrayLength:v.length,samples:v.slice(0,3).map(function(x){return walk(x,key,depth+1);})};
                 if(key==='problemStatus'){
@@ -3721,7 +3737,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
     function apiDiagnosticStatus() {
         var label=document.getElementById('pta-api-diagnostic-status');
-        if(label)label.textContent=(apiDiagnostics.enabled?(apiDiagnostics.resumed?'正在记录（已续接） · ':apiDiagnostics.continuation?'正在记录（可续接一次重载） · ':'正在记录（不能跨刷新） · '):'已关闭 · ')+apiDiagnostics.records.length+' 条'+(apiDiagnostics.error?' · '+apiDiagnostics.error:'');
+        if(label)label.textContent=(apiDiagnostics.enabled?(apiDiagnostics.resumed?'正在记录题目内容（已续接） · ':apiDiagnostics.continuation?'正在记录题目内容（可续接一次重载） · ':'正在记录题目内容（不能跨刷新） · '):'已关闭 · ')+apiDiagnostics.records.length+' 条'+(apiDiagnostics.error?' · '+apiDiagnostics.error:'');
         var toggle=document.getElementById('pta-api-diagnostic-toggle');if(toggle)toggle.checked=apiDiagnostics.enabled;
         var badge=document.getElementById('pta-api-diagnostic-badge');if(badge)badge.hidden=!apiDiagnostics.enabled;
     }
@@ -3731,13 +3747,31 @@ return module.exports; } catch (unavailable) { return null; } })();
         if(apiDiagnostics.restore){apiDiagnostics.restore();apiDiagnostics.restore=null;}
         apiDiagnostics.readers.forEach(function(cancel){cancel();});apiDiagnostics.readers.clear();apiDiagnosticStatus();
     }
+    function apiDiagnosticQuestionData(value) {
+        var nodes=0,limited=false;
+        function clean(v,depth){
+            if(++nodes>10000||depth>16){limited=true;return '[size/depth limit]';}
+            if(v===null||typeof v==='boolean')return v;
+            if(typeof v==='number')return Number.isFinite(v)?v:null;
+            if(typeof v==='string'){if(v.length>200000){limited=true;return '[string size limit]';}return diagnosticRedact(v);}
+            if(Array.isArray(v)){if(v.length>2000)limited=true;return v.slice(0,2000).map(function(x){return clean(x,depth+1);});}
+            if(typeof v!=='object')return '[unsupported]';
+            var out=Object.create(null),keys=Object.keys(v);if(keys.length>500)limited=true;
+            keys.slice(0,500).forEach(function(k){
+                // Neither known nor unknown credential containers may enter an export.
+                if(/password|passwd|token|secret|auth|cookie|credential|session|csrf|api.?key|access.?key|refresh.?key|headers?|private.?key|client.?secret/i.test(k)||/^(?:__proto__|constructor|prototype)$/i.test(k))return;
+                if(k.length>120){limited=true;return;}out[diagnosticRedact(k)]=clean(v[k],depth+1);
+            });return out;
+        }
+        return {data:clean(value,0),possiblyTruncated:limited};
+    }
     function addApiDiagnostic(target,status,body,note,generation) {
         if(!apiDiagnostics.enabled || generation!==apiDiagnostics.generation)return;
         var record={request:target,status:Number.isInteger(status)&&status>=0&&status<=599?status:0};
-        if(body!==undefined)record.response=apiDiagnosticShape(body);
+        if(body!==undefined){record.response=apiDiagnosticShape(body);if(/^\/api\/problem-sets\/:id\/(?:exam-problem-list|exam-problems\/:id)$/.test(target.path))record.questionContent=apiDiagnosticQuestionData(body);}
         if(note)record.note=note; // Callers supply fixed constants, never exception text.
         var bytes=new Blob([JSON.stringify(record)]).size;
-        if(apiDiagnostics.records.length>=60 || apiDiagnostics.bytes+bytes>256*1024){stopApiDiagnostics();return;}
+        if(apiDiagnostics.records.length>=60 || apiDiagnostics.bytes+bytes>4*1024*1024){stopApiDiagnostics();return;}
         apiDiagnostics.records.push(record);apiDiagnostics.bytes+=bytes;apiDiagnosticStatus();
         if(apiDiagnostics.records.length>=60)stopApiDiagnostics();
     }
@@ -3839,7 +3873,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         var existing=document.getElementById('pta-api-diagnostic-preview');if(existing)existing.remove();
         var overlay=document.createElement('div');overlay.id='pta-api-diagnostic-preview';overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#0008;display:flex;align-items:center;justify-content:center;';
         var panel=document.createElement('div');panel.className='pta-dev-preview';
-        var title=document.createElement('h3');title.textContent='接口诊断预览';panel.appendChild(title);
+        var title=document.createElement('h3');title.textContent='接口诊断预览（含题目内容，请检查后导出）';panel.appendChild(title);
         var text=document.createElement('textarea');text.readOnly=true;text.setAttribute('aria-label','接口诊断预览内容');
         text.value=JSON.stringify({format:'pta-api-shape-v2',records:apiDiagnostics.records},null,2);panel.appendChild(text);
         var download=document.createElement('button');download.textContent='导出此预览';download.type='button';download.className='pta-dev-btn pta-dev-btn-primary';download.addEventListener('click',function(){
@@ -3859,7 +3893,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         } catch (e) { return '[invalid URL removed]'; }
     }
     function diagnosticRedact(value) {
-        return String(value).replace(/https?:\/\/[^\s<>"']+/gi, diagnosticURL).replace(/Bearer\s+[\w.+/=-]+/gi, 'Bearer [REDACTED]')
+        return String(value).replace(/-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----/g,'[REDACTED PRIVATE KEY]').replace(/(["'](?:password|passwd|token|secret|api[_ -]?key|authorization|cookie)["']\s*:\s*)["'][^"']*["']/gi,'$1"[REDACTED]"').replace(/https?:\/\/[^\s<>"']+/gi, diagnosticURL).replace(/Bearer\s+[\w.+/=-]+/gi, 'Bearer [REDACTED]')
             .replace(/\b(?:sk-|sk_)[A-Za-z0-9_-]{8,}/g, '[REDACTED KEY]')
             .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED TOKEN]')
             .replace(/((?:password|passwd|token|secret|api[_ -]?key)\s*[:=]\s*)[^\s,;<>]+/gi, '$1[REDACTED]');
@@ -3889,9 +3923,47 @@ return module.exports; } catch (unavailable) { return null; } })();
         comments.forEach(function (node) { node.remove(); });
         return diagnosticRedact(clone.outerHTML).slice(0, 400000);
     }
+    function diagnosticQuestionContent() {
+        if(!/^\/problem-sets\/\d+\/exam\/problems\/type\/[1-7](?:\/|$)/.test(location.pathname))return {questions:[],note:'not a question page'};
+        if(document.getElementsByTagName('*').length>12000)return {questions:[],possiblyTruncated:true,note:'DOM exceeds 12000 nodes; question content omitted'};
+        var roots=[],limit=false;
+        queryAll('.rendered-markdown').forEach(function(markdown){
+            if(markdown.closest('#pta-root,.pta-assist,#pta-api-diagnostic-preview')||!markdown.getClientRects().length)return;
+            var root=markdown,p=markdown;
+            while(p&&p!==document.body){if(/^\d{1,25}$/.test(p.id||'')){root=p;break;}p=p.parentElement;}
+            if(!roots.some(function(known){return known===root||known.contains(root);}))roots.push(root);
+        });
+        if(roots.length>200){roots=roots.slice(0,200);limit=true;}
+        var questions=roots.map(function(root){
+            var clone=root.cloneNode(true),originals=[root].concat(Array.from(root.querySelectorAll('*'))),copies=[clone].concat(Array.from(clone.querySelectorAll('*')));
+            originals.forEach(function(node,index){
+                var copy=copies[index];
+                var choiceControl=node.tagName==='INPUT'&&/^(radio|checkbox)$/.test(node.type||'')&&node.closest('label')&&node.closest('label').getClientRects().length;
+                if(/password|passwd|token|secret|api.?key|csrf|credential/i.test((node.id||'')+' '+(node.getAttribute('name')||''))||(!node.getClientRects().length&&!choiceControl)){copy.remove();return;}
+                if(node.tagName==='INPUT'){
+                    if(!/^(?:text|number|radio|checkbox)?$/.test(node.getAttribute('type')||'')){copy.remove();return;}
+                    copy.setAttribute('value',diagnosticRedact(node.value||''));if(node.checked)copy.setAttribute('checked','');else copy.removeAttribute('checked');
+                }
+                if(node.tagName==='TEXTAREA')copy.textContent=diagnosticRedact(node.value||'');
+                if(node.tagName==='OPTION'){if(node.selected)copy.setAttribute('selected','');else copy.removeAttribute('selected');}
+            });
+            originals.forEach(function(editor,index){if(!editor.classList||!editor.classList.contains('cm-editor')||!copies[index].parentElement)return;var pre=document.createElement('pre');pre.textContent=diagnosticRedact(getEditorDoc(editor));copies[index].replaceWith(pre);});
+            clone.querySelectorAll('script,style,iframe,frame,object,embed,link,meta,noscript,[hidden],[aria-hidden="true"],.pta-assist,#pta-root').forEach(function(node){node.remove();});
+            [clone].concat(Array.from(clone.querySelectorAll('*'))).forEach(function(node){
+                Array.from(node.attributes).forEach(function(attr){
+                    if(/^(href|src|action)$/i.test(attr.name))node.setAttribute(attr.name,diagnosticURL(attr.value));
+                    else if(!/^(id|class|role|aria-label|aria-checked|aria-selected|colspan|rowspan|type|value|checked|selected|disabled|readonly)$/i.test(attr.name))node.removeAttribute(attr.name);
+                    else node.setAttribute(attr.name,diagnosticRedact(attr.value));
+                });
+            });
+            var html=diagnosticRedact(clone.outerHTML);if(html.length>200000){limit=true;return {html:'[question exceeds size limit]',possiblyTruncated:true};}
+            return {html:html};
+        });
+        return {questions:questions,possiblyTruncated:limit,note:'Visible question content including options, entered blanks, selected options and visible code; not proof of official answers. Resource URL queries removed.'};
+    }
     function diagnosticStatus() {
         var label = document.getElementById('pta-diagnostic-status');
-        if (label) label.textContent = (diagnostics.enabled ? '正在记录页面诊断 · ' : '诊断已关闭 · ') + diagnostics.records.length + ' 条';
+        if (label) label.textContent = (diagnostics.enabled ? '正在记录题目完整内容 · ' : '诊断已关闭 · ') + diagnostics.records.length + ' 条';
         var badge = document.getElementById('pta-diagnostic-badge');
         if (badge) badge.hidden = !diagnostics.enabled;
         var toggle = document.getElementById('pta-diagnostic-toggle');
@@ -3907,13 +3979,13 @@ return module.exports; } catch (unavailable) { return null; } })();
     function captureDiagnostic(reason) {
         if (!diagnostics.enabled || location.hostname !== 'pintia.cn' || location.protocol !== 'https:') { stopDiagnostics(); return; }
         var html = diagnosticHTML();
-        var entry = { time: new Date().toISOString(), reason: reason, url: diagnosticURL(location.href), html: html, possiblyTruncated: html.length >= 400000 };
+        var entry = { time: new Date().toISOString(), reason: reason, url: diagnosticURL(location.href), html: html, questionContent:diagnosticQuestionContent(), possiblyTruncated: html.length >= 400000 };
         var bytes = new Blob([JSON.stringify(entry)]).size;
         var previous = diagnostics.records[diagnostics.records.length - 1];
-        if (previous && previous.url === entry.url && previous.html === entry.html) return;
+        if (previous && previous.url === entry.url && previous.html === entry.html && JSON.stringify(previous.questionContent)===JSON.stringify(entry.questionContent)) return;
         // Keep the latest state instead of stopping before a slow judge finishes.
         // Evict oldest snapshots to preserve strict memory/count bounds.
-        if (bytes > 4 * 1024 * 1024) return;
+        if (bytes > 4 * 1024 * 1024) {entry.questionContent={questions:[],possiblyTruncated:true,note:'Question content exceeds 4 MiB; omitted'};bytes=new Blob([JSON.stringify(entry)]).size;}
         while (diagnostics.records.length && (diagnostics.records.length >= 20 || diagnostics.bytes + bytes > 4 * 1024 * 1024)) {
             diagnostics.bytes -= new Blob([JSON.stringify(diagnostics.records.shift())]).size;
         }
@@ -3941,7 +4013,8 @@ return module.exports; } catch (unavailable) { return null; } })();
         captureDiagnostic('recording enabled');
     }
     function exportDiagnostics() {
-        var data = { format: 'pta-diagnostics-v1', warning: 'Best-effort redaction only. Review before sharing; may contain questions, scores and personal text.', records: diagnostics.records };
+        if(diagnostics.enabled)captureDiagnostic('export current question state');
+        var data = { format: 'pta-diagnostics-v1', warning: 'Contains full visible question content and entered answers. Best-effort credential redaction only. Review before sharing; may contain questions, scores and personal text.', records: diagnostics.records };
         var url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
         var link = document.createElement('a'); link.href = url; link.download = 'pta-diagnostics-' + Date.now() + '.json'; link.click();
         setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
@@ -3981,6 +4054,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
 
     function boot() {
+        if(document.getElementById('pta-root')){console.warn('[PTA Copilot] 检测到已运行的旧版或另一份脚本，请仅启用一份；本副本不启动。');return;}
         loadState(); render(); apiDiagnosticStatus(); installSPAGuards(); startClassHome();
         detectOpenCode(false);
         localMonitorTimer = setInterval(function () { detectOpenCode(true); }, 15000);
