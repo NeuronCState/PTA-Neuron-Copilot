@@ -1,7 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const src=fs.readFileSync('PTA Auto Solver Pro-1.8.1-beta.1.user.js','utf8');
 const code=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    function render()'));
-function harness({total=72,mode='',delay=0,dom=[],storage=null}={}){
+function harness({total=72,mode='',delay=0,dom=[],storage=null,session=null}={}){
  const baseline=Date.UTC(2026,10,7);let now=baseline,seq=0,active=0,max=0;const timers=new Map(),calls=[],events={},intervals=[];
  const setTimer=(fn,ms)=>{timers.set(++seq,{fn,at:now+ms});return seq;};
  const ctx={URL,Set,Map,AbortController,Uint8Array,TextDecoder,Date:class extends Date{static now(){return now;}},setTimeout:setTimer,clearTimeout:id=>timers.delete(id),setInterval:fn=>intervals.push(fn),location:{origin:'https://pintia.cn',pathname:'/problem-sets/dashboard'},window:{addEventListener:(k,fn)=>events[k]=fn},document:{getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[],createElement(){throw Error('no embedded document');}},fetch:async(url,options)=>{
@@ -29,7 +29,8 @@ function harness({total=72,mode='',delay=0,dom=[],storage=null}={}){
  ctx.getTestRows=()=>dom.map(row=>Object.assign({},row));
  const diagnosticRecords=[];ctx.apiDiagnostics={enabled:false,generation:1};ctx.apiDiagnosticTarget=url=>({path:new URL(url).pathname.replace(/\/\d+/g,'/:id'),method:'GET'});ctx.addApiDiagnostic=(...args)=>diagnosticRecords.push(args);
  if(storage){ctx.GM_getValue=(key,fallback)=>storage.has(key)?storage.get(key):fallback;ctx.GM_setValue=(key,value)=>storage.set(key,value);ctx.GM_deleteValue=key=>storage.delete(key);}
- const api=vm.runInNewContext(code+'; catalogueRows=function(){return getTestRows();};({catalogueState,loadClassCatalogue,stopClassCatalogue,startClassHome,syncCatalogueDOM,catalogueAPIRow,catalogueAPIMetrics,groupCatalogueRows,catalogueCache,clearCatalogueCache,catalogueCacheWrite,catalogueCacheRead,catalogueProgressQueue,cataloguePersistence,loadPersistentCatalogueCache,flushPersistentCatalogueCache,clearPersistentCatalogueCache,getVerifiedCatalogueIdentity,catalogueValidateStored,catalogueArchiveGroups,catalogueSnapshotRows})',ctx);
+ if(session)ctx.sessionStorage={getItem:key=>session.get(key)||null,setItem:(key,value)=>session.set(key,value)};
+ const api=vm.runInNewContext(code+'; catalogueRows=function(){return getTestRows();};({catalogueState,loadClassCatalogue,stopClassCatalogue,startClassHome,syncCatalogueDOM,catalogueAPIRow,catalogueAPIMetrics,groupCatalogueRows,catalogueCache,clearCatalogueCache,catalogueCacheWrite,catalogueCacheRead,catalogueProgressQueue,cataloguePersistence,loadPersistentCatalogueCache,flushPersistentCatalogueCache,clearPersistentCatalogueCache,getVerifiedCatalogueIdentity,catalogueValidateStored,catalogueArchiveGroups,catalogueSnapshotRows,catalogueVisits,trackCatalogueVisit,tryVisitedCatalogue})',ctx);
  async function flush(p){let done=false,error;Promise.resolve(p).then(()=>done=true,e=>{done=true;error=e;});for(let i=0;!done&&i<20000;i++){for(let j=0;j<40;j++)await Promise.resolve();if(!done&&timers.size){let [id,t]=[...timers].sort((a,b)=>a[1].at-b[1].at)[0];timers.delete(id);now=t.at;t.fn();}}assert.ok(done,'settled');if(error)throw error;}
  return {api,ctx,calls,events,intervals,flush,diagnosticRecords,setDOM:rows=>{dom=rows;},max:()=>max,now:()=>now-baseline,advance:ms=>{now+=ms;}};
 }
