@@ -1,0 +1,11 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const src=fs.readFileSync('PTA Auto Solver Pro-1.8.1-beta.1.user.js','utf8');
+assert.ok(src.includes('#pta-root .pta-expanded:not(.pta-catalog-mode){scrollbar-width:none}'));
+assert.ok(src.includes('#pta-root .pta-expanded:not(.pta-catalog-mode)::-webkit-scrollbar{display:none;width:0;height:0}'));
+assert.ok(src.includes('.pta-expanded{flex:1 1 auto;min-height:0;min-width:0;width:100%;max-width:100%;padding:14px;overflow-y:auto;overflow-x:hidden}'),'short viewports must keep controls reachable');
+assert.ok(src.includes('.pta-log{height:108px;border-top:1px solid var(--pta-line);padding-top:5px;overflow:auto;scrollbar-width:thin}'));
+assert.ok(src.includes('.pta-drawer-body{flex:1 1 auto;min-height:0;min-width:0;max-width:100%;overflow-y:auto;overflow-x:hidden}'));
+assert.ok(!src.includes('.pta-expanded:not(.pta-catalog-mode){overflow:hidden}'));
+assert.ok(src.includes('#pta-class-home{padding:0 2px;flex:1 1 auto;min-height:0;max-height:100%;overflow:auto;'));
+assert.ok(src.includes('.pta-expanded.pta-catalog-mode{display:flex;flex-direction:column;overflow:hidden}'));
+console.log('PASS answer-only outer scrollbar hiding, short-viewport scroll access retained, log/catalogue/settings scroll unaffected (static CSS)');
