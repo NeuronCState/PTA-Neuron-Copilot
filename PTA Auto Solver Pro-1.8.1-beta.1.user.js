@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PTA Auto Solver Beta
 // @namespace    https://pintia.cn/
-// @version      1.8.1-beta.19
+// @version      1.8.1-beta.20
 // @description  轻量、清晰的 PTA AI 辅助答题脚本
 // @author       NeuronCState
 // @match        https://pintia.cn/*
@@ -2594,7 +2594,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     #pta-root #pta-home-pull-handle:hover path{fill:var(--pta-accent-soft)}
     #pta-root .pta-top-actions .pta-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;min-width:32px;padding:0;border:1px solid var(--pta-line);border-radius:9px;background:var(--pta-panel);line-height:1;flex:none}
     #pta-root .pta-drawer{z-index:30}
-    #pta-root #pta-drawer-close{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;padding:0;border:1px solid var(--pta-line);border-radius:10px;background:var(--pta-panel);font-size:24px;line-height:1;flex:none}
+    #pta-root #pta-drawer-close{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;min-width:32px;padding:0;border:1px solid var(--pta-line);border-radius:9px;background:var(--pta-panel);font-size:20px;line-height:1;flex:none}
     #pta-root .pta-top-actions .pta-icon-btn:focus-visible,#pta-root #pta-drawer-close:focus-visible{outline:2px solid var(--pta-accent);outline-offset:2px}
     @media(prefers-reduced-motion:reduce){#pta-home-pull .pta-home-pull-fold{transition:none}}
     #pta-root *{box-sizing:border-box}#pta-shell{position:relative;z-index:2;width:390px;height:554px;max-height:calc(100vh - 44px);border:1px solid rgba(20,24,40,.12);border-radius:18px;background:var(--pta-bg);box-shadow:0 18px 55px rgba(22,24,40,.18),0 3px 12px rgba(22,24,40,.08);overflow:hidden;transition:width .72s cubic-bezier(.16,1,.3,1),height .72s cubic-bezier(.16,1,.3,1),border-radius .72s cubic-bezier(.16,1,.3,1)}
@@ -2641,6 +2641,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     html.pta-theme-dark .pta-max-tokens-scale .pta-scale-item.active strong,html.pta-theme-dark .pta-thinking-scale .pta-scale-item.active strong{color:#fff}
     html.pta-theme-dark .pta-max-tokens-scale .pta-scale-item.active span,html.pta-theme-dark .pta-thinking-scale .pta-scale-item.active span{color:#fff}
     html.pta-theme-dark .pta-check,html.pta-theme-dark .pta-image-option{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.16);color:#aaaab2}html.pta-theme-dark .pta-check:hover,html.pta-theme-dark .pta-image-option:hover{border-color:#f5f5f5;color:#f5f5f5}html.pta-theme-dark .pta-check:has(input:checked),html.pta-theme-dark .pta-image-option:has(input:checked){background:#f5f5f5;border-color:#f5f5f5;color:#111;box-shadow:0 5px 16px rgba(0,0,0,.28)}html.pta-theme-dark .pta-check:has(input:focus-visible),html.pta-theme-dark .pta-image-option:has(input:focus-visible){outline-color:#f5f5f5}
+    #pta-root .pta-review-switch{position:relative;min-height:36px;padding-right:46px!important}#pta-root .pta-review-switch::before{content:'';position:absolute;right:5px;top:calc(50% - 9px);width:32px;height:18px;border-radius:10px;background:#777}#pta-root .pta-review-switch::after{content:'';position:absolute;right:21px;top:calc(50% - 7px);width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .16s}#pta-root .pta-review-switch[aria-checked="true"]::before{background:#15803d}#pta-root .pta-review-switch[aria-checked="true"]::after{transform:translateX(14px)}#pta-root .pta-review-switch:focus-visible{outline:2px solid var(--pta-text);outline-offset:2px}@media(prefers-reduced-motion:reduce){#pta-root .pta-review-switch::after{transition:none}}
     .pta-secondary{height:32px;border:1px solid var(--pta-line);border-radius:8px;background:rgba(255,255,255,.52);color:var(--pta-text);padding:0 11px;cursor:pointer;font:600 11px inherit;transition:background .2s ease,color .2s ease,transform .2s ease}.pta-secondary:hover{background:#111;color:#fff;transform:translateY(-1px)}.pta-drawer-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}.pta-image-option{display:flex;align-items:center;gap:6px;color:var(--pta-muted);font-size:11px}.pta-image-option input{accent-color:#111}.pta-fixed,.pta-status{background:rgba(245,245,245,.6)}.pta-toast{background:#111}.pta-icon-btn:hover,.pta-link-btn:hover{background:rgba(0,0,0,.08);color:#111}.pta-error{color:#333!important;font-weight:600}
     .pta-model-select{position:relative}.pta-model-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.pta-select-trigger{width:100%;height:38px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--pta-line);border-radius:10px;padding:0 11px;background:rgba(255,255,255,.56);color:var(--pta-text);font:12px inherit;text-align:left;cursor:pointer;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}.pta-select-trigger:hover,.pta-model-select.open .pta-select-trigger{border-color:#111;background:#fff}.pta-model-select.open .pta-select-trigger{box-shadow:0 0 0 3px rgba(0,0,0,.06)}.pta-select-trigger:disabled{cursor:not-allowed;opacity:.55}.pta-select-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pta-select-chevron{width:7px;height:7px;flex:0 0 auto;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .24s cubic-bezier(.22,1,.36,1)}.pta-model-select.open .pta-select-chevron{transform:rotate(225deg) translate(-1px,-2px)}.pta-select-menu{position:absolute;left:0;right:0;top:calc(100% + 7px);z-index:20;padding:4px;border:1px solid rgba(0,0,0,.12);border-radius:11px;background:rgba(255,255,255,.92);box-shadow:0 14px 32px rgba(0,0,0,.12);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);opacity:0;visibility:hidden;transform:translateY(-5px) scale(.985);transform-origin:top center;transition:opacity .2s ease,transform .24s cubic-bezier(.22,1,.36,1),visibility 0s linear .24s;max-height:176px;overflow:auto}.pta-model-select.open .pta-select-menu{opacity:1;visibility:visible;transform:none;transition-delay:0s}.pta-select-option{display:flex;align-items:center;min-height:32px;padding:0 9px;border-radius:7px;color:#555;font-size:12px;cursor:pointer;opacity:0;transform:translateY(-3px);transition:background .16s ease,color .16s ease,opacity .2s ease,transform .24s cubic-bezier(.22,1,.36,1)}.pta-model-select.open .pta-select-option{opacity:1;transform:none;transition-delay:calc(var(--option-index,0) * 22ms)}.pta-select-option:hover,.pta-select-option.active{background:#111;color:#fff}.pta-select-option[aria-disabled="true"]{color:#999;cursor:default}.pta-select-option[aria-disabled="true"]:hover{background:transparent;color:#999}
     .pta-model-select.closing .pta-select-menu{opacity:0;visibility:visible;transform:translateY(-4px) scale(.985);transition:opacity .15s ease,transform .17s cubic-bezier(.4,0,.2,1),visibility 0s linear .17s}.pta-model-select.closing .pta-select-option{opacity:0;transform:translateY(-2px);transition-delay:calc(var(--option-index,0) * 8ms)}
@@ -3292,7 +3293,7 @@ return module.exports; } catch (unavailable) { return null; } })();
             }
         }
     }
-    var originalReview={generation:0,setId:null,url:null,set:null,timer:null,panels:[],pending:false};
+    var originalReview={generation:0,setId:null,url:null,set:null,timer:null,panels:[],pending:false,statusNode:null,startedAt:0};
     function originalReviewType(type){return {TRUE_OR_FALSE:1,MULTIPLE_CHOICE:2,MULTIPLE_CHOICE_MORE_THAN_ONE_ANSWER:3,MULTIPLE_CHOICE_MORE_THAN_ONE:3,FILL_IN_THE_BLANK:4,FILL_IN_THE_BLANKS:4,FILL_IN_THE_BLANK_FOR_PROGRAMMING:5,CODE_COMPLETION:6,PROGRAMMING:7}[type]||0;}
     function originalReviewText(value){return String(value||'').replace(/\s+/g,' ').trim();}
     function originalReviewContent(value){try{return originalReviewText(renderAssistance(value).textContent);}catch(ignore){return originalReviewText(value);}}
@@ -3300,7 +3301,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     function originalReviewFingerprint(root){return JSON.stringify([originalReviewText((root.querySelector('.rendered-markdown')||{}).textContent),Array.from(root.querySelectorAll('input,textarea')).filter(function(n){return !n.closest('.pta-local-review,.cm-editor');}).map(function(n){return [n.id,n.getAttribute('type'),n.closest('label')?originalReviewText(n.closest('label').textContent):'',typeof n.checked==='boolean'?n.checked:n.hasAttribute('checked'),n.value||''];})]);}
     function originalReviewSource(source){return {'accepted-submission':'平台判正确的历史作答','binary-verdict-inversion':'二元判断结果反推','ai-generated':'AI 生成，未获平台验证','platform':'平台参考答案'}[source]||'答案未获取';}
     function originalReviewRemove(entry){if(entry.controller)entry.controller.abort();entry.panel.remove();entry.hidden.forEach(function(x){if(x.value===null)x.node.removeAttribute('style');else x.node.setAttribute('style',x.value);});}
-    function stopOriginalReview(){originalReview.generation++;if(originalReview.timer)clearInterval(originalReview.timer);originalReview.timer=null;originalReview.panels.forEach(originalReviewRemove);originalReview.panels=[];originalReview.setId=null;originalReview.url=null;originalReview.set=null;originalReview.pending=false;}
+    function stopOriginalReview(){originalReview.generation++;if(originalReview.statusNode)originalReview.statusNode.remove();originalReview.statusNode=null;if(originalReview.timer)clearInterval(originalReview.timer);originalReview.timer=null;originalReview.panels.forEach(originalReviewRemove);originalReview.panels=[];originalReview.setId=null;originalReview.url=null;originalReview.set=null;originalReview.pending=false;}
     function originalReviewCurrent(generation){return originalReview.generation===generation&&originalReview.url===location.href&&new RegExp('^/problem-sets/'+originalReview.setId+'/exam(?:/|$)').test(location.pathname)&&(!originalReview.set||typeof getReviewSet!=='function'||getReviewSet(originalReview.setId)===originalReview.set);}
     function originalReviewAnswer(question,count){
         if(!Array.isArray(question.answer)||!question.answer.length||question.answerSource==='unknown')return null;
@@ -3310,34 +3311,37 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
     function originalReviewMount(root,question,generation){
         var type=originalReviewType(question.type),markdown=root.querySelector('.rendered-markdown');
-        if(!markdown||originalReviewText(markdown.textContent)!==originalReviewContent(question.content))return null;
+        if(!markdown||!originalReviewText(markdown.textContent))return null;
+        var cacheMatches=originalReviewText(markdown.textContent)===originalReviewContent(question.content);
         var controls=Array.from(root.querySelectorAll('input,textarea')).filter(function(n){return !n.closest('.pta-local-review,.cm-editor');});
         var choiceInputs=controls.filter(function(n){return /^(radio|checkbox)$/.test(n.type||n.getAttribute('type')||'');});
         var labels=choiceInputs.map(function(n){return n.closest('label');});
         var texts=labels.map(function(n){return n?originalReviewText(n.textContent):'';}),cachedChoices=originalReviewChoices(question);
         if(type>=1&&type<=3){
             if(!texts.length||labels.some(function(n){return !n;}))return null;
-            if(type===1){if(texts.length!==2||texts[0]!=='T'||texts[1]!=='F')return null;}
-            else if(cachedChoices.length!==texts.length||cachedChoices.some(function(c,i){return originalReviewContent(c)!==texts[i].replace(/^[A-Z][.．、:：]\s*/, '');}))return null;
+            if(type===1){if(texts.length!==2||new Set(texts).size!==2||texts.some(function(x){return x!=='T'&&x!=='F';}))return null;if(texts[0]!=='T'||texts[1]!=='F')cacheMatches=false;}
+            else if(cachedChoices.length!==texts.length||cachedChoices.some(function(c,i){return originalReviewContent(c)!==texts[i].replace(/^[A-Z][.．、:：]\s*/, '');}))cacheMatches=false;
         }
         var blanks=controls.filter(function(n){return n.tagName==='TEXTAREA'||!n.getAttribute('type')||/^(text|number)$/.test(n.getAttribute('type'));});
-        if(type===4||type===5){if(blanks.length<1||blanks.length>50||(Number.isInteger(question.blankCount)&&question.blankCount>0&&question.blankCount!==blanks.length))return null;question=Object.assign({},question,{blankCount:blanks.length});}
+        if(type===4||type===5){if(blanks.length<1||blanks.length>50)return null;if(Number.isInteger(question.blankCount)&&question.blankCount>0&&question.blankCount!==blanks.length)cacheMatches=false;question=Object.assign({},question,{blankCount:blanks.length});}
         var fingerprint=originalReviewFingerprint(root),observed=type<=5?reviewQuestionFromDOM(root,type):null;
-        var currentQuestion=Object.assign({},question);if(type===1&&(!currentQuestion.choices||!currentQuestion.choices.length))currentQuestion.choices=texts.map(function(text,index){return {label:String.fromCharCode(65+index),content:text};});
-        if(observed&&observed.answer!==null&&(question.answerSource==='unknown'||question.answerSource==='ai-generated')){
+        var currentQuestion=Object.assign({},question);if(!cacheMatches){currentQuestion.content=markdown.textContent;currentQuestion.choices=texts.map(function(text,index){return {label:String.fromCharCode(65+index),content:text.replace(/^[A-Z][.．、:：]\s*/, '')};});currentQuestion.answer=null;currentQuestion.answerSource='unknown';}if(type===1&&(!currentQuestion.choices||!currentQuestion.choices.length))currentQuestion.choices=texts.map(function(text,index){return {label:String.fromCharCode(65+index),content:text};});
+        if(observed&&observed.answer!==null&&(currentQuestion.answerSource==='unknown'||currentQuestion.answerSource==='ai-generated')){
             currentQuestion.answer=observed.answer;currentQuestion.answerSource=observed.answerSource;
-            if(typeof updateReviewSetAnswers==='function')Promise.resolve(updateReviewSetAnswers(originalReview.setId,[{id:question.id,answer:observed.answer,answerSource:observed.answerSource,blankCount:question.blankCount}])).catch(function(){});
+            if(cacheMatches&&typeof updateReviewSetAnswers==='function')Promise.resolve(updateReviewSetAnswers(originalReview.setId,[{id:question.id,answer:observed.answer,answerSource:observed.answerSource,blankCount:question.blankCount}])).catch(function(){});
         }
-        var panel=document.createElement('section');panel.className='pta-local-review';panel.setAttribute('aria-label','本地复习');panel.style.cssText='margin:12px 0;padding:12px;border:1px solid #8886;border-radius:10px;';
+        var panel=document.createElement('section');panel.className='pta-local-review';panel.setAttribute('aria-label','本地复习');panel.style.cssText='display:block;visibility:visible;pointer-events:auto;opacity:1;margin:12px 0;padding:12px;border:1px solid #8886;border-radius:10px;';
+        ['input','change','click','pointerdown','pointerup','mousedown','mouseup','keydown','keyup','focusin','focusout'].forEach(function(name){panel.addEventListener(name,function(event){event.stopPropagation();});});
+        panel.addEventListener('keydown',function(event){if(event.key==='Enter'&&event.target&&event.target.tagName==='INPUT'){event.preventDefault();event.stopPropagation();if(check)check.click();}});
         var title=document.createElement('strong');title.textContent='本地复习（Beta） · 不提交到 PTA';panel.appendChild(title);
-        var note=document.createElement('p');note.textContent=originalReviewSource(currentQuestion.answerSource);panel.appendChild(note);
+        var note=document.createElement('p');note.textContent=(cacheMatches?'':'缓存题面/选项不匹配，仅按当前页面练习，不使用或覆盖缓存答案。 ')+originalReviewSource(currentQuestion.answerSource);panel.appendChild(note);
         var hidden=[],inputs=[];function hide(n){if(!n||hidden.some(function(x){return x.node===n;}))return;hidden.push({node:n,value:n.getAttribute('style')});n.style.setProperty('visibility','hidden');}
-        if(type>=1&&type<=3){choiceInputs.forEach(hide);texts.forEach(function(text,index){var label=document.createElement('label');label.style.cssText='display:flex;gap:8px;margin:8px 0;align-items:baseline;';var input=document.createElement('input');input.type=type===3?'checkbox':'radio';input.name='pta-local-review-'+generation+'-'+question.id;input.value=String(index);label.appendChild(input);label.appendChild(document.createTextNode(text));panel.appendChild(label);inputs.push(input);});}
-        else if(type===4||type===5){blanks.forEach(hide);for(var i=0;i<question.blankCount;i++){var label=document.createElement('label');label.style.cssText='display:block;margin:8px 0;';label.textContent='第 '+(i+1)+' 空 ';var input=document.createElement('input');input.type='text';input.style.cssText='border:1px solid #888;padding:6px;max-width:100%;color:inherit;background:transparent;';label.appendChild(input);panel.appendChild(label);inputs.push(input);}}
-        else{note.textContent='大题仅复习原题面，不读取或缓存答案代码。';}
+        if(type>=1&&type<=3){choiceInputs.forEach(hide);texts.forEach(function(text,index){var label=document.createElement('label');label.style.cssText='display:flex;gap:8px;margin:8px 0;align-items:baseline;';var input=document.createElement('input');input.type=type===3?'checkbox':'radio';input.disabled=false;input.setAttribute('form','pta-local-review-detached-'+generation);input.style.cssText='pointer-events:auto;visibility:visible;opacity:1;cursor:pointer;';input.name='pta-local-review-'+generation+'-'+question.id;input.value=String(index);label.appendChild(input);label.appendChild(document.createTextNode(text));panel.appendChild(label);inputs.push(input);});}
+        else if(type===4||type===5){blanks.forEach(hide);for(var i=0;i<question.blankCount;i++){var label=document.createElement('label');label.style.cssText='display:block;margin:8px 0;';label.textContent='第 '+(i+1)+' 空 ';var input=document.createElement('input');input.type='text';input.disabled=false;input.readOnly=false;input.setAttribute('form','pta-local-review-detached-'+generation);input.style.cssText='border:1px solid #888;padding:6px;max-width:100%;color:inherit;background:transparent;';label.appendChild(input);panel.appendChild(label);inputs.push(input);}}
+        else{note.textContent='大题本地草稿：可手动输入，不保存到 PTA，不进行平台判题，也不读取缓存答案代码。';var scratch=document.createElement('textarea');scratch.setAttribute('aria-label','本地代码草稿');scratch.placeholder='在这里手动编写本地草稿；离开复习后清除';scratch.rows=10;scratch.setAttribute('form','pta-local-review-detached-'+generation);scratch.disabled=false;scratch.readOnly=false;scratch.style.cssText='display:block;width:100%;box-sizing:border-box;min-height:160px;margin:10px 0;padding:8px;border:1px solid #888;color:inherit;background:transparent;pointer-events:auto;';panel.appendChild(scratch);}
         Array.from(root.querySelectorAll('.text-light')).filter(function(n){return n.textContent.trim()==='评测结果';}).forEach(function(n){hide(n.parentElement);});
         var controller=new AbortController(),result=document.createElement('p');result.setAttribute('role','status');
-        if(currentQuestion.answer===null&&currentQuestion.answerSource==='unknown'&&type>=1&&type<=5&&typeof supplementReviewAnswers==='function'){
+        if(cacheMatches&&currentQuestion.answer===null&&currentQuestion.answerSource==='unknown'&&type>=1&&type<=5&&typeof supplementReviewAnswers==='function'){
             var ai=document.createElement('button');ai.type='button';ai.textContent='此题缺少答案 · AI 补充';ai.style.cssText='margin:8px;padding:6px 12px;border:1px solid #888;border-radius:6px;';
             ai.addEventListener('click',async function(event){event.preventDefault();event.stopPropagation();if(ai.disabled)return;
                 function current(){return originalReviewCurrent(generation)&&root.isConnected&&panel.isConnected&&originalReviewFingerprint(root)===fingerprint&&currentQuestion.answer===null&&currentQuestion.answerSource==='unknown';}
@@ -3356,18 +3360,24 @@ return module.exports; } catch (unavailable) { return null; } })();
             if((type<=3&&!actual.length)||(type>=4&&actual.some(function(v){return !v;}))){result.textContent='请先完成本题。';return;}
             var normalized=type<=3?expected.slice().sort(function(a,b){return a-b;}):expected.map(function(x){return x.trim();});
             var equal=JSON.stringify(actual)===JSON.stringify(normalized);result.textContent=(equal?'与缓存答案一致':'与缓存答案不一致')+'（仅本地比对） · '+originalReviewSource(currentQuestion.answerSource)+'：'+(type<=3?normalized.map(function(i){return texts[i];}).join('；'):normalized.join('；'));
-        });panel.appendChild(check);}panel.appendChild(result);var exit=document.createElement('button');exit.type='button';exit.textContent='退出复习';exit.style.cssText='margin-top:8px;padding:6px 12px;border:1px solid #888;border-radius:6px;';exit.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();if(typeof exitReviewMode==='function')exitReviewMode();else stopOriginalReview();});panel.appendChild(exit);root.appendChild(panel);
-        return {root:root,panel:panel,hidden:hidden,controller:controller,question:question,signature:fingerprint};
+        });panel.appendChild(check);}panel.appendChild(result);var exit=document.createElement('button');exit.type='button';exit.textContent='退出复习';exit.style.cssText='margin-top:8px;padding:6px 12px;border:1px solid #888;border-radius:6px;';exit.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();if(typeof exitReviewMode==='function')exitReviewMode();else stopOriginalReview();});panel.appendChild(exit);var blocker=null,ancestor=root;while(ancestor&&ancestor!==document.body){if(ancestor.hasAttribute('inert')||(ancestor.tagName==='FIELDSET'&&ancestor.hasAttribute('disabled')))blocker=ancestor;ancestor=ancestor.parentElement;}if(blocker&&blocker.parentElement)blocker.parentElement.insertBefore(panel,blocker.nextSibling);else root.appendChild(panel);
+        return {root:root,panel:panel,hidden:hidden,controller:controller,question:question,signature:fingerprint,cacheMatches:cacheMatches};
+    }
+    function originalReviewStatus(message){
+        if(!originalReview.statusNode){var bar=document.createElement('aside');bar.className='pta-local-review-status';bar.setAttribute('aria-label','本地复习状态');bar.style.cssText='position:fixed;left:12px;bottom:12px;z-index:2147483646;max-width:min(420px,calc(100vw - 24px));box-sizing:border-box;padding:10px 12px;border:1px solid #888;border-radius:8px;background:#fff;color:#111;box-shadow:0 2px 10px #0003;pointer-events:auto;';var text=document.createElement('span');text.setAttribute('role','status');bar.appendChild(text);var exit=document.createElement('button');exit.type='button';exit.textContent='退出复习';exit.style.cssText='margin-left:10px;padding:4px 8px;';exit.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();if(typeof exitReviewMode==='function')exitReviewMode();else stopOriginalReview();});bar.appendChild(exit);document.body.appendChild(bar);originalReview.statusNode=bar;}
+        var label=originalReview.statusNode.querySelector('[role="status"]');if(label.textContent!==message)label.textContent=message;
     }
     function refreshOriginalReview(generation){
         if(!originalReviewCurrent(generation)){stopOriginalReview();return;}
         originalReview.panels=originalReview.panels.filter(function(entry){var markdown=entry.root.querySelector('.rendered-markdown');if(!entry.root.isConnected||!markdown||originalReviewFingerprint(entry.root)!==entry.signature){originalReviewRemove(entry);return false;}return true;});
         (originalReview.set.questions||[]).forEach(function(question){if(originalReview.panels.some(function(e){return e.question.id===question.id;}))return;var root=document.getElementById(question.id);if(!root||root.closest('#pta-root'))return;var entry=originalReviewMount(root,question,generation);if(entry)originalReview.panels.push(entry);});
+        var mounted=originalReview.panels.length,fallback=originalReview.panels.filter(function(e){return !e.cacheMatches;}).length;
+        originalReviewStatus(mounted?'本地复习：'+mounted+' 题可手动填写'+(fallback?'；'+fallback+' 题缓存不匹配，未套用缓存答案':''):'本地复习：'+(!/\/problems\//.test(location.pathname)?'请打开原版题型页面。':Date.now()-originalReview.startedAt>15000?'未找到可挂载题卡，请检查题型或退出后重试。':'等待原版题卡加载…'));
     }
     async function startOriginalReview(setId){
         stopOriginalReview();if(!/^\d{1,25}$/.test(String(setId))||!new RegExp('^/problem-sets/'+setId+'/exam(?:/|$)').test(location.pathname))return {status:'wrong-page'};
         if(typeof stopSolve==='function')stopSolve();if(typeof stopAssistance==='function')stopAssistance(true);
-        originalReview.setId=String(setId);originalReview.url=location.href;originalReview.pending=true;var generation=originalReview.generation;
+        originalReview.setId=String(setId);originalReview.url=location.href;originalReview.pending=true;originalReview.startedAt=Date.now();originalReviewStatus('本地复习：正在核验缓存与账号…');var generation=originalReview.generation;
         var cached;try{cached=await verifyReviewSet(String(setId));}catch(ignore){if(originalReviewCurrent(generation))stopOriginalReview();return {status:'unavailable'};}
         if(!originalReviewCurrent(generation))return {status:'cancelled'};
         if(!cached||!cached.complete||!Array.isArray(cached.questions)){stopOriginalReview();return {status:'incomplete'};}
@@ -3397,9 +3407,35 @@ return module.exports; } catch (unavailable) { return null; } })();
         return {id:root.id,type:type,statement:statement.textContent,options:options,answer:answer,answerSource:source,verdict:verdict};
     }
 
-    var reviewHub={busy:false,showTools:false,status:'',revision:0,epoch:0,activeSet:null,timer:null};
+    var reviewHub={busy:false,enabled:false,preferenceReady:false,preferenceBusy:false,showTools:false,status:'',revision:0,epoch:0,activeSet:null,timer:null,autoKey:''};
+    var REVIEW_ENABLED_KEY='pta-review-enabled-v1';
     function refreshReviewHub(){reviewHub.revision++;catalogueSignature='';refreshClassHome();}
+    async function loadReviewPreference(){
+        if(reviewHub.preferenceReady||reviewHub.preferenceBusy)return;
+        reviewHub.preferenceBusy=true;
+        try{reviewHub.enabled=(await reviewStorageWait(Promise.resolve(GM_getValue(REVIEW_ENABLED_KEY,false))))===true;}
+        catch(_){reviewHub.enabled=false;reviewHub.status='复习开关读取失败，请手动开启重试';}
+        finally{reviewHub.preferenceReady=true;reviewHub.preferenceBusy=false;reviewHub.showTools=reviewHub.enabled;refreshReviewHub();}
+    }
+    async function setReviewEnabled(enabled){
+        if(reviewHub.preferenceBusy)return;enabled=enabled===true;reviewHub.preferenceBusy=true;
+        // Turning off immediately stops work even if persistence later fails.
+        if(!enabled){reviewHub.enabled=false;exitReviewMode();}
+        refreshReviewHub();
+        try{await GM_setValue(REVIEW_ENABLED_KEY,enabled);reviewHub.enabled=enabled;reviewHub.preferenceReady=true;reviewHub.showTools=enabled;reviewHub.autoKey='';reviewHub.status=enabled?'复习（Beta）已开启，将在完整目录就绪后自动缓存；刷新后保持开启':'复习（Beta）已关闭，已有缓存保留';}
+        catch(_){reviewHub.status='复习开关保存失败，刷新后的状态未确认';toast(reviewHub.status);}
+        finally{reviewHub.preferenceBusy=false;refreshReviewHub();}
+    }
+    function syncReviewAutomation(){
+        if(!reviewHub.preferenceReady||!reviewHub.enabled||reviewHub.preferenceBusy||reviewHub.busy||reviewHub.activeSet||reviewIntent()||catalogueState.suspended)return;
+        if(!cataloguePanelActive()||(!catalogueState.directoryComplete&&!catalogueState.cacheVerified)||!catalogueCache.owner)return;
+        var items=catalogueState.rows.filter(function(item){return item.lifecycle==='ended';});if(!items.length)return;
+        var key=catalogueCache.owner+'|'+(catalogueState.snapshotAt||'')+'|'+items.map(function(item){return item.id+':'+(item.listedExamId||'');}).sort().join(',');
+        if(reviewHub.autoKey===key)return;reviewHub.autoKey=key;
+        cacheReviewGroup(items); // One attempt per verified catalogue generation, never a polling retry storm.
+    }
     async function cacheReviewGroup(items){
+        if(!reviewHub.enabled){toast('请先开启复习（Beta）');return;}
         if(reviewHub.busy){toast('复习题集正在读取，请先停止或等待');return;}
         if(reviewHub.activeSet)exitReviewMode();
         var epoch=++reviewHub.epoch,controller=new AbortController(),aiTimer=null;reviewHub.controller=controller;reviewHub.busy=true;reviewHub.status='复习（Beta）：后台读取题目，不切换页面';refreshReviewHub();
@@ -3439,24 +3475,27 @@ return module.exports; } catch (unavailable) { return null; } })();
     function exitReviewMode(){try{sessionStorage.removeItem('pta-review-intent-v1');}catch(_){}stopReviewWork();reviewHub.failedURL=null;toast('已退出本地复习，原页面已恢复');}
     function reviewIntent(){try{var value=JSON.parse(sessionStorage.getItem('pta-review-intent-v1')||'null');return value&&/^\d{1,25}$/.test(value.id)&&Number.isFinite(value.at)&&value.at<=Date.now()&&Date.now()-value.at<30*60*1000?value:null;}catch(_){return null;}}
     function openCachedReview(item){
+        if(!reviewHub.enabled){toast('请先开启复习（Beta）');return;}
         var cached=typeof getReviewSetSummary==='function'?getReviewSetSummary(item.id):getReviewSet(item.id);if(!cached||!cached.complete){toast('题目缓存尚未完整或账号未核验');return;}
         try{sessionStorage.setItem('pta-review-intent-v1',JSON.stringify({id:item.id,at:Date.now()}));}catch(_){toast('浏览器无法保存本次复习入口，请检查存储权限');return;}
         location.href=item.href;
     }
     function updateReviewExitControl(){if(typeof document==='undefined')return;var button=document.getElementById('pta-review-exit');if(button)button.hidden=!reviewHub.activeSet;}
     function syncOriginalReviewIntent(){
+        if(!reviewHub.preferenceReady||!reviewHub.enabled)return;
         updateReviewExitControl();
         var intent=reviewIntent(),match=location.pathname.match(/^\/problem-sets\/(\d{1,25})\/exam(?:\/|$)/);
         if(!intent||!match||match[1]!==intent.id){if(reviewHub.activeSet){stopOriginalReview();reviewHub.activeSet=null;}return;}
         if(reviewHub.activeSet===intent.id){if(Date.now()-intent.at>60000)try{sessionStorage.setItem('pta-review-intent-v1',JSON.stringify({id:intent.id,at:Date.now()}));}catch(_){}return;}
         if(reviewHub.failedURL===location.href)return;
         reviewHub.activeSet=intent.id;updateReviewExitControl();if(state.running)stopSolve();stopAssistance(true);
-        Promise.resolve(startOriginalReview(intent.id)).then(function(result){if(reviewHub.activeSet!==intent.id)return;if(result.status!=='ready'){toast('复习暂不可用：缓存未完整或账号未核验');reviewHub.failedURL=location.href;reviewHub.activeSet=null;}else if(!result.mounted)toast('复习（Beta）：等待原题加载或核对题面；未匹配的题不会挂载');}).catch(function(){if(reviewHub.activeSet===intent.id){toast('复习缓存校验未完成，请返回题集列表重试');reviewHub.failedURL=location.href;reviewHub.activeSet=null;}});
+        Promise.resolve(startOriginalReview(intent.id)).then(function(result){if(reviewHub.activeSet!==intent.id)return;if(result.status!=='ready'){toast('复习暂不可用：缓存未完整或账号未核验');if(typeof originalReviewStatus==='function')originalReviewStatus('复习暂不可用：缓存未完整或账号未核验，请返回目录重试。');reviewHub.failedURL=location.href;reviewHub.activeSet=null;}else if(!result.mounted)toast('复习（Beta）：等待原题加载或核对题面；未匹配的题不会挂载');}).catch(function(){if(reviewHub.activeSet===intent.id){toast('复习缓存校验未完成，请返回题集列表重试');if(typeof originalReviewStatus==='function')originalReviewStatus('复习缓存校验未完成，请返回题集列表重试。');reviewHub.failedURL=location.href;reviewHub.activeSet=null;}});
     }
     function startReviewLifecycle(){
         if(reviewHub.timer!==null)return;
         window.addEventListener('pagehide',stopReviewWork);
-        reviewHub.timer=setInterval(syncOriginalReviewIntent,500);syncOriginalReviewIntent();
+        loadReviewPreference();
+        reviewHub.timer=setInterval(function(){syncOriginalReviewIntent();syncReviewAutomation();},500);syncOriginalReviewIntent();
     }
 
     // Invisible read-only review collection. No UI navigation or PTA writes.
@@ -3740,7 +3779,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         var days=document.createElement('strong');days.textContent=value.days;
         var caption=document.createElement('small');caption.textContent=value.caption;
         var cached=typeof getReviewSetSummary==='function'?getReviewSetSummary(item.id):typeof getReviewSet==='function'?getReviewSet(item.id):null;
-        if(cached&&cached.complete){
+        if(cached&&cached.complete&&reviewHub.enabled){
             var review=document.createElement('button');review.type='button';review.textContent='复习';review.className='pta-review-open';review.style.cssText='pointer-events:auto;min-width:40px;min-height:40px;border:0;border-radius:8px;padding:6px;color:#166534;background:#dcfce7;font-weight:700;cursor:pointer';
             review.title='复习（Beta）：题目已缓存；缺失或 AI 答案会单独标明';review.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();openCachedReview(item);});center.appendChild(review);ring.removeAttribute('role');ring.setAttribute('aria-label',value.label+'；题目已缓存，可复习');
         }else{center.appendChild(days);center.appendChild(caption);}
@@ -3810,7 +3849,7 @@ return module.exports; } catch (unavailable) { return null; } })();
             finally{clearCache.disabled=false;}
         });fragment.appendChild(clearCache);
         if(typeof reviewCacheClass==='function'){
-            var reviewTools=node('button','复习（Beta）','pta-link-btn');reviewTools.type='button';reviewTools.disabled=reviewHub.busy;reviewTools.addEventListener('click',function(){if(!catalogueState.directoryComplete&&!catalogueState.cacheVerified){toast('请等待完整题集目录读取完成，再启动复习缓存');return;}reviewHub.showTools=true;cacheReviewGroup(catalogueState.rows);});fragment.appendChild(reviewTools);
+            var reviewTools=node('button','复习（Beta） · '+(reviewHub.enabled?'开启':'关闭'),'pta-link-btn pta-review-switch');reviewTools.type='button';reviewTools.setAttribute('role','switch');reviewTools.setAttribute('aria-checked',String(reviewHub.enabled));reviewTools.disabled=reviewHub.preferenceBusy;reviewTools.addEventListener('click',function(){setReviewEnabled(!reviewHub.enabled);});fragment.appendChild(reviewTools);
             if(reviewHub.showTools)fragment.appendChild(node('p','复习（Beta）：后台缓存全部未缓存的已结束可访问题集；已有缓存不重复拉取，缺失答案和 AI 生成答案单独标出。','pta-catalog-note'));
         }
         function renderGroup(group) {
@@ -3843,7 +3882,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         }
         if(typeof reviewHub!=='undefined'&&reviewHub.status)fragment.appendChild(node('p',reviewHub.status,'pta-catalog-note'));
         if(typeof clearReviewCache==='function'&&reviewHub.showTools){
-            var clearReview=node('button','清除复习缓存','pta-link-btn');clearReview.type='button';clearReview.addEventListener('click',async function(){stopReviewWork();clearReview.disabled=true;try{await clearReviewCache();reviewHub.status='复习缓存已清除';}catch(_){reviewHub.status='复习缓存删除失败，请重试';toast(reviewHub.status);}finally{clearReview.disabled=false;refreshReviewHub();}});fragment.appendChild(clearReview);
+            var clearReview=node('button','清除复习缓存','pta-link-btn');clearReview.type='button';clearReview.addEventListener('click',async function(){stopReviewWork();clearReview.disabled=true;try{await clearReviewCache();reviewHub.status='复习缓存已清除，开关保持原状态；重新开启或手动缓存可再次读取';}catch(_){reviewHub.status='复习缓存删除失败，请重试';toast(reviewHub.status);}finally{clearReview.disabled=false;refreshReviewHub();}});fragment.appendChild(clearReview);
             if(reviewHub.busy){var cancelReview=node('button','停止复习缓存','pta-link-btn');cancelReview.type='button';cancelReview.addEventListener('click',function(){stopReviewWork();reviewHub.status='已停止复习缓存';refreshReviewHub();});fragment.appendChild(cancelReview);}
         }
         fragment.appendChild(node('p',(catalogueState.message || '准备读取…')+' 已保存进度 · 未知不代表0。'+(partition.uncertain?' 目录或状态未确认的班级暂不归档。':''),'pta-catalog-note'));
@@ -4765,7 +4804,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         if (!force && location.href === spaObservedURL) return;
         spaObservedURL = location.href;
         trackCatalogueVisit();
-        if(typeof stopReviewWork==='function')stopReviewWork();
+        if(typeof stopReviewWork==='function'){if(reviewHub.busy)reviewHub.autoKey='';stopReviewWork();}
         state.routeRevision = (state.routeRevision || 0) + 1;
         localAnswerProgress = null;
         pendingPageWrites = { url: '', items: [] };
