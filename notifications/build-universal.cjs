@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path'),dir=__dirname;
 const header=`// ==UserScript==
 // @name         PNC Helper
 // @namespace    https://pintia.cn/pnc-reminders/
-// @version      1.0.0-beta.3
+// @version      1.0.0-beta.4
 // @description  通用倒计时提醒；需手动公钥配对并在扩展菜单授权
 // @match        http://*/*
 // @match        https://*/*
