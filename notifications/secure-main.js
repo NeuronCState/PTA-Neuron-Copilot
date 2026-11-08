@@ -37,13 +37,39 @@
         var previous=el&&el.textContent,ok=await scheduleSignedDeadlineReminder();
         if(ok&&el&&!/失败|不可用|超限|超过|账号已变化/.test(previous||''))el.textContent='签名配置已发送；需手动配对通用 Helper。是否接收请查看扩展菜单，不代表通知已送达。';
     };
-    async function copyHelperPairingCode(){
-        try{var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
-            await Promise.resolve(GM_setClipboard(value,'text'));
-            var el=document.getElementById('pta-helper-pair-status');if(el)el.textContent='公钥已复制，请在 Helper 扩展菜单选择“粘贴配对公钥”。';
-        }catch(e){var el=document.getElementById('pta-helper-pair-status');if(el)el.textContent='复制失败：'+e.message;else alert('无法生成配对公钥：'+e.message);}
+    var helperCopyBusy=false,helperCopyResetTimer=null;
+    function writeHelperPairingClipboard(value){
+        return new Promise(function(resolve,reject){
+            var done=false,timer=setTimeout(function(){finish(Error('未收到复制确认，请重试'));},5000);
+            function finish(error){if(done)return;done=true;clearTimeout(timer);if(error)reject(error);else resolve();}
+            try{
+                var result=GM_setClipboard(value,'text',function(){finish();});
+                if(result&&typeof result.then==='function')result.then(function(){finish();},function(){finish(Error('剪贴板写入失败，请重试'));});
+            }catch(_){finish(Error('剪贴板写入失败，请检查脚本管理器权限'));}
+        });
     }
-    if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC：复制 Helper 配对公钥（不含私钥）',copyHelperPairingCode);
+    async function copyHelperPairingCode(){
+        if(helperCopyBusy)return;
+        helperCopyBusy=true;clearTimeout(helperCopyResetTimer);
+        var button=document.getElementById('pta-helper-copy-pair'),el=document.getElementById('pta-helper-pair-status');
+        if(button){button.disabled=true;button.textContent='复制中…';}
+        if(el)el.textContent='正在复制配对码…';
+        try{
+            var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
+            await writeHelperPairingClipboard(value);
+            if(button)button.textContent='已复制 ✓';
+            if(el)el.textContent='配对码已复制，请在 Helper 菜单选择“配对”。';
+            else alert('配对码已复制。');
+            helperCopyResetTimer=setTimeout(function(){
+                if(button)button.textContent='复制 Helper 配对码';
+                if(el)el.textContent='仅复制验证公钥，不含私钥或 API Key。';
+            },2500);
+        }catch(_){
+            if(button)button.textContent='重试复制';
+            if(el)el.textContent='未确认复制成功，请重试并检查脚本管理器权限。';
+            else alert('未确认复制成功，请重试并检查脚本管理器权限。');
+        }finally{helperCopyBusy=false;if(button)button.disabled=false;}
+    }
     // This request only republishes existing signed configuration; it cannot grant permissions,
     // alter settings or export key material. Host pages can request the same public broadcast.
     var helperSyncRequestAt=0;
