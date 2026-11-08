@@ -2712,7 +2712,7 @@ return module.exports; } catch (unavailable) { return null; } })();
 
     // Read PTA-rendered same-origin catalogue/overview pages; keep private course data in memory only.
     function catalogueRoute(path) {
-        return /^\/problem-sets\/(dashboard|active|all)\/?$/.test(path || '');
+        return /^\/problem-sets\/(dashboard|active|all)\/?$/.test(path || '') || /^\/home(?:\/|$)/.test(path || '');
     }
     var homePull={open:false,path:'',host:null,button:null,fold:null};
     function homePullRoute(){return /^\/problem-sets\/\d{1,25}\/exam(?:\/|$)/.test(location.pathname);}
@@ -2884,6 +2884,8 @@ return module.exports; } catch (unavailable) { return null; } })();
         if(job.controller.signal.aborted)throw catalogueFailure('cancelled');
     }
     function stopClassCatalogue() {
+        // A route change is not a cache deletion. Serialize pending progress before resetting the view.
+        if(typeof flushPersistentCatalogueCache==='function'&&typeof cataloguePersistence!=='undefined'&&cataloguePersistence&&cataloguePersistence.dirty)flushPersistentCatalogueCache();
         if(catalogueState.job){catalogueState.job.controller.abort();clearTimeout(catalogueState.job.timer);}
         catalogueState.job=null;catalogueState.run++;catalogueState.rows=[];catalogueState.status='idle';catalogueState.message='';catalogueState.total=null;catalogueState.source='dom';catalogueState.domSignature='';catalogueState.failure='';catalogueState.directoryComplete=false;catalogueState.cacheVerified=false;catalogueState.snapshotAt=null;
     }
@@ -3940,7 +3942,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         classHomeTimer=setInterval(function () {
             refreshCatalogueClock(catalogueState.rows,Date.now());
             trackCatalogueVisit();
-            if(!cataloguePanelActive()){if((!homePullRoute()||homePull.path!==location.pathname)&&catalogueState.status!=='idle')stopClassCatalogue();if(!/^\/problem-sets(?:\/|$)/.test(location.pathname))clearCatalogueCache();}
+            if(!cataloguePanelActive()){if((!homePullRoute()||homePull.path!==location.pathname)&&catalogueState.status!=='idle')stopClassCatalogue();if(!/^\/problem-sets(?:\/|$)/.test(location.pathname)){flushPersistentCatalogueCache();catalogueIdentity=null;}}
             else if(!catalogueState.suspended && catalogueState.status==='idle')loadClassCatalogue();
             if(catalogueState.source==='dom')syncCatalogueDOM();
             refreshClassHome();
@@ -4983,7 +4985,8 @@ return module.exports; } catch (unavailable) { return null; } })();
         localAnswerProgress = null;
         pendingPageWrites = { url: '', items: [] };
         stopAssistance(true);
-        stopClassCatalogue(); refreshClassHome();
+        // Recheck the logged-in identity after navigation without destroying recoverable cache data.
+        catalogueIdentity=null;stopClassCatalogue(); refreshClassHome();
         // Cancel requests belonging to the old page. Intentional solver navigation
         // has already awaited them, and its next page receives a fresh controller.
         if (activeSolveController) activeSolveController.abort();
