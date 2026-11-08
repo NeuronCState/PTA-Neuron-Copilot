@@ -5,8 +5,8 @@ const runtime=fs.readFileSync('notifications/universal-runtime.js','utf8'),C=req
  const table={},store=new Map();let holdPair=null;const flush=()=>new Promise(r=>setImmediate(r));
  function make(tab,{queued=false}={}){
   const events={},menus=[],writes=[];let ipc=Promise.resolve(),held=true;const pending=[];
-  const ctx={crypto:webcrypto,Uint32Array,PNCDeadlineCore:C,PNCReminderProtocol:V,PNCReminderTabLock:L,PNC_HELPER_PUBLIC_KEY:pub,Date,document:{},location:{origin:'https://example.test'},window:null,
-   GM_getValue:async(k,d)=>{if(holdPair&&holdPair.tab===tab&&k.endsWith(':pair'))await holdPair.wait;return store.has(k)?structuredClone(store.get(k)):d;},GM_setValue:async(k,v)=>store.set(k,structuredClone(v)),
+  const ctx={crypto:webcrypto,Uint32Array,PNCDeadlineCore:C,PNCReminderProtocol:V,PNCReminderTabLock:L,Date,document:{},location:{origin:'https://example.test'},window:null,
+   GM_getValue:async(k,d)=>{if(holdPair&&holdPair.tab===tab&&k.endsWith(':pairing'))await holdPair.wait;return store.has(k)?structuredClone(store.get(k)):d;},GM_setValue:async(k,v)=>store.set(k,structuredClone(v)),
    GM_getTabs:f=>f(structuredClone(table)),GM_saveTab:v=>{writes.push(structuredClone(v));if(!queued){table[tab]=structuredClone(v);return;}const next=ipc.then(()=>new Promise(resolve=>{const apply=()=>{table[tab]=structuredClone(v);resolve();};if(held)pending.push(apply);else apply();}));ipc=next;return next;},GM_registerMenuCommand:(n,f)=>menus.push({n,f}),GM_notification:()=>assert.fail('not authorized to notify'),setInterval:()=>{},setTimeout,clearTimeout,alert:()=>{}};
   const win={addEventListener:(n,f)=>events[n]=f};win.top=win;win.self=win;ctx.window=win;vm.runInNewContext(runtime,ctx);
   return {events,writes,authorize:()=>menus.find(m=>m.n.includes('授权')).f(),releaseIPC:async()=>{held=false;pending.splice(0).forEach(f=>f());await ipc;}};

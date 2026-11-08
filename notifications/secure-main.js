@@ -37,8 +37,18 @@
         var previous=el&&el.textContent,ok=await scheduleSignedDeadlineReminder();
         if(ok&&el&&!/失败|不可用|超限|超过|账号已变化/.test(previous||''))el.textContent='签名配置已发送；需手动配对通用 Helper。是否接收请查看扩展菜单，不代表通知已送达。';
     };
-    if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC：复制 Helper 配对公钥（不含私钥）',async function(){
+    async function copyHelperPairingCode(){
         try{var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
-            GM_setClipboard(value,'text');
-        }catch(e){alert('无法生成配对公钥：'+e.message);}
+            await Promise.resolve(GM_setClipboard(value,'text'));
+            var el=document.getElementById('pta-helper-pair-status');if(el)el.textContent='公钥已复制，请在 Helper 扩展菜单选择“粘贴配对公钥”。';
+        }catch(e){var el=document.getElementById('pta-helper-pair-status');if(el)el.textContent='复制失败：'+e.message;else alert('无法生成配对公钥：'+e.message);}
+    }
+    if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC：复制 Helper 配对公钥（不含私钥）',copyHelperPairingCode);
+    // This request only republishes existing signed configuration; it cannot grant permissions,
+    // alter settings or export key material. Host pages can request the same public broadcast.
+    var helperSyncRequestAt=0;
+    if(typeof window.addEventListener==='function')window.addEventListener('message',function(event){
+        if(event.source!==window||event.origin!=='https://pintia.cn'||!event.data||event.data.channel!=='pnc-helper-request-sync-v1')return;
+        if(Date.now()-helperSyncRequestAt<5000)return;helperSyncRequestAt=Date.now();
+        syncDeadlineReminderV2();
     });

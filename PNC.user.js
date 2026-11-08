@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
-// @version      2.1.0-beta.2
+// @version      2.1.0-beta.3
 // @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
 // @homepageURL  https://neuroncstate.github.io/PTA-Neuron-Copilot/
 // @supportURL   https://github.com/NeuronCState/PTA-Neuron-Copilot/issues
-// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.2/PNC.user.js
-// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.2/PNC.user.js
+// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.3/PNC.user.js
+// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.3/PNC.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -2678,6 +2678,16 @@ return module.exports; } catch (unavailable) { return null; } })();
     #pta-class-home .pta-catalog-items{max-height:min(240px,38vh);overflow-y:auto;overscroll-behavior:auto;scrollbar-width:thin;padding-right:5px}
     #pta-class-home .pta-catalog-items:focus-visible{outline:2px solid var(--pta-text);outline-offset:-2px}
     #pta-class-home .pta-catalog-note{margin:8px 0 0;font-size:10px;line-height:1.4}
+    #pta-root .pta-ai-cache-row{display:flex;align-items:center;gap:10px}
+    #pta-root .pta-ai-cache-row>button{flex:0 0 auto;max-width:48%}
+    #pta-root .pta-ai-cache-row>.pta-dev-status{display:block;flex:1;min-width:0;margin:0;line-height:1.5}
+    #pta-root .pta-reminder-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:10px}
+    #pta-root .pta-reminder-row>.pta-check{display:flex;align-items:center;justify-content:center;margin:0;min-width:0;min-height:36px;height:auto;box-sizing:border-box;padding:8px 6px;white-space:normal;line-height:1.35;text-align:center}
+    #pta-root .pta-reminder-row>.pta-check>.pta-reminder-label{display:block;min-width:0;margin:0;padding:0;line-height:inherit;text-align:center}
+    #pta-root .pta-reminder-threshold{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+    #pta-root .pta-reminder-threshold>label{margin:0;font-size:11px;line-height:1.3;min-width:0}
+    #pta-root .pta-reminder-threshold>select{width:66px;min-width:0;flex:0 0 66px;padding:6px 4px;font-size:12px}
+    #pta-root #pta-helper-copy-pair{margin-top:10px;max-width:100%}
     #pta-root .pta-options > .pta-check{min-width:0;min-height:36px;padding:6px;gap:0;white-space:normal;line-height:1.35;text-align:center;overflow-wrap:anywhere}
     .pta-range-wrap{position:relative;width:100%;margin-top:2px}
     .pta-range{display:block;width:100%;height:6px;margin:8px 0 6px;-webkit-appearance:none;appearance:none;background:var(--pta-line);border-radius:99px;outline:none;cursor:pointer;transition:background .2s ease}
@@ -4118,7 +4128,7 @@ return module.exports; } catch (unavailable) { return null; } })();
                                 </div>
                             </div>
                         </div>
-                        <div class="pta-field"><button id="pta-ai-cache-clear" type="button" class="pta-dev-btn">清除 AI 解答缓存</button><span class="pta-dev-status">本地保存 7 天，刷新保留 · 按账号隔离</span></div>
+                        <div class="pta-field pta-ai-cache-row"><button id="pta-ai-cache-clear" type="button" class="pta-dev-btn">清除 AI 解答缓存</button><span class="pta-dev-status">本地保存 7 天，刷新保留 · 按账号隔离</span></div>
                         <details class="pta-field pta-dev-options"><summary>开发者选项</summary>
                             <div id="pta-dev-collapse" class="pta-dev-collapse"><div class="pta-dev-collapse-inner">
                             <div class="pta-dev-card">
@@ -4134,12 +4144,15 @@ return module.exports; } catch (unavailable) { return null; } })();
                         </div></div>
                         </details>
                         <div class="pta-field" id="pta-deadline-reminder-settings">
-                            <label class="pta-check"><input id="pta-deadline-reminder-toggle" type="checkbox" role="switch">倒计时提醒（Beta）</label>
-                            <label for="pta-deadline-reminder-days">剩余时间小于</label>
-                            <select id="pta-deadline-reminder-days" aria-label="倒计时提醒提前天数"><option value="1">1 天</option><option value="2">2 天</option><option value="3">3 天</option><option value="4">4 天</option><option value="5">5 天</option><option value="6">6 天</option><option value="7">7 天</option><option value="8">8 天</option><option value="9">9 天</option><option value="10">10 天</option><option value="11">11 天</option><option value="12">12 天</option><option value="13">13 天</option><option value="14">14 天</option><option value="15">15 天</option><option value="16">16 天</option><option value="17">17 天</option><option value="18">18 天</option><option value="19">19 天</option><option value="20">20 天</option><option value="21">21 天</option><option value="22">22 天</option><option value="23">23 天</option><option value="24">24 天</option><option value="25">25 天</option><option value="26">26 天</option><option value="27">27 天</option><option value="28">28 天</option><option value="29">29 天</option><option value="30">30 天</option></select>
+                            <div class="pta-reminder-row"><label class="pta-check"><input id="pta-deadline-reminder-toggle" type="checkbox" role="switch"><span class="pta-reminder-label">倒计时提醒（Beta）</span></label>
+                            <div class="pta-reminder-threshold"><label for="pta-deadline-reminder-days">剩余时间小于</label>
+                            <select id="pta-deadline-reminder-days" aria-label="倒计时提醒提前天数"><option value="1">1 天</option><option value="2">2 天</option><option value="3">3 天</option><option value="4">4 天</option><option value="5">5 天</option><option value="6">6 天</option><option value="7">7 天</option><option value="8">8 天</option><option value="9">9 天</option><option value="10">10 天</option><option value="11">11 天</option><option value="12">12 天</option><option value="13">13 天</option><option value="14">14 天</option><option value="15">15 天</option><option value="16">16 天</option><option value="17">17 天</option><option value="18">18 天</option><option value="19">19 天</option><option value="20">20 天</option><option value="21">21 天</option><option value="22">22 天</option><option value="23">23 天</option><option value="24">24 天</option><option value="25">25 天</option><option value="26">26 天</option><option value="27">27 天</option><option value="28">28 天</option><option value="29">29 天</option><option value="30">30 天</option></select></div></div>
+                            <button type="button" class="pta-btn" id="pta-helper-copy-pair">复制 Helper 配对码</button>
+                            <p id="pta-helper-pair-status" class="pta-help" role="status">仅复制验证公钥，不含私钥或 API Key。</p>
+
                             <p id="pta-deadline-reminder-status" class="pta-help" role="status"></p>
-                            <p class="pta-help">篡改猴/脚本猫通用：在扩展菜单复制 PNC 配对公钥，手动填入 Helper（不含私钥）。Helper 使用自己的存储，不再共享主脚本缓存。普通网页全部关闭或被冻结时提醒可能延迟；只按最后同步的截止时间提醒。</p>
-                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.2/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.2</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.2/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
+                            <p class="pta-help">篡改猴/脚本猫通用：点击上方复制配对码，再在 Helper 扩展菜单粘贴保存并授权（不含私钥）。Helper 使用自己的存储，不再共享主脚本缓存。普通网页全部关闭或被冻结时提醒可能延迟；只按最后同步的截止时间提醒。</p>
+                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.3/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.3</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.3/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
                         </div><div class="pta-help">配置均实时自动保存到当前浏览器本地。Key 仅保存在本地设备，不经任何中转。OpenCode Free 会自动探测 127.0.0.1:8788。</div>
                     </div>
                 </div>
@@ -4450,14 +4463,26 @@ return module.exports; } catch (unavailable) { return null; } })();
         var previous=el&&el.textContent,ok=await scheduleSignedDeadlineReminder();
         if(ok&&el&&!/失败|不可用|超限|超过|账号已变化/.test(previous||''))el.textContent='签名配置已发送；需手动配对通用 Helper。是否接收请查看扩展菜单，不代表通知已送达。';
     };
-    if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC：复制 Helper 配对公钥（不含私钥）',async function(){
+    async function copyHelperPairingCode(){
         try{var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
-            GM_setClipboard(value,'text');
-        }catch(e){alert('无法生成配对公钥：'+e.message);}
+            await Promise.resolve(GM_setClipboard(value,'text'));
+            var el=document.getElementById('pta-helper-pair-status');if(el)el.textContent='公钥已复制，请在 Helper 扩展菜单选择“粘贴配对公钥”。';
+        }catch(e){var el=document.getElementById('pta-helper-pair-status');if(el)el.textContent='复制失败：'+e.message;else alert('无法生成配对公钥：'+e.message);}
+    }
+    if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC：复制 Helper 配对公钥（不含私钥）',copyHelperPairingCode);
+    // This request only republishes existing signed configuration; it cannot grant permissions,
+    // alter settings or export key material. Host pages can request the same public broadcast.
+    var helperSyncRequestAt=0;
+    if(typeof window.addEventListener==='function')window.addEventListener('message',function(event){
+        if(event.source!==window||event.origin!=='https://pintia.cn'||!event.data||event.data.channel!=='pnc-helper-request-sync-v1')return;
+        if(Date.now()-helperSyncRequestAt<5000)return;helperSyncRequestAt=Date.now();
+        syncDeadlineReminderV2();
     });
 
     function bindUI(root) {
         bindDeadlineReminderUI();
+        var pairButton=document.getElementById('pta-helper-copy-pair');
+        if(pairButton)pairButton.addEventListener('click',function(event){if(event.isTrusted)copyHelperPairingCode();});
         bindDeveloperDisclosure(root);
         if(typeof RELEASE_FEATURES!=='undefined'&&!RELEASE_FEATURES.developer){var dev=root.querySelector('.pta-dev-options');if(dev){dev.hidden=true;dev.setAttribute('inert','');dev.style.setProperty('display','none','important');}stopDiagnostics();stopApiDiagnostics();}
         document.getElementById('pta-api-diagnostic-toggle').addEventListener('change',function(){if(this.checked)startApiDiagnostics();else stopApiDiagnostics();});

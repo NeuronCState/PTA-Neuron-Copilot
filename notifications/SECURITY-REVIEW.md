@@ -26,3 +26,10 @@ Optional ScriptCat background mode still has whole-main-GM access via manual `@s
 `pagehide` marks the document disposed, then issues one immediate zero-ticket `GM_saveTab` teardown write only if that instance previously registered. It deliberately bypasses the normal alive guard; every ordinary read/write continuation remains disabled. This fixes the definite residual-lock bug where `finally` cleanup itself was rejected after `pagehide`. The new lifecycle harness covers a suspended critical section, suspended acquisition, navigation with no replacement script, and asynchronously queued FIFO tab writes. Received packet age is rechecked after acquiring the lock.
 
 This depends on the manager preserving write invocation order for a tab. A manager that applies an earlier nonzero write after the later teardown can still strand a lock; per-tab FIFO and teardown delivery must be verified in both real managers. The available APIs provide no cross-origin compare-and-swap or cancellation of an already-issued write, so arbitrary reordered/lost IPC cannot be made reliable by this patch.
+
+## beta.3：菜单输入配对
+- 公钥由管理器菜单触发的沙箱原生 prompt 输入，二次确认；存于 Helper 独立 GM pairing。无页面消息设置信任入口。
+- 限长、字段白名单、坐标格式与 WebCrypto 导入验证，拒绝私钥、非法点、额外令牌字段。
+- 撤销/替换在跨标签锁下清缓存并默认暂停；每次验证捕获 pairing revision，提交前再次检查，旧标签不能写回旧配对。
+- 同步请求仅 PTA 同源发送，主脚本每 5 秒最多接受一次，仅重新广播已有签名配置，不授予权限。
+- 模拟覆盖取消、无效输入、替换/撤销并发、跨文档持久化；实际管理器沙箱与原生对话框尚需验证。

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PNC Helper
 // @namespace    https://pintia.cn/pnc-reminders/
-// @version      1.0.0-beta.2
+// @version      1.0.0-beta.3
 // @description  通用倒计时提醒；需手动公钥配对并在扩展菜单授权
 // @match        http://*/*
 // @match        https://*/*
@@ -19,8 +19,6 @@
 
 (function(){
 "use strict";
-// Paste only the public JWK copied by the MAIN userscript extension menu. Never paste private d.
-var PNC_HELPER_PUBLIC_KEY = null;
 var PNCDeadlineCore=(function(){var module={exports:{}};
 /* PNC deadline reminders: pure, offline-only input validation and due selection. */
 (function(root){
@@ -163,24 +161,50 @@ if(hasDOM){
  if(typeof GM_info==='undefined'||GM_info.scriptHandler!=='ScriptCat')return;
  var queue=Promise.resolve();lock={run:function(fn){var p=queue.catch(function(){}).then(fn);queue=p;return p;}};
 }
-var paired;
-try{paired=V.publicKey(PNC_HELPER_PUBLIC_KEY);}catch(_){
- if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC Helper：未配对，打开脚本编辑器填写公钥',function(){alert('请从PNC扩展菜单复制配对公钥，手动填入Helper的PNC_HELPER_PUBLIC_KEY。不要填私钥、Token或API Key。');});return;
+// Only extension-menu callbacks may establish trust. Never accept keys from page events.
+// Capture dialogs from the userscript sandbox, not unsafeWindow or page DOM.
+var inputDialog=typeof prompt==='function'?prompt.bind(globalThis):null;
+var confirmDialog=typeof confirm==='function'?confirm.bind(globalThis):null;
+var notifyDialog=typeof alert==='function'?alert.bind(globalThis):function(){};
+async function parsePair(text){
+ if(typeof text!=='string'||text.length>4096)throw Error('请粘贴完整的公钥 JSON');
+ var j;try{j=JSON.parse(text);}catch(_){throw Error('不是有效的公钥 JSON');}
+ var allowed=['kty','crv','x','y','ext','key_ops'];
+ if(!j||Array.isArray(j)||Object.keys(j).some(function(k){return allowed.indexOf(k)<0;})||!/^[-_A-Za-z0-9]{43}$/.test(j.x||'')||!/^[-_A-Za-z0-9]{43}$/.test(j.y||''))throw Error('仅接受 PNC 公钥，不可包含私钥、令牌或其他字段');
+ if(j.ext!==undefined&&j.ext!==true||j.key_ops!==undefined&&(!Array.isArray(j.key_ops)||j.key_ops.length!==1||j.key_ops[0]!=='verify'))throw Error('公钥权限不正确');
+ var key=V.publicKey(j);await crypto.subtle.importKey('jwk',key,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return key;
 }
-var pairId=JSON.stringify(paired);
-async function ensurePair(){var old=await get('pair',null);if(old!==pairId){await set('paused',true);await set('accepted',null);await set('sent',{});await set('pair',pairId);}}
+async function pairing(){var p=await get('pairing',null);return p&&typeof p.revision==='string'&&p.key?p:null;}
+function requestSync(){if(isPTA&&typeof window.postMessage==='function')window.postMessage({channel:'pnc-helper-request-sync-v1'},'https://pintia.cn');}
 async function status(message){await set('status',{at:Date.now(),message:message});}
 if(typeof GM_registerMenuCommand==='function'){
- GM_registerMenuCommand('PNC Helper：授权当前配对并运行',async function(){
-  try{await lock.run(async function(){await ensurePair();await set('paused',false);await status('已授权配对；需在PTA同步已签名配置');});tick();}catch(e){alert('Helper启动失败：'+e.message);}
+ GM_registerMenuCommand('PNC Helper：粘贴配对公钥 / 更换配对',async function(){
+  try{
+   if(!inputDialog||!confirmDialog)throw Error('当前环境不支持安全输入框，请在普通网页的管理器菜单操作');
+   var text=inputDialog('PNC Helper 配对：粘贴从 PNC 扩展菜单复制的公钥 JSON。不要粘贴私钥、Cookie、Token 或 API Key。','');
+   if(text===null)return;
+   var key=await parsePair(text);
+   if(!confirmDialog('保存此公钥并替换现有配对？原提醒缓存将清空并暂停通知。请确认公钥来自你自己的 PNC。'))return;
+   await lock.run(async function(){await set('paused',true);await set('accepted',null);await set('sent',{});await set('pairing',{key:key,revision:id+':'+Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-')});await status('配对已保存；请从扩展菜单授权运行，再打开 PTA 同步');});
+   requestSync();
+   notifyDialog('配对已保存并已更新运行状态，无需刷新页面。请点击“授权当前配对并运行”，再打开 PTA 同步。');
+  }catch(e){notifyDialog('配对未保存：'+e.message);}
  });
- GM_registerMenuCommand('PNC Helper：立即暂停所有标签通知',async function(){try{await set('paused',true);await status('已在扩展菜单暂停');}catch(e){alert('暂停写入失败，请在管理器禁用Helper');}});
- GM_registerMenuCommand('PNC Helper：查看状态',async function(){var s=await get('status',null);alert(s?s.message+'\n'+new Date(s.at).toLocaleString():'尚未同步。先授权配对，再打开PTA。');});
+ GM_registerMenuCommand('PNC Helper：授权当前配对并运行',async function(){
+  try{await lock.run(async function(){if(!await pairing())throw Error('请先粘贴并保存配对公钥');await set('paused',false);await status('已授权配对；需在PTA同步已签名配置');});requestSync();tick();}catch(e){notifyDialog('Helper启动失败：'+e.message);}
+ });
+ GM_registerMenuCommand('PNC Helper：撤销配对并清空提醒缓存',async function(){
+  try{if(!confirmDialog||!confirmDialog('撤销 Helper 配对、暂停通知并清空本地提醒缓存？已发出的通知无法撤回。'))return;
+   await lock.run(async function(){await set('paused',true);await set('pairing',null);await set('accepted',null);await set('sent',{});await status('配对已撤销，通知已暂停');});notifyDialog('配对已撤销。');
+  }catch(e){notifyDialog('撤销失败，请在管理器禁用 Helper：'+e.message);}
+ });
+ GM_registerMenuCommand('PNC Helper：立即暂停所有标签通知',async function(){try{await set('paused',true);await status('已在扩展菜单暂停');}catch(e){notifyDialog('暂停写入失败，请在管理器禁用Helper');}});
+ GM_registerMenuCommand('PNC Helper：查看状态',async function(){var s=await get('status',null);notifyDialog(s?s.message+'\n'+new Date(s.at).toLocaleString():'尚未配对。先粘贴公钥并授权，再打开PTA。');});
 }
 async function receive(event){
  if(disposed||!isPTA||event.source!==window||event.origin!=='https://pintia.cn')return;
- var packet;try{packet=await V.verify(crypto,paired,event.data,Date.now());}catch(_){return;}
- try{await lock.run(async function(){if(packet.at>Date.now()+5000||Date.now()-packet.at>90000)return;await ensurePair();var previous=await get('accepted',null);if(previous&&packet.sequence<=previous.sequence)return;
+ var packet,pair;try{pair=await pairing();if(!pair)return;packet=await V.verify(crypto,pair.key,event.data,Date.now());}catch(_){return;}
+ try{await lock.run(async function(){if(packet.at>Date.now()+5000||Date.now()-packet.at>90000)return;var currentPair=await pairing();if(!currentPair||currentPair.revision!==pair.revision)return;var previous=await get('accepted',null);if(previous&&packet.sequence<=previous.sequence)return;
   var ctl=packet.control,rev=packet.revocation,snap=C.snapshot(packet.snapshot,Date.now(),true);
   if(typeof rev!=='string'||rev.length>512)return;
   if(ctl!==null&&(!ctl||typeof ctl.id!=='string'||ctl.id.length>128||typeof ctl.enabled!=='boolean'||!Number.isInteger(ctl.days)||ctl.days<1||ctl.days>30||typeof ctl.revocation!=='string'||ctl.revocation.length>512||ctl.enabled&&!/^\d{1,25}$/.test(ctl.owner||'')))return;
@@ -205,7 +229,7 @@ async function tick(){if(disposed||busy)return;busy=true;try{
  if(await get('paused',true)||!preview||!preview.control||!preview.control.enabled||preview.control.revocation!==preview.revocation||!preview.snapshot||preview.snapshot.owner!==preview.control.owner)return;
  if(!C.due(preview.snapshot,preview.control,{},Date.now()).some(function(r){var e=prior&&prior[C.key(preview.snapshot.owner,r,preview.control.days)];return !e||e.state==='failed'&&e.attempts<5&&Date.now()>=e.retryAt;}))return;
  await lock.run(async function(){
- await ensurePair();if(await get('paused',true)){await status('Helper已暂停，请从扩展菜单授权运行');return;}
+ if(!await pairing())return;if(await get('paused',true)){await status('Helper已暂停，请从扩展菜单授权运行');return;}
  var raw=await get('accepted',null),ctl=raw&&raw.control,snap=raw&&raw.snapshot,now=Date.now();
  if(!ctl||!ctl.enabled||ctl.revocation!==raw.revocation||!snap||snap.owner!==ctl.owner){await status('等待有效签名配置或提醒已关闭');return;}
  var sent=await get('sent',{});if(!sent||typeof sent!=='object')sent={};

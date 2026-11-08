@@ -57,3 +57,5 @@ Review integration tests additionally use `PTA_REVIEW_DIAGNOSTIC_DIR=../pta-revi
 ## Universal Helper candidate (unpublished beta.2)
 
 Run `node tests/universal-protocol.cjs`, `node tests/universal-chain.cjs`, `node tests/deadline-notifications.cjs`, and `node tests/notification-release.cjs` from the repository root. They read the current `PNC.user.js`/`PNC Helper.user.js` or their exact embedded modules. Use `node notifications/build.cjs` to rebuild Helper after module changes. These use simulated manager APIs; live cross-manager, frozen-tab, closed-tab, sandbox isolation and OS-notification validation is still pending. See `notifications/README.md` for the manual public-key trust step and non-delivery/duplicate limitations.
+
+输入框配对（beta.3）：`node tests/helper-pairing.cjs` 覆盖菜单可信入口模型、取消/无效输入、公钥校验、GM 持久化、撤销与替换竞态。仅模拟，不代表管理器实机验证。

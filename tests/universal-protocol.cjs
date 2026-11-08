@@ -16,8 +16,8 @@ const assert=require('node:assert/strict'),fs=require('fs'),{webcrypto}=require(
  table.frozen={pncReminderLock:{id:'aaa',ticket:1,choosing:false}};await assert.rejects(locks[0].run(()=>assert.fail('must wait')),/frozen|busy/);delete table.frozen;await locks[0].run(()=>{});
  const main=fs.readFileSync('PNC.user.js','utf8'),helper=fs.readFileSync('PNC Helper.user.js','utf8');
  assert.ok(main.includes(fs.readFileSync('notifications/secure-main.js','utf8')));assert.ok(helper.includes(fs.readFileSync('notifications/universal-runtime.js','utf8')));
- assert.doesNotMatch(helper,/^\/\/ @storageName|^\/\/ @connect|^\/\/ @grant\s+unsafeWindow/m);
+ assert.match(helper,/if\(isPTA&&typeof window\.postMessage/);assert.doesNotMatch(helper,/^\/\/ @storageName|^\/\/ @connect|^\/\/ @grant\s+unsafeWindow/m);
  assert.match(helper,/if\(isPTA\)window.addEventListener\('message',receive\)/);
- assert.doesNotMatch(helper,/window\.postMessage|document\.querySelector|localStorage|fetch\(/);
+ assert.doesNotMatch(helper,/document\.querySelector|localStorage|fetch\(/);
  console.log('PASS signed transport tamper/wrong-key/expiry/size, cross-origin tab bakery mutual exclusion/frozen fail-closed, generated source and no arbitrary-site data access');
 })().catch(e=>{console.error(e);process.exitCode=1;});
