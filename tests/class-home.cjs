@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const src=fs.readFileSync('PTA Auto Solver Pro-1.8.1-beta.1.user.js','utf8');
-const section=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    function render()'));
+const section=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    // Panel UI state only.'));
 function card(id,{title='Example',group='Class A',deadline='2026-11-11 18:14',status=['已开放'],href}={}) {
  const groupNode={textContent:group};const spans=[{textContent:'来源用户组:',nextElementSibling:groupNode},groupNode,...status.map(textContent=>({textContent}))];
  return {getAttribute:()=>href||`https://pintia.cn/problem-sets/${id}/overview`,querySelector:s=>s==='.font-bold'?{textContent:title}:null,querySelectorAll:()=>spans,closest:()=>null,textContent:`${title}关闭时间:${deadline}来源用户组:${group}${status.join('')}`};

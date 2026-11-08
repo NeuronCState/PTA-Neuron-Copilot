@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
-// @version      2.0.0
+// @version      2.0.2
 // @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
 // @homepageURL  https://neuroncstate.github.io/PTA-Neuron-Copilot/
 // @supportURL   https://github.com/NeuronCState/PTA-Neuron-Copilot/issues
-// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js
-// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.0.user.js
+// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.2.user.js
+// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PTA%20Neuron%20Copilot-2.0.2.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -2589,6 +2589,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     .pta-aura-ambient{position:absolute;left:50%;top:50%;margin-left:-42px;margin-top:-42px;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at center,rgba(245,180,0,.3) 0%,rgba(99,91,255,.18) 45%,transparent 70%);filter:blur(16px);animation:pta-ambient-breathe 3.6s ease-in-out infinite alternate}
     .pta-aura-disc{position:absolute;left:50%;top:50%;margin-left:-46px;margin-top:-46px;width:92px;height:92px;border-radius:50%;background:conic-gradient(from 0deg,rgba(245,175,0,.82) 0deg,rgba(235,95,30,.7) 60deg,rgba(99,91,255,.82) 135deg,rgba(14,165,233,.75) 220deg,rgba(16,185,129,.68) 285deg,rgba(245,175,0,.82) 360deg);filter:blur(15px);opacity:.78;animation:pta-orb-spin 6.5s linear infinite,pta-orb-morph 9s ease-in-out infinite alternate;will-change:transform,filter}
     /* Keep PAS glyphs stationary: text clipping on transformed children can leave displaced glyphs. */
+    #pta-shell.collapsed .pta-drawer{visibility:hidden!important;pointer-events:none!important}
     #pta-shell.collapsed{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
     html.pta-theme-dark #pta-shell.collapsed{background:#18181a;backdrop-filter:none;-webkit-backdrop-filter:none}
     html.pta-theme-dark .pta-aura-ambient{background:radial-gradient(circle at center,rgba(255,200,50,.32) 0%,rgba(138,120,255,.2) 45%,transparent 70%);filter:blur(16px)}
@@ -2636,6 +2637,8 @@ return module.exports; } catch (unavailable) { return null; } })();
     #pta-class-home .pta-catalog-item{display:grid;grid-template-columns:minmax(0,1fr)64px;align-items:center;gap:10px}
     #pta-class-home .pta-catalog-item-copy{min-width:0}
     #pta-class-home .pta-catalog-time-ring{position:relative;width:64px;height:64px;color:var(--pta-text)}
+    #pta-class-home .pta-catalog-time-ring.urgent .pta-catalog-ring-center strong,#pta-class-home .pta-catalog-time-ring.urgent .pta-catalog-ring-center small{color:#dc2626}
+    #pta-root[data-theme=dark] #pta-class-home .pta-catalog-time-ring.urgent .pta-catalog-ring-center strong,#pta-root[data-theme=dark] #pta-class-home .pta-catalog-time-ring.urgent .pta-catalog-ring-center small{color:#f87171}
     #pta-class-home .pta-catalog-time-ring svg{display:block;width:100%;height:100%}
     #pta-class-home .pta-catalog-ring-track{stroke:var(--pta-line)}
     #pta-class-home .pta-catalog-ring-arc{stroke:var(--pta-text);stroke-linecap:round}
@@ -2718,6 +2721,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     function setHomePull(open){
         if(!homePullRoute()||!homePull.host)return;
         homePull.open=!!open;homePull.path=location.pathname;
+        if(typeof rememberPanelPage==='function')rememberPanelPage(homePull.open?'catalogue':'answer');
         homePull.host.classList.toggle('open',homePull.open);
         homePull.button.setAttribute('aria-expanded',String(homePull.open));homePull.button.setAttribute('aria-label',homePull.open?'收起班级题集':'展开班级题集');
         homePull.button.querySelector('span').textContent=homePull.open?'▴':'▾';
@@ -2761,8 +2765,9 @@ return module.exports; } catch (unavailable) { return null; } })();
         var m = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/);
         if (!m) return Infinity;
         var y=+m[1], mo=+m[2], d=+m[3], h=+m[4], mi=+m[5], sec=+(m[6] || 0);
-        var stamp=Date.UTC(y,mo-1,d,h,mi,sec), check=new Date(stamp);
-        return mo >= 1 && mo <= 12 && check.getUTCFullYear() === y && check.getUTCMonth() === mo-1 && check.getUTCDate() === d && h < 24 && mi < 60 && sec < 60 ? stamp : Infinity;
+        var check=new Date(y,mo-1,d,h,mi,sec),stamp=check.getTime();
+        // Unzoned text shown by this browser is local wall time, not UTC.
+        return mo >= 1 && mo <= 12 && check.getFullYear() === y && check.getMonth() === mo-1 && check.getDate() === d && check.getHours()===h && check.getMinutes()===mi && h < 24 && mi < 60 && sec < 60 ? stamp : Infinity;
     }
     function catalogueCard(card) {
         var url;
@@ -3765,21 +3770,35 @@ return module.exports; } catch (unavailable) { return null; } })();
         job.deadline=Infinity;return {results:results,stopped:null,omitted:Math.max(0,unique.size-attempted)};
     }
 
+    function refreshCatalogueClock(rows,now) {
+        rows.forEach(function(item){
+            var end=item.endTime,start=item.startTime;
+            if(!Number.isFinite(end))return;
+            if(end<=now){
+                if(item.lifecycle!=='ended')item.clockEnded=true;
+                item.lifecycle='ended';item.status='已关闭';
+            }else if(item.lifecycle==='upcoming'||item.clockEnded){
+                item.lifecycle=Number.isFinite(start)&&start>now?'upcoming':'active';
+                item.status=item.lifecycle==='upcoming'?'未开放':'已开放';delete item.clockEnded;
+            }
+        });
+    }
+    function catalogueClockSignature(rows,now){return rows.map(function(item){var ring=catalogueTimeRing(item,now);return ring.days+':'+ring.caption;}).join('|');}
     function catalogueTimeRing(item, now) {
         var end=item.endTime,start=item.startTime,m=item.metrics;
         var valid=m && Number.isInteger(m.answered) && Number.isInteger(m.total) && m.total>0 && m.answered>=0 && m.answered<=m.total;
-        var ratio=valid?m.answered/m.total:null,days='—',caption='截止未知',timeLabel='截止时间未知';
+        var ratio=valid?m.answered/m.total:null,days='—',caption='截止未知',timeLabel='截止时间未知',urgent=false;
         if(Number.isFinite(end)){
-            if(end<=now){days='0天';caption='已截止';timeLabel='已截止，剩余0天';}
-            else{days=Math.ceil((end-now)/86400000)+'天';caption=Number.isFinite(start)&&start<end&&now<start?'未开始':'剩余';timeLabel='距截止剩余'+days+'（不足一天按一天计）';}
+            if(end<=now){days='已截止';caption='';timeLabel='已截止';}
+            else{var remaining=end-now;urgent=remaining<86400000;days=remaining>=86400000?Math.floor(remaining/86400000)+'天':remaining>=3600000?Math.floor(remaining/3600000)+'小时':Math.max(1,Math.ceil(remaining/60000))+'分钟';caption=Number.isFinite(start)&&start<end&&now<start?'未开始':'剩余';timeLabel='距截止剩余'+days+(remaining>=86400000?'（整天向下取整）':remaining>=3600000?'（整小时向下取整）':'（分钟向上取整）');}
         }
         var progressLabel=valid?'已保存作答 '+m.answered+'/'+m.total+'，完成度 '+Math.round(ratio*1000)/10+'%':'已保存完成度未知';
         if(item.metricsCached)progressLabel+='（缓存）';
-        return {days:days,caption:caption,ratio:ratio,label:timeLabel+'；环形表示'+progressLabel};
+        return {days:days,caption:caption,ratio:ratio,urgent:urgent,label:timeLabel+'；环形表示'+progressLabel};
     }
     function renderCatalogueTimeRing(item) {
         var value=catalogueTimeRing(item,Date.now()),ring=document.createElement('div');
-        ring.className='pta-catalog-time-ring';ring.setAttribute('role','img');ring.setAttribute('aria-label',value.label);ring.title=value.label;
+        ring.className='pta-catalog-time-ring';if(value.urgent)ring.classList.add('urgent');ring.setAttribute('role','img');ring.setAttribute('aria-label',value.label);ring.title=value.label;
         var ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 56 56');svg.setAttribute('aria-hidden','true');
         function circle(cls){var el=document.createElementNS(ns,'circle');el.setAttribute('cx','28');el.setAttribute('cy','28');el.setAttribute('r','24');el.setAttribute('class',cls);el.setAttribute('fill','none');el.setAttribute('stroke-width','3');svg.appendChild(el);return el;}
         circle('pta-catalog-ring-track');var arc=circle('pta-catalog-ring-arc'),length=2*Math.PI*24;
@@ -3839,7 +3858,8 @@ return module.exports; } catch (unavailable) { return null; } })();
         var answer=syncHomePull(view,expanded),active=cataloguePanelActive();
         expanded.classList.toggle('pta-catalog-mode',catalogueRoute(location.pathname));if(!answer)view.hidden=!active;
         if (!active) { if(answer)return;if(catalogueSignature)view.replaceChildren();catalogueSignature='';if(catalogueState.status!=='idle')stopClassCatalogue();return; }
-        var data=groupCatalogueRows(catalogueState.rows), partition=catalogueArchiveGroups(data), signature=location.href+'|'+catalogueState.status+'|'+catalogueState.message+'|'+JSON.stringify(data)+'|'+JSON.stringify(partition)+'|'+Math.floor(Date.now()/60000)+'|'+(typeof reviewHub!=='undefined'?reviewHub.revision:0);
+        refreshCatalogueClock(catalogueState.rows,Date.now());
+        var data=groupCatalogueRows(catalogueState.rows), partition=catalogueArchiveGroups(data), signature=location.href+'|'+catalogueState.status+'|'+catalogueState.message+'|'+JSON.stringify(data)+'|'+JSON.stringify(partition)+'|'+catalogueClockSignature(catalogueState.rows,Date.now())+'|'+(typeof reviewHub!=='undefined'?reviewHub.revision:0);
         if (signature===catalogueSignature) return;
         catalogueSignature=signature;
         var memory=view._ptaCatalogueMemory||(view._ptaCatalogueMemory={opened:new Set(),scrolls:new Map(),outer:0});
@@ -3909,6 +3929,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         window.addEventListener('pageshow',function(){catalogueState.suspended=false;refreshClassHome();});
         // Works with React updates, history navigation and reused DOM without touching PTA's cards.
         classHomeTimer=setInterval(function () {
+            refreshCatalogueClock(catalogueState.rows,Date.now());
             trackCatalogueVisit();
             if(!cataloguePanelActive()){if((!homePullRoute()||homePull.path!==location.pathname)&&catalogueState.status!=='idle')stopClassCatalogue();if(!/^\/problem-sets(?:\/|$)/.test(location.pathname))clearCatalogueCache();}
             else if(!catalogueState.suspended && catalogueState.status==='idle')loadClassCatalogue();
@@ -3916,6 +3937,59 @@ return module.exports; } catch (unavailable) { return null; } })();
             refreshClassHome();
         }, 500);
         if(catalogueRoute(location.pathname)) loadClassCatalogue();
+    }
+
+    // Panel UI state only. Never persist a PTA URL, answer, editor buffer or credential here.
+    var PANEL_PAGE_KEY='pta-panel-page-v1';
+    var panelBehavior={bound:false,reason:null,timer:null,epoch:0,alive:true};
+    function rememberPanelPage(page){
+        if(['answer','settings','catalogue'].indexOf(page)<0)return;
+        try{localStorage.setItem(PANEL_PAGE_KEY,JSON.stringify({version:1,page:page}));}catch(_){}
+    }
+    function panelOwnedTarget(target){
+        var node=target&&target.nodeType===1?target:target&&target.parentElement;
+        return !!(node&&typeof node.closest==='function'&&node.closest('#pta-root,.pta-assist-popover,#pta-api-diagnostic-preview,.pta-toast,.pta-local-review,.pta-local-review-status'));
+    }
+    function cancelPanelReopen(){clearTimeout(panelBehavior.timer);panelBehavior.timer=null;panelBehavior.epoch++;}
+    function setPanelCollapsed(collapsed,reason){
+        var shell=document.getElementById('pta-shell');if(!shell)return;
+        cancelPanelReopen();panelBehavior.reason=collapsed?(reason||'manual'):null;
+        shell.classList.toggle('collapsed',!!collapsed);shell.setAttribute('aria-expanded',String(!collapsed));
+        var drawer=document.getElementById('pta-drawer'),expanded=shell.querySelector('.pta-expanded');
+        if(drawer)drawer.inert=!!collapsed||!drawer.classList.contains('open');
+        if(expanded)expanded.inert=!!collapsed;
+        if(typeof homePull!=='undefined'&&homePull.host)homePull.host.inert=!!collapsed;
+    }
+    function panelScroll(event){
+        if(!panelBehavior.alive||document.visibilityState==='hidden'||panelOwnedTarget(event.target))return;
+        var shell=document.getElementById('pta-shell');if(!shell)return;
+        // A manual/outside collapse is sticky until the user clicks the capsule.
+        if(shell.classList.contains('collapsed')&&panelBehavior.reason!=='scroll')return;
+        setPanelCollapsed(true,'scroll');var epoch=panelBehavior.epoch,url=location.href;
+        panelBehavior.timer=setTimeout(function(){
+            panelBehavior.timer=null;
+            if(epoch!==panelBehavior.epoch||!panelBehavior.alive||document.visibilityState==='hidden'||location.href!==url||panelBehavior.reason!=='scroll')return;
+            setPanelCollapsed(false);
+        },500);
+    }
+    function panelOutsideClick(event){if(!panelOwnedTarget(event.target))setPanelCollapsed(true,'outside');}
+    function panelRouteChanged(){cancelPanelReopen();if(panelBehavior.reason==='scroll')panelBehavior.reason='navigation';}
+    function restorePanelPage(){
+        var saved=null;try{var raw=localStorage.getItem(PANEL_PAGE_KEY);if(raw&&raw.length<100)saved=JSON.parse(raw);}catch(_){}
+        if(!saved||saved.version!==1||['answer','settings','catalogue'].indexOf(saved.page)<0)return;
+        var drawer=document.getElementById('pta-drawer');
+        if(drawer)drawer.classList.toggle('open',saved.page==='settings');
+        if(saved.page==='catalogue'&&typeof homePullRoute==='function'&&homePullRoute())setHomePull(true);
+    }
+    function initPanelBehavior(){
+        if(panelBehavior.bound)return;panelBehavior.bound=true;
+        restorePanelPage();setPanelCollapsed(false);
+        document.addEventListener('click',panelOutsideClick,true);
+        document.addEventListener('scroll',panelScroll,{capture:true,passive:true});
+        window.addEventListener('scroll',panelScroll,{passive:true});
+        document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')panelRouteChanged();});
+        window.addEventListener('pagehide',function(){panelBehavior.alive=false;panelRouteChanged();});
+        window.addEventListener('pageshow',function(){panelBehavior.alive=true;});
     }
 
     function render() {
@@ -4239,11 +4313,11 @@ return module.exports; } catch (unavailable) { return null; } })();
                 el.classList.remove('saved');
             }, 1400);
         }
-        shell.addEventListener('click', function () { if (shell.classList.contains('collapsed')) shell.classList.remove('collapsed'); });
-        document.getElementById('pta-collapse').addEventListener('click', function (e) { e.stopPropagation(); shell.classList.add('collapsed'); drawer.classList.remove('open'); });
+        shell.addEventListener('click', function () { if (shell.classList.contains('collapsed')) setPanelCollapsed(false); });
+        document.getElementById('pta-collapse').addEventListener('click', function (e) { e.stopPropagation(); setPanelCollapsed(true,'manual'); });
         document.getElementById('pta-theme-toggle').addEventListener('click', function (e) { e.stopPropagation(); state.theme = state.theme === 'dark' ? 'light' : 'dark'; saveState(); applyTheme(); });
-        document.getElementById('pta-settings').addEventListener('click', function (e) { e.stopPropagation(); drawer.classList.add('open'); });
-        document.getElementById('pta-drawer-close').addEventListener('click', function () { saveSettings(false); drawer.classList.remove('open'); });
+        document.getElementById('pta-settings').addEventListener('click', function (e) { e.stopPropagation(); drawer.classList.add('open');drawer.inert=false;rememberPanelPage('settings'); });
+        document.getElementById('pta-drawer-close').addEventListener('click', function () { saveSettings(false); drawer.classList.remove('open');drawer.inert=true;rememberPanelPage(homePullRoute()&&homePull.open?'catalogue':'answer'); });
         function bindDropdownTrigger(triggerId, wrapperId) {
             document.getElementById(triggerId).addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -4819,6 +4893,7 @@ return module.exports; } catch (unavailable) { return null; } })();
     function observeSPARoute(force) {
         if (!force && location.href === spaObservedURL) return;
         spaObservedURL = location.href;
+        if(typeof panelRouteChanged==='function')panelRouteChanged();
         trackCatalogueVisit();
         if(typeof stopReviewWork==='function'){if(reviewHub.busy)reviewHub.autoKey='';stopReviewWork();}
         state.routeRevision = (state.routeRevision || 0) + 1;
@@ -4852,7 +4927,7 @@ return module.exports; } catch (unavailable) { return null; } })();
 
     function boot() {
         if(document.getElementById('pta-root')){console.warn('[PTA Neuron Copilot] 检测到已运行的旧版或另一份脚本，请仅启用一份；本副本不启动。');return;}
-        loadState(); render(); apiDiagnosticStatus(); installSPAGuards(); startClassHome(); startReviewLifecycle();
+        loadState(); render(); apiDiagnosticStatus(); installSPAGuards(); startClassHome(); initPanelBehavior(); startReviewLifecycle();
         detectOpenCode(false);
         localMonitorTimer = setInterval(function () { detectOpenCode(true); }, 15000);
         if (providerReady(state.provider) && !state.configs[state.provider].models.length) setTimeout(function () { loadModels(state.provider, true); }, 250);

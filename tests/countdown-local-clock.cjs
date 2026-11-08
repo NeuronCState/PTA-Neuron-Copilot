@@ -1,0 +1,21 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),cp=require('node:child_process');
+const src=fs.readFileSync('PTA Neuron Copilot-2.0.0.user.js','utf8');
+const helpers=src.slice(src.indexOf('    function refreshCatalogueClock('),src.indexOf('    function renderCatalogueTimeRing('));
+const deadline=src.slice(src.indexOf('    function catalogueDeadline('),src.indexOf('    function catalogueCard('));
+const row=src.slice(src.indexOf('    function catalogueAPIRow('),src.indexOf('    function catalogueAPIMetrics('));
+const ctx={Date,Map};vm.createContext(ctx);vm.runInContext(helpers+deadline+row,ctx);
+const day=86400000,now=Date.parse('2026-11-08T08:10:53+08:00');
+let item={startTime:now-day,endTime:Date.parse('2026-12-31T19:26:00+08:00'),lifecycle:'active',status:'已开放',metrics:{answered:64,total:64}};
+assert.equal(ctx.catalogueTimeRing(item,now).days,'53天','user screenshot: elapsed whole days, not ceil=54');
+for(const [remaining,label] of [[54*day,'54天'],[54*day-1,'53天'],[day+1,'1天'],[day,'1天'],[day-1,'23小时'],[3600000,'1小时'],[3600000-1,'60分钟'],[60000,'1分钟'],[60001,'2分钟'],[1,'1分钟'],[0,'已截止'],[-1,'已截止']]){const v=ctx.catalogueTimeRing({...item,endTime:now+remaining},now);assert.equal(v.days,label);assert.equal(v.ratio,1);assert.equal(v.urgent,remaining>0&&remaining<day);assert.equal(v.caption,remaining<=0?'':'剩余');}
+assert.equal(ctx.catalogueTimeRing({...item,endTime:null},now).days,'—');
+const explicitA=ctx.catalogueAPIRow({id:'1',name:'set',endAt:'2026-12-31T19:26:00+08:00'},new Map()),explicitB=ctx.catalogueAPIRow({id:'1',name:'set',endAt:'2026-12-31T11:26:00Z'},new Map());assert.equal(explicitA.endTime,explicitB.endTime);
+// Raw API offsets are authoritative; unzoned DOM text follows browser local time.
+for(const tz of ['UTC','Asia/Shanghai','America/New_York']){const code=`${deadline};const v=catalogueDeadline('2026-12-31 19:26:00');process.stdout.write(JSON.stringify([v,new Date(2026,11,31,19,26,0).getTime(),catalogueDeadline('2026-02-30 00:00:00')===Infinity]));`;const v=JSON.parse(cp.execFileSync(process.execPath,['-e',code],{env:{...process.env,TZ:tz},encoding:'utf8'}));assert.equal(v[0],v[1],tz);assert.equal(v[2],true);}
+const rows=[{...item,endTime:now+500,startTime:now-day},{...item,startTime:now+500,endTime:now+day,lifecycle:'upcoming',status:'未开放'},{endTime:null,lifecycle:'unknown'}];ctx.refreshCatalogueClock(rows,now+500);assert.equal(rows[0].lifecycle,'ended');assert.equal(rows[0].status,'已关闭');assert.equal(rows[0].metrics.answered,64);assert.equal(rows[1].lifecycle,'active');assert.equal(rows[2].lifecycle,'unknown');
+rows[0].endTime=now+2*day;ctx.refreshCatalogueClock(rows,now+500);assert.equal(rows[0].lifecycle,'active','new known deadline replaces old local expiry');
+assert.notEqual(ctx.catalogueClockSignature([{endTime:now+day}],now),ctx.catalogueClockSignature([{endTime:now+day}],now+1),'render key changes at the true display boundary, not minute bucket');
+// Actual recurring timer path: one initial load, then local clock changes only.
+let time=now,calls=0,tick,paint=[];const timerContext={...ctx,Date:class extends Date{static now(){return time}},catalogueState:{rows:[{...item,endTime:now+day}],status:'ready',source:'cache',suspended:false},location:{pathname:'/problem-sets/dashboard'},window:{addEventListener(){}},trackCatalogueVisit(){},cataloguePanelActive:()=>true,catalogueRoute:()=>true,loadClassCatalogue(){calls++},refreshClassHome(){paint.push(ctx.catalogueTimeRing(timerContext.catalogueState.rows[0],time).days)},setInterval(fn,ms){assert.equal(ms,500);tick=fn;return 1}};
+vm.createContext(timerContext);vm.runInContext(helpers+src.slice(src.indexOf('    var classHomeTimer='),src.indexOf('    function render()')),timerContext);timerContext.startClassHome();assert.equal(calls,1);time++;tick();assert.equal(paint.at(-1),'23小时');time+=day;tick();assert.equal(paint.at(-1),'已截止');assert.equal(timerContext.catalogueState.rows[0].lifecycle,'ended');assert.equal(calls,1,'no timer-driven requests');
+console.log('PASS: screenshot 53/54 rounding, exact-day/subday/expiry boundaries, API offset equivalence, DOM local time in 3 zones, changed deadlines and timer-only expiry with no additional network');

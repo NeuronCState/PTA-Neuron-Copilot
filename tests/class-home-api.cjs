@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const src=fs.readFileSync('PTA Auto Solver Pro-1.8.1-beta.1.user.js','utf8');
-const code=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    function render()'));
+const code=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    // Panel UI state only.'));
 function harness({total=72,mode='',delay=0,dom=[],storage=null,session=null}={}){
  const baseline=Date.UTC(2026,10,7);let now=baseline,seq=0,active=0,max=0;const timers=new Map(),calls=[],events={},intervals=[];
  const setTimer=(fn,ms)=>{timers.set(++seq,{fn,at:now+ms});return seq;};

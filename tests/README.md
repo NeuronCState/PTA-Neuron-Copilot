@@ -51,3 +51,5 @@ Sample DOM regression: install `linkedom` in a separate test environment, then r
 `class-home-order.cjs` additionally checks future deadlines ascending, expired items last, unknown dates not reclassified, and the active query queue matching visible order. `review-full-diagnostics.cjs` requires linkedom (`NODE_PATH`), exercises live form/code values, credential exclusion and size bounds; it is not live PTA API verification.
 
 Review integration tests additionally use `PTA_REVIEW_DIAGNOSTIC_DIR=../pta-review-inspect` and `NODE_PATH=/tmp/pta-dom-test/node_modules` for the private 34-question real DOM fixture. This exercises answer provenance and original-page local controls, not authenticated live API/AI or browser layout. `review-hub.cjs` verifies global batch entry, unknown/provider failures, AI label-to-index mapping, cancellation and failure retry suppression.
+
+`panel-behavior.cjs`：面板默认展开、外部点击/手动收起优先级、外部滚动 500ms 防抖、内部滚动与脚本弹层排除、SPA/pagehide 迟到展开拦截，以及设置/目录页面跨刷新枚举恢复；确认不保存 URL/答案/编辑器草稿。离线 DOM 与虚拟时钟验证，不代表真实 PTA 浏览器验收。
