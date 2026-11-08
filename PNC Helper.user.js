@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PNC Helper
 // @namespace    https://pintia.cn/pnc-reminders/
-// @version      1.0.0-beta.3
+// @version      1.0.0-beta.4
 // @description  通用倒计时提醒；需手动公钥配对并在扩展菜单授权
 // @match        http://*/*
 // @match        https://*/*
@@ -177,29 +177,52 @@ async function parsePair(text){
 async function pairing(){var p=await get('pairing',null);return p&&typeof p.revision==='string'&&p.key?p:null;}
 function requestSync(){if(isPTA&&typeof window.postMessage==='function')window.postMessage({channel:'pnc-helper-request-sync-v1'},'https://pintia.cn');}
 async function status(message){await set('status',{at:Date.now(),message:message});}
+function samePair(a,b){return !!a&&a.key.x===b.x&&a.key.y===b.y&&a.key.crv===b.crv;}
+function revision(p){return p?p.revision:null;}
 if(typeof GM_registerMenuCommand==='function'){
- GM_registerMenuCommand('PNC Helper：粘贴配对公钥 / 更换配对',async function(){
+ GM_registerMenuCommand('配对',async function(){
   try{
-   if(!inputDialog||!confirmDialog)throw Error('当前环境不支持安全输入框，请在普通网页的管理器菜单操作');
-   var text=inputDialog('PNC Helper 配对：粘贴从 PNC 扩展菜单复制的公钥 JSON。不要粘贴私钥、Cookie、Token 或 API Key。','');
+   if(!inputDialog||!confirmDialog)throw Error('请在普通网页的管理器菜单操作');
+   var text=inputDialog('粘贴 PNC 设置 → 倒计时提醒下方复制的配对码。','');
    if(text===null)return;
-   var key=await parsePair(text);
-   if(!confirmDialog('保存此公钥并替换现有配对？原提醒缓存将清空并暂停通知。请确认公钥来自你自己的 PNC。'))return;
-   await lock.run(async function(){await set('paused',true);await set('accepted',null);await set('sent',{});await set('pairing',{key:key,revision:id+':'+Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-')});await status('配对已保存；请从扩展菜单授权运行，再打开 PTA 同步');});
-   requestSync();
-   notifyDialog('配对已保存并已更新运行状态，无需刷新页面。请点击“授权当前配对并运行”，再打开 PTA 同步。');
-  }catch(e){notifyDialog('配对未保存：'+e.message);}
+   var key=await parsePair(text),before=await pairing(),same=samePair(before,key);
+   if(!confirmDialog((before&&!same?'更换配对会清空原提醒缓存。\n':'')+'确认配对码来自你自己的 PNC，并启用系统提醒？'))return;
+   await lock.run(async function(){
+    if(revision(await pairing())!==revision(before))throw Error('其他标签已更改配对，请重试');
+    await set('paused',true);
+    if(!same){await set('accepted',null);await set('sent',{});}
+    await set('pairing',{key:key,revision:id+':'+Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-')});
+    await set('paused',false);await status('已配对并启用提醒');
+   });
+   requestSync();tick();
+   notifyDialog(isPTA?'已配对，正在同步。':'已配对，请打开 PTA 同步题集。');
+  }catch(e){notifyDialog('配对未完成：'+e.message);}
  });
- GM_registerMenuCommand('PNC Helper：授权当前配对并运行',async function(){
-  try{await lock.run(async function(){if(!await pairing())throw Error('请先粘贴并保存配对公钥');await set('paused',false);await status('已授权配对；需在PTA同步已签名配置');});requestSync();tick();}catch(e){notifyDialog('Helper启动失败：'+e.message);}
+ GM_registerMenuCommand('提醒状态',async function(){
+  try{
+   var before=await pairing();
+   if(!before){notifyDialog('未配对。请先选择“配对”。');return;}
+   var paused=await get('paused',true),accepted=await get('accepted',null);
+   var summary=(paused?'提醒已暂停':'提醒已启用')+' · '+(accepted?'已同步':'等待 PTA 同步');
+   if(!confirmDialog||!confirmDialog(summary+'\n\n'+(paused?'恢复所有标签的提醒？':'暂停所有标签的提醒？')))return;
+   await lock.run(async function(){
+    if(revision(await pairing())!==revision(before)||(await get('paused',true))!==paused)throw Error('其他标签已更改状态，请重试');
+    await set('paused',!paused);await status(paused?'提醒已恢复':'提醒已暂停');
+   });
+   if(paused){requestSync();tick();}
+  }catch(e){notifyDialog('状态未更改：'+e.message);}
  });
- GM_registerMenuCommand('PNC Helper：撤销配对并清空提醒缓存',async function(){
-  try{if(!confirmDialog||!confirmDialog('撤销 Helper 配对、暂停通知并清空本地提醒缓存？已发出的通知无法撤回。'))return;
-   await lock.run(async function(){await set('paused',true);await set('pairing',null);await set('accepted',null);await set('sent',{});await status('配对已撤销，通知已暂停');});notifyDialog('配对已撤销。');
-  }catch(e){notifyDialog('撤销失败，请在管理器禁用 Helper：'+e.message);}
+ GM_registerMenuCommand('取消配对',async function(){
+  try{
+   var before=await pairing();if(!before){notifyDialog('尚未配对。');return;}
+   if(!confirmDialog||!confirmDialog('取消配对并暂停所有标签的提醒？本地提醒缓存将清空，不影响 PNC 答题缓存。'))return;
+   await lock.run(async function(){
+    if(revision(await pairing())!==revision(before))throw Error('其他标签已更改配对，请重试');
+    await set('paused',true);await set('pairing',null);await set('accepted',null);await set('sent',{});await status('配对已取消');
+   });
+   notifyDialog('已取消配对。');
+  }catch(e){notifyDialog('取消配对失败：'+e.message);}
  });
- GM_registerMenuCommand('PNC Helper：立即暂停所有标签通知',async function(){try{await set('paused',true);await status('已在扩展菜单暂停');}catch(e){notifyDialog('暂停写入失败，请在管理器禁用Helper');}});
- GM_registerMenuCommand('PNC Helper：查看状态',async function(){var s=await get('status',null);notifyDialog(s?s.message+'\n'+new Date(s.at).toLocaleString():'尚未配对。先粘贴公钥并授权，再打开PTA。');});
 }
 async function receive(event){
  if(disposed||!isPTA||event.source!==window||event.origin!=='https://pintia.cn')return;
