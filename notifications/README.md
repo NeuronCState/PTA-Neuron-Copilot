@@ -1,17 +1,16 @@
 # 通用 PNC Helper 测试版
 
-测试版本：PNC `2.1.0-beta.3`，PNC Helper `1.0.0-beta.3`。独立测试分支 `beta/pnc-2.1.0-beta.3`，不修改稳定版、beta.1 或 beta.2 分支。文件仍为 `PNC.user.js`、`PNC Helper.user.js`。
+测试版本：PNC `2.1.0-beta.4`，PNC Helper `1.0.0-beta.4`。独立测试分支 `beta/pnc-2.1.0-beta.4`，不修改稳定版或既有测试分支。文件仍为 `PNC.user.js`、`PNC Helper.user.js`。
 
 ## 普通网页模式：篡改猴与脚本猫
 
 Helper 在普通 HTTP/HTTPS 顶层网页运行；任何其他网页仍在运行时，可依据 Helper 自己的缓存检查截止时间，不要求 PTA 标签一直打开。**不是“永远运行”**：所有普通标签关闭、浏览器退出、页面冻结/丢弃、系统休眠会停止或延迟；恢复后仅提醒还未截止的题集。浏览器内部页和不允许注入的站点不覆盖。
 
 1. 只保留一份 PNC 和一份 Helper，不要同时启用旧后台 Helper 副本。
-2. 在 PNC 设置页“倒计时提醒”下面点击“复制 Helper 配对码”（扩展菜单也保留公钥复制入口）。浏览器需支持 Web Crypto 和 Web Locks。没有安全写锁则同步失败，不降级为不安全计数器。
-3. 点击管理器中 Helper 的“粘贴配对公钥 / 更换配对”，在弹出的输入框粘贴公钥 JSON，确认保存。公钥保存在 Helper 自己的 GM 存储，刷新后保留，不用编辑脚本。**不要填私钥 `d`、Token、Cookie、API Key 或主脚本 UUID。** 仅通过扩展菜单手动配对，不从网页消息自动信任公钥。取消或无效内容不会修改已有配对。替换配对会清除旧提醒缓存并暂停，需再次授权；“撤销配对并清空提醒缓存”可取消信任。
-4. 在扩展菜单选择“PNC Helper：授权当前配对并运行”。这是独立授权；默认不运行。管理器/系统通知权限按用户提示允许。
-5. 打开 PTA 读取并验证当前账号目录，在 PNC 设置底部启用提醒并选择提前天数；配对保存和授权运行时自动请求立即同步并更新 Helper 状态，不刷新网页，不影响未保存答案；主脚本旧版本不响应请求时等下一次约 30 秒同步。非 PTA 页保存后需打开 PTA 同步。Helper 菜单“查看状态”可查看同步结果。主面板显示“已发送”不等于 Helper 已收到，更不等于系统已显示通知。
-6. 关闭全部 PTA 标签后，可由其他正在运行的普通网页中的 Helper 继续检查。Helper 除在 `https://pintia.cn` 接收签名提醒数据外，不读取其他网页 DOM、不监听其他站点页面消息、不向其他站点发消息、不联网、不读取凭据。题名仍可能出现在系统通知和锁屏上。
+2. 在 PNC 设置页“倒计时提醒”下面点击“复制 Helper 配对码”。浏览器需支持 Web Crypto 和 Web Locks。没有安全写锁则同步失败，不降级为不安全计数器。
+3. 在 Helper 扩展菜单选择“配对”，粘贴配对码，确认来源并启用提醒。无需再单独授权。取消或无效内容不修改配对；同一公钥重新配对保留提醒缓存，更换公钥会在明确确认后清空旧提醒缓存。只接受公钥，不要填私钥、Token、Cookie 或 API Key。
+4. 打开 PTA，在 PNC 设置底部启用倒计时提醒并选择提前天数。配对会立即请求同步，不刷新网页；其他站点配对后需打开 PTA 同步。
+5. 菜单仅保留“配对”“提醒状态”“取消配对”。“提醒状态”显示同步及启停状态，确认后切换所有标签的暂停/恢复；取消弹窗则不更改。“取消配对”需确认，清除 Helper 提醒缓存，不影响 PNC 答题缓存。系统是否显示通知仍取决于通知权限和系统设置。
 
 主脚本私钥只在主脚本 GM 存储，Helper 仅持公钥和自己的提醒缓存。主签名序号用 PTA 同源 Web Locks 串行生成，Helper验证签名、时效与单调序号；页面不能伪造新配置，但恶意宿主仍能阻断同步。停止通知可直接在**Helper 扩展菜单暂停**，不要依赖可能未送达的网页关闭消息。仅关闭页面不会撤销最后确认账号；离线期间无法知道服务器注销、延期等变化。
 
@@ -43,8 +42,8 @@ Helper 在普通 HTTP/HTTPS 顶层网页运行；任何其他网页仍在运行�
 
 ## 测试安装入口
 
-- [PNC 2.1.0-beta.3](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.3/PNC.user.js)
-- [PNC Helper 1.0.0-beta.3](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.3/PNC%20Helper.user.js)
+- [PNC 2.1.0-beta.4](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC.user.js)
+- [PNC Helper 1.0.0-beta.4](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC%20Helper.user.js)
 
 Helper 暂不配置自动更新地址，避免覆盖可选后台模式的手动元数据；普通模式公钥独立存储，更新代码不会覆盖。手动升级后请核对配对。
 
