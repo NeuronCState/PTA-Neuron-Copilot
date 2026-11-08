@@ -1,11 +1,13 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const main=fs.readFileSync('PNC.user.js','utf8'),helper=fs.readFileSync('PNC Helper.user.js','utf8'),guide=fs.readFileSync('notifications/README.md','utf8');
-const base='https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.1/';
-assert.match(main,/@name\s+PTA-Neuron-Copilot\n/);assert.match(main,/@namespace\s+https:\/\/pintia.cn\//);assert.match(main,/@version\s+2\.1\.0-beta\.1\n/);assert.doesNotMatch(main,/^\/\/ @storageName/m);
-for(const tag of ['updateURL','downloadURL'])assert.equal(main.match(new RegExp('@'+tag+'\\s+(\\S+)'))[1],base+'PNC.user.js');
-assert.match(helper,/@name\s+PNC Helper\n/);assert.match(helper,/@version\s+1\.0\.0-beta\.1\n/);assert.match(helper,/@storageName\s+REPLACE_WITH_MAIN_SCRIPT_UUID\n/);assert.match(helper,/@background/);
-assert.ok(main.includes(base+'PNC%20Helper.user.js'));assert.ok(helper.includes(base+'PNC.user.js'));assert.ok(guide.includes(base+'PNC.user.js'));assert.ok(guide.includes(base+'PNC%20Helper.user.js'));
-assert.ok(helper.includes(fs.readFileSync('notifications/background-runtime.js','utf8')));assert.ok(helper.includes(fs.readFileSync('notifications/core.js','utf8')));
-assert.match(guide,/整个主脚本 GM 存储/);assert.match(guide,/未经真实/);assert.match(guide,/手动/);
-assert.ok(!fs.existsSync('PTA Neuron Copilot-2.1.0-beta.1.user.js'));assert.ok(!fs.existsSync('notifications/PNC Deadline Background-2.1.0-beta.1.user.js'));
-console.log('PASS PNC/PNC Helper names, independent versions, beta-only links, unchanged main identity, explicit manual whole-GM binding and generated source');
+assert.match(main,/@name\s+PTA-Neuron-Copilot\n/);assert.match(main,/@namespace\s+https:\/\/pintia.cn\//);assert.match(main,/@version\s+2\.1\.0-beta\.2\n/);assert.doesNotMatch(main,/^\/\/ @storageName/m);
+assert.match(helper,/@name\s+PNC Helper\n/);assert.match(helper,/@version\s+1\.0\.0-beta\.2\n/);
+assert.doesNotMatch(helper,/^\/\/ @(storageName|background|connect|grant\s+unsafeWindow)/m);
+assert.match(helper,/@match\s+https:\/\/\*\/\*/);assert.match(helper,/@noframes/);assert.match(helper,/PNC_HELPER_PUBLIC_KEY = null/);
+for(const f of ['background-runtime.js','core.js','secure-protocol.js','tab-lock.js','universal-runtime.js'])assert.ok(helper.includes(fs.readFileSync('notifications/'+f,'utf8')),f);
+assert.ok(main.includes(fs.readFileSync('notifications/secure-main.js','utf8')));
+assert.match(guide,/GM/);assert.match(guide,/手动/);
+console.log('PASS universal beta.2 release metadata, preserved main identity, no default shared storage, generated source');
+
+assert.equal((main.match(/beta\/pnc-2\.1\.0-beta\.2/g)||[]).length,4);
+assert.doesNotMatch(main,/beta\/pnc-2\.1\.0-beta\.1/);

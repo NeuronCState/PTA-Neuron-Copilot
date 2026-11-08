@@ -30,7 +30,6 @@
     }
     function bindDeadlineReminderUI(){
         var toggle=document.getElementById('pta-deadline-reminder-toggle'),days=document.getElementById('pta-deadline-reminder-days'),status=document.getElementById('pta-deadline-reminder-status');if(!toggle||reminderV2.bound)return;reminderV2.bound=true;
-        if(typeof GM_info==='undefined'||GM_info.scriptHandler!=='ScriptCat'){toggle.disabled=true;days.disabled=true;status.textContent='独立后台提醒仅支持脚本猫，其他管理器不支持关闭PTA标签后提醒';return;}
         async function change(e){
             if(!e.isTrusted)return;
             var enabled=toggle.checked,count=Number(days.value),proof=getVerifiedCatalogueIdentity();

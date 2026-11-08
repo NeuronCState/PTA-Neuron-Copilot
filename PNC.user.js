@@ -1,19 +1,20 @@
 // ==UserScript==
 // @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
-// @version      2.1.0-beta.1
+// @version      2.1.0-beta.2
 // @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
 // @homepageURL  https://neuroncstate.github.io/PTA-Neuron-Copilot/
 // @supportURL   https://github.com/NeuronCState/PTA-Neuron-Copilot/issues
-// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.1/PNC.user.js
-// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.1/PNC.user.js
+// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.2/PNC.user.js
+// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.2/PNC.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_listValues
 // @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
 // @grant        GM_setClipboard
 // @grant        unsafeWindow
 // @connect      api.deepseek.com
@@ -26,6 +27,21 @@
 
 (function () {
     'use strict';
+var PNCReminderProtocol=(function(){var module={exports:{}};
+/* Authenticated reminders. Private keys never leave the main userscript GM store. */
+(function(root){
+'use strict';
+var CHANNEL='pnc-deadline-signed-v1',MAX=4*1024*1024;
+function encode(bytes){return btoa(String.fromCharCode.apply(null,new Uint8Array(bytes)));}
+function decode(s){if(typeof s!=='string'||s.length>256)throw Error('signature');return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});}
+function publicKey(j){if(!j||j.kty!=='EC'||j.crv!=='P-256'||typeof j.x!=='string'||typeof j.y!=='string'||j.d)throw Error('public key');return {kty:'EC',crv:'P-256',x:j.x,y:j.y,ext:true};}
+async function sign(crypto,key,payload){var raw=JSON.stringify(payload);if(raw.length>MAX)throw Error('payload too large');var k=await crypto.subtle.importKey('jwk',key,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);var sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},k,new TextEncoder().encode(raw));return {channel:CHANNEL,raw:raw,signature:encode(sig)};}
+async function verify(crypto,jwk,envelope,now){if(!envelope||envelope.channel!==CHANNEL||typeof envelope.raw!=='string'||envelope.raw.length>MAX)throw Error('envelope');var key=await crypto.subtle.importKey('jwk',publicKey(jwk),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);if(!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,decode(envelope.signature),new TextEncoder().encode(envelope.raw)))throw Error('signature');var p=JSON.parse(envelope.raw);if(!p||p.version!==1||!Number.isSafeInteger(p.sequence)||p.sequence<1||!Number.isFinite(p.at)||p.at>now+5000||now-p.at>90000)throw Error('expired/sequence');return p;}
+var api={CHANNEL:CHANNEL,publicKey:publicKey,sign:sign,verify:verify};if(typeof module==='object'&&module.exports)module.exports=api;else root.PNCReminderProtocol=api;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+return module.exports;})();
+
     if (window.top !== window.self && window.name === 'pta-catalog-reader') return;
 
     // Public 2.0.0 surface: preserve stored data, but do not activate hidden features.
@@ -3961,6 +3977,26 @@ return module.exports; } catch (unavailable) { return null; } })();
         var node=target&&target.nodeType===1?target:target&&target.parentElement;
         return !!(node&&typeof node.closest==='function'&&node.closest('#pta-root,.pta-assist-popover,#pta-api-diagnostic-preview,.pta-toast,.pta-local-review,.pta-local-review-status'));
     }
+    // Preserve the panel for same-set question-type navigation, including router scroll reset.
+    var panelTypeNavigation={target:null,timer:null};
+    function clearPanelTypeNavigation(){clearTimeout(panelTypeNavigation.timer);panelTypeNavigation.timer=null;panelTypeNavigation.target=null;}
+    function panelTypeLink(event){
+        if(event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return null;
+        var node=event.target&&event.target.nodeType===1?event.target:event.target&&event.target.parentElement;
+        var link=node&&node.closest&&node.closest('a[href]');if(!link||link.hasAttribute('download')||link.getAttribute('target')==='_blank')return null;
+        try{
+            var from=new URL(location.href),to=new URL(link.getAttribute('href'),from.href);
+            var current=from.pathname.match(/^\/problem-sets\/([^/]+)\/exam\/problems\/type\/[1-7](?:\/|$)/);
+            var next=to.pathname.match(/^\/problem-sets\/([^/]+)\/exam\/problems\/type\/[1-7]\/?$/);
+            return current&&next&&current[1]===next[1]&&from.origin===to.origin?to.href:null;
+        }catch(_){return null;}
+    }
+    function protectPanelTypeNavigation(url){
+        clearPanelTypeNavigation();panelTypeNavigation.target=url;
+        panelTypeNavigation.timer=setTimeout(clearPanelTypeNavigation,800);
+        cancelPanelReopen();
+        if(panelBehavior.reason==='scroll')setPanelCollapsed(false);
+    }
     function cancelPanelReopen(){clearTimeout(panelBehavior.timer);panelBehavior.timer=null;panelBehavior.epoch++;}
     function panelCatalogueDeferred(){
         var shell=document.getElementById('pta-shell');
@@ -3989,7 +4025,7 @@ return module.exports; } catch (unavailable) { return null; } })();
         if(typeof homePull!=='undefined'&&homePull.host)homePull.host.inert=!!collapsed;
     }
     function panelScroll(event){
-        if(!panelBehavior.alive||document.visibilityState==='hidden'||panelOwnedTarget(event.target))return;
+        if(!panelBehavior.alive||document.visibilityState==='hidden'||panelOwnedTarget(event.target)||panelTypeNavigation.target)return;
         var shell=document.getElementById('pta-shell');if(!shell)return;
         // A manual/outside collapse is sticky until the user clicks the capsule.
         if(shell.classList.contains('collapsed')&&panelBehavior.reason!=='scroll')return;
@@ -4000,8 +4036,8 @@ return module.exports; } catch (unavailable) { return null; } })();
             setPanelCollapsed(false);
         },500);
     }
-    function panelOutsideClick(event){if(!panelOwnedTarget(event.target))setPanelCollapsed(true,'outside');}
-    function panelRouteChanged(){cancelPanelReopen();if(panelBehavior.reason==='scroll')panelBehavior.reason='navigation';}
+    function panelOutsideClick(event){if(panelOwnedTarget(event.target))return;var url=panelTypeLink(event);if(url){protectPanelTypeNavigation(url);return;}clearPanelTypeNavigation();setPanelCollapsed(true,'outside');}
+    function panelRouteChanged(){if(panelTypeNavigation.target){if(location.href===panelTypeNavigation.target)protectPanelTypeNavigation(location.href);else clearPanelTypeNavigation();}cancelPanelReopen();if(panelBehavior.reason==='scroll')panelBehavior.reason='navigation';}
     function restorePanelPage(){
         var saved=null;try{var raw=localStorage.getItem(PANEL_PAGE_KEY);if(raw&&raw.length<100)saved=JSON.parse(raw);}catch(_){}
         if(!saved||saved.version!==1||['answer','settings','catalogue'].indexOf(saved.page)<0)return;
@@ -4017,10 +4053,12 @@ return module.exports; } catch (unavailable) { return null; } })();
             if(event.target===shell&&event.propertyName==='width')finishPanelMotion();
         });
         document.addEventListener('click',panelOutsideClick,true);
+        ['wheel','touchmove'].forEach(function(name){document.addEventListener(name,function(event){if(!panelOwnedTarget(event.target))clearPanelTypeNavigation();},{capture:true,passive:true});});
+        document.addEventListener('keydown',function(event){if(!panelOwnedTarget(event.target)&&['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].indexOf(event.key)>=0)clearPanelTypeNavigation();},true);
         document.addEventListener('scroll',panelScroll,{capture:true,passive:true});
         window.addEventListener('scroll',panelScroll,{passive:true});
         document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')panelRouteChanged();});
-        window.addEventListener('pagehide',function(){panelBehavior.alive=false;panelRouteChanged();clearTimeout(panelBehavior.motionTimer);panelBehavior.motionTimer=null;panelBehavior.moving=false;});
+        window.addEventListener('pagehide',function(){panelBehavior.alive=false;clearPanelTypeNavigation();panelRouteChanged();clearTimeout(panelBehavior.motionTimer);panelBehavior.motionTimer=null;panelBehavior.moving=false;});
         window.addEventListener('pageshow',function(){panelBehavior.alive=true;});
     }
 
@@ -4100,8 +4138,8 @@ return module.exports; } catch (unavailable) { return null; } })();
                             <label for="pta-deadline-reminder-days">剩余时间小于</label>
                             <select id="pta-deadline-reminder-days" aria-label="倒计时提醒提前天数"><option value="1">1 天</option><option value="2">2 天</option><option value="3">3 天</option><option value="4">4 天</option><option value="5">5 天</option><option value="6">6 天</option><option value="7">7 天</option><option value="8">8 天</option><option value="9">9 天</option><option value="10">10 天</option><option value="11">11 天</option><option value="12">12 天</option><option value="13">13 天</option><option value="14">14 天</option><option value="15">15 天</option><option value="16">16 天</option><option value="17">17 天</option><option value="18">18 天</option><option value="19">19 天</option><option value="20">20 天</option><option value="21">21 天</option><option value="22">22 天</option><option value="23">23 天</option><option value="24">24 天</option><option value="25">25 天</option><option value="26">26 天</option><option value="27">27 天</option><option value="28">28 天</option><option value="29">29 天</option><option value="30">30 天</option></select>
                             <p id="pta-deadline-reminder-status" class="pta-help" role="status"></p>
-                            <p class="pta-help">仅脚本猫：需手动把一个后台辅助脚本的 storageName 绑定到主脚本 UUID。辅助脚本将具有整个主脚本 GM 存储访问权限，代码仅使用提醒专用键。后台只按最后同步的截止时间提醒，不读取服务器最新状态。</p>
-                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.1/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.1</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.1/notifications/README.md" target="_blank" rel="noopener noreferrer">手动绑定与权限说明</a></p>
+                            <p class="pta-help">篡改猴/脚本猫通用：在扩展菜单复制 PNC 配对公钥，手动填入 Helper（不含私钥）。Helper 使用自己的存储，不再共享主脚本缓存。普通网页全部关闭或被冻结时提醒可能延迟；只按最后同步的截止时间提醒。</p>
+                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.2/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.2</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.2/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
                         </div><div class="pta-help">配置均实时自动保存到当前浏览器本地。Key 仅保存在本地设备，不经任何中转。OpenCode Free 会自动探测 127.0.0.1:8788。</div>
                     </div>
                 </div>
@@ -4363,7 +4401,6 @@ return module.exports; } catch (unavailable) { return null; } })();
     }
     function bindDeadlineReminderUI(){
         var toggle=document.getElementById('pta-deadline-reminder-toggle'),days=document.getElementById('pta-deadline-reminder-days'),status=document.getElementById('pta-deadline-reminder-status');if(!toggle||reminderV2.bound)return;reminderV2.bound=true;
-        if(typeof GM_info==='undefined'||GM_info.scriptHandler!=='ScriptCat'){toggle.disabled=true;days.disabled=true;status.textContent='独立后台提醒仅支持脚本猫，其他管理器不支持关闭PTA标签后提醒';return;}
         async function change(e){
             if(!e.isTrusted)return;
             var enabled=toggle.checked,count=Number(days.value),proof=getVerifiedCatalogueIdentity();
@@ -4373,6 +4410,51 @@ return module.exports; } catch (unavailable) { return null; } })();
         toggle.addEventListener('change',change);days.addEventListener('change',change);
         syncDeadlineReminderV2();reminderV2.timer=setInterval(syncDeadlineReminderV2,30000);
     }
+
+    // Universal Helper transport: signing only on PTA, no secret sent to a page.
+    var reminderSigningQueue=Promise.resolve(),reminderSignedKey='pnc-reminder-signing-v1';
+    async function reminderSigningState(){
+        var saved=await Promise.resolve(GM_getValue(reminderSignedKey,null));
+        if(saved){if(!saved.privateKey||!saved.publicKey||!Number.isSafeInteger(saved.sequence)||saved.sequence<0)throw Error('签名存储损坏，提醒暂停');return saved;}
+        var pair=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
+        saved={privateKey:await crypto.subtle.exportKey('jwk',pair.privateKey),publicKey:await crypto.subtle.exportKey('jwk',pair.publicKey),sequence:0};
+        await Promise.resolve(GM_setValue(reminderSignedKey,saved));
+        return saved;
+    }
+    async function withReminderSigningLock(fn){
+        if(location.origin!=='https://pintia.cn'||!crypto.subtle||!navigator.locks)throw Error('当前浏览器缺少安全签名/同源写锁，提醒同步暂停');
+        return navigator.locks.request('pnc-reminder-signing-v1',fn);
+    }
+    async function publishSignedDeadlineReminder(){
+        return withReminderSigningLock(async function(){
+            var keys=await reminderSigningState(),ctl=await reminderGet('control',null),rev=await reminderGet('revocation',''),snapshot=await reminderGet('snapshot',null);
+            if(keys.sequence>=Number.MAX_SAFE_INTEGER-1)throw Error('签名序号已耗尽');
+            keys.sequence++;
+            // Persist sequence before publishing; a crashed send cannot reuse an old sequence.
+            await Promise.resolve(GM_setValue(reminderSignedKey,keys));
+            var envelope=await PNCReminderProtocol.sign(crypto,keys.privateKey,{version:1,sequence:keys.sequence,at:Date.now(),control:ctl,revocation:rev,snapshot:snapshot});
+            window.postMessage(envelope,'https://pintia.cn');
+        });
+    }
+    function scheduleSignedDeadlineReminder(){
+        reminderSigningQueue=reminderSigningQueue.catch(function(){}).then(publishSignedDeadlineReminder).then(function(){return true;}).catch(function(){
+            var el=document.getElementById('pta-deadline-reminder-status');if(el)el.textContent='安全签名同步失败，Helper仍可能保留旧配置；请在扩展菜单暂停Helper';return false;
+        });return reminderSigningQueue;
+    }
+    var reminderOriginalSet=reminderSet;
+    reminderSet=async function(k,v){await reminderOriginalSet(k,v);await scheduleSignedDeadlineReminder();};
+    var reminderOriginalSync=syncDeadlineReminderV2;
+    syncDeadlineReminderV2=async function(){
+        await reminderOriginalSync();
+        var el=document.getElementById('pta-deadline-reminder-status');
+        var previous=el&&el.textContent,ok=await scheduleSignedDeadlineReminder();
+        if(ok&&el&&!/失败|不可用|超限|超过|账号已变化/.test(previous||''))el.textContent='签名配置已发送；需手动配对通用 Helper。是否接收请查看扩展菜单，不代表通知已送达。';
+    };
+    if(typeof GM_registerMenuCommand==='function')GM_registerMenuCommand('PNC：复制 Helper 配对公钥（不含私钥）',async function(){
+        try{var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
+            GM_setClipboard(value,'text');
+        }catch(e){alert('无法生成配对公钥：'+e.message);}
+    });
 
     function bindUI(root) {
         bindDeadlineReminderUI();
