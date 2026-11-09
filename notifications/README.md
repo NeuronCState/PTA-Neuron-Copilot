@@ -1,6 +1,6 @@
 # 通用 PNC Helper 测试版
 
-测试版本：PNC `2.1.0-beta.5`，PNC Helper `1.0.0-beta.5`。独立测试分支 `beta/pnc-helper-1.0.0-beta.5`，不修改稳定版或既有测试分支。文件仍为 `PNC.user.js`、`PNC Helper.user.js`。
+测试版本：PNC `2.1.0-beta.6`，PNC Helper `1.0.0-beta.6`。独立测试分支 `beta/pnc-2.1.0-beta.6`，不修改稳定版或既有测试分支。文件仍为 `PNC.user.js`、`PNC Helper.user.js`。
 
 ## 普通网页模式：篡改猴与脚本猫
 
@@ -42,8 +42,8 @@ Helper 在普通 HTTP/HTTPS 顶层网页运行；任何其他网页仍在运行�
 
 ## 测试安装入口
 
-- [PNC 2.1.0-beta.5](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC.user.js)
-- [PNC Helper 1.0.0-beta.5](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-helper-1.0.0-beta.5/PNC%20Helper.user.js)
+- [PNC 2.1.0-beta.6](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.6/PNC.user.js)
+- [PNC Helper 1.0.0-beta.6](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.6/PNC%20Helper.user.js)
 
 Helper 暂不配置自动更新地址，避免覆盖可选后台模式的手动元数据；普通模式公钥独立存储，更新代码不会覆盖。手动升级后请核对配对。
 
@@ -73,4 +73,10 @@ Helper 暂不配置自动更新地址，避免覆盖可选后台模式的手动�
 
 `node tests/helper-diagnostics.cjs` 覆盖上述状态、取消、明确授权后测试、结果区分和敏感字段不输出。使用模拟管理器，未替代真实浏览器/系统通知验收。
 
-本次仅升级 Helper 至 1.0.0-beta.5；PNC 维持 2.1.0-beta.5，无需重复安装。
+本次需要同时手动更新 PNC 2.1.0-beta.6 和 Helper 1.0.0-beta.6，然后刷新 PTA 页面；只保留各一份启用的脚本。已有配对公钥与主签名键保持原存储键，代码不主动重置；若管理器将其安装成新副本，请停用旧副本并重新配对。
+
+### beta.6：同步通道兼容修复
+
+PNC 和 Helper 增加 PTA 页面内的 DOM 字符串事件备用通道，和窗口消息并行发送同一个签名包。需同时升级两个脚本。窗口消息不再依赖脚本沙箱 `Window` 包装对象的相等性；信任仍来自手动配对的公钥验证，不来自页面、事件来源对象或备用事件名称。Helper 诊断增加“接收通道”。两条通道都可能被宿主阻断，签名发送不等于收到或系统通知送达。
+
+`node tests/universal-transport.cjs` 用实际主/Helper模块和独立存储验证不同 Window 包装、仅备用通道、双通道、伪造、重复、来源和长度限制。未在真实篡改猴或脚本猫中复现根因或完成验收。
