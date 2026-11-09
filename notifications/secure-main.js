@@ -41,11 +41,23 @@
     function writeHelperPairingClipboard(value){
         return new Promise(function(resolve,reject){
             var done=false,timer=setTimeout(function(){finish(Error('未收到复制确认，请重试'));},5000);
-            function finish(error){if(done)return;done=true;clearTimeout(timer);if(error)reject(error);else resolve();}
+            function finish(error,confirmed){if(done)return;done=true;clearTimeout(timer);if(error)reject(error);else resolve({confirmed:confirmed===true});}
+            function requestManagerCopy(){
+                if(done)return;
+                try{
+                    // ScriptCat invokes the callback on failure as well. Neither this
+                    // callback nor GM.setClipboard's wrapper promise proves a write.
+                    var result=GM_setClipboard(value,'text',function(){finish(null,false);});
+                    if(result&&typeof result.then==='function')result.then(function(){finish(null,false);},function(){finish(Error('剪贴板写入失败，请重试'));});
+                }catch(_){finish(Error('剪贴板写入失败，请检查脚本管理器权限'));}
+            }
             try{
-                var result=GM_setClipboard(value,'text',function(){finish();});
-                if(result&&typeof result.then==='function')result.then(function(){finish();},function(){finish(Error('剪贴板写入失败，请重试'));});
-            }catch(_){finish(Error('剪贴板写入失败，请检查脚本管理器权限'));}
+                if(typeof navigator!=='undefined'&&navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+                    var result=navigator.clipboard.writeText(value);
+                    if(result&&typeof result.then==='function'){result.then(function(){finish(null,true);},requestManagerCopy);return;}
+                }
+            }catch(_){}
+            requestManagerCopy();
         });
     }
     async function copyHelperPairingCode(){
@@ -56,7 +68,13 @@
         if(el)el.textContent='正在复制配对码…';
         try{
             var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
-            await writeHelperPairingClipboard(value);
+            var copied=await writeHelperPairingClipboard(value);
+            if(!copied.confirmed){
+                if(button)button.textContent='已请求复制';
+                if(el)el.textContent='已请求复制，请粘贴检查；脚本管理器无法确认是否成功。';
+                else alert('已请求复制，请粘贴检查；脚本管理器无法确认是否成功。');
+                return;
+            }
             if(button)button.textContent='已复制 ✓';
             if(el)el.textContent='配对码已复制，请在 Helper 菜单选择“配对”。';
             else alert('配对码已复制。');
