@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PNC Helper
 // @namespace    https://pintia.cn/pnc-reminders/
-// @version      1.0.0-beta.4
+// @version      1.0.0-beta.5
 // @description  通用倒计时提醒；需手动公钥配对并在扩展菜单授权
 // @match        http://*/*
 // @match        https://*/*
@@ -140,6 +140,7 @@ return;
 'use strict';
 var C=PNCDeadlineCore,V=PNCReminderProtocol,P='pnc-helper-universal-v1:',busy=false;
 var disposed=false,tabRegistered=false;
+var diagnostic={receivedAt:0,verifiedAt:0,issue:null},diagnosticBusy=false;
 function alive(){if(disposed)throw Error('page lifecycle ended; reload required');}
 var get=async function(k,d){alive();var v=await Promise.resolve(GM_getValue(P+k,d));alive();return v;},set=async function(k,v){alive();await Promise.resolve(GM_setValue(P+k,v));alive();};
 var hasDOM=typeof document!=='undefined',isPTA=hasDOM&&location.origin==='https://pintia.cn';
@@ -179,7 +180,51 @@ function requestSync(){if(isPTA&&typeof window.postMessage==='function')window.p
 async function status(message){await set('status',{at:Date.now(),message:message});}
 function samePair(a,b){return !!a&&a.key.x===b.x&&a.key.y===b.y&&a.key.crv===b.crv;}
 function revision(p){return p?p.revision:null;}
+function syncState(raw){
+ if(!raw)return '等待 PTA 同步';
+ if(!raw.control)return '已收签名，但缺少提醒设置';
+ if(!raw.control.enabled)return 'PNC 倒计时提醒已关闭';
+ if(raw.control.revocation!==raw.revocation)return '提醒授权已撤销或失效';
+ if(!raw.snapshot)return '已收设置，但缺少题集数据';
+ if(raw.snapshot.owner!==raw.control.owner)return '题集账号不匹配';
+ return raw.snapshot.rows.length?'题集数据可用':'已同步，题集列表为空';
+}
+function diagnosticTime(value){return Number.isFinite(value)&&value>0?new Date(value).toLocaleString():'无';}
+async function showDiagnostics(){
+ if(diagnosticBusy)return;diagnosticBusy=true;
+ try{
+  var pair=await pairing(),paused=await get('paused',true),raw=await get('accepted',null);
+  var snap=raw&&raw.snapshot,ready=raw&&raw.control&&raw.control.enabled&&raw.control.revocation===raw.revocation&&snap&&snap.owner===raw.control.owner;
+  var due=ready?C.due(snap,raw.control,{},Date.now()).length:null;
+  var lines=['PNC Helper · 测试诊断',
+   '环境：'+(typeof GM_info!=='undefined'&&GM_info.scriptHandler==='ScriptCat'?'脚本猫':typeof GM_info!=='undefined'&&GM_info.scriptHandler==='Tampermonkey'?'篡改猴':'其他管理器')+' / '+(isPTA?'PTA 页面':'其他网页'),
+   '配对：'+(pair?'已配对':'未配对')+'；Helper：'+(paused?'已暂停':'已启用'),
+   '同步：'+(pair?syncState(raw):'请先配对'),
+   '最近已验签数据：'+diagnosticTime(raw&&raw.at),
+   '题集缓存更新时间：'+diagnosticTime(snap&&snap.capturedAt),
+   '缓存题集：'+(snap?snap.rows.length:'无')+'；阈值内未截止：'+(due===null?'不可计算':due),
+   '本页最近收到同步消息：'+diagnosticTime(diagnostic.receivedAt),
+   '本页最近验签通过：'+diagnosticTime(diagnostic.verifiedAt),
+   '本页最近诊断：'+(diagnostic.issue||'未发现错误（不代表通知已送达）'),
+   '通知接口：'+(typeof GM_notification==='function'?'可调用，系统权限仍需测试':'不可用'),
+   '', '1：请求 PTA 同步；2：发送一条测试通知。取消仅关闭。',
+   '不会清除缓存或改变启停状态；不展示密钥、账号或题目内容。'];
+  var action=inputDialog?inputDialog(lines.join('\n'),''):null;
+  if(action===null||action==='')return;
+  if(action.trim()==='1'){
+   if(!pair){notifyDialog('请先配对。');return;}
+   if(!isPTA){notifyDialog('请打开 PTA，在该页面的 Helper 菜单请求同步。');return;}
+   requestSync();notifyDialog('已请求同步，请稍后重新打开测试诊断。若仍无消息，请确认当前 PTA 页面已启用 PNC；若验签失败，请重新复制配对码。请求不等于同步成功。');
+  }else if(action.trim()==='2'){
+   if(!confirmDialog||!confirmDialog('发送一条不包含题集信息的系统测试通知？不会开启已暂停的提醒或改变提醒去重记录。'))return;
+   var outcome=await notification({title:'PNC Helper · 测试通知',text:'这是手动测试通知，不是题集截止提醒。',tag:'pnc-helper-manual-test',timeout:5000});
+   notifyDialog(outcome==='failed'?'测试通知调用失败。请检查脚本管理器与浏览器的通知权限。':outcome==='created'?'管理器回报已创建通知；请自行确认系统是否实际显示。':'测试通知已请求，但管理器未确认创建。请自行确认系统是否显示，并检查通知权限和勿扰模式。');
+  }else notifyDialog('请输入 1 或 2，或取消。');
+ }catch(_){notifyDialog('诊断未完成：本地读取失败或页面已离开，请刷新后重试。');}
+ finally{diagnosticBusy=false;}
+}
 if(typeof GM_registerMenuCommand==='function'){
+ GM_registerMenuCommand('测试诊断',showDiagnostics);
  GM_registerMenuCommand('配对',async function(){
   try{
    if(!inputDialog||!confirmDialog)throw Error('请在普通网页的管理器菜单操作');
@@ -203,7 +248,7 @@ if(typeof GM_registerMenuCommand==='function'){
    var before=await pairing();
    if(!before){notifyDialog('未配对。请先选择“配对”。');return;}
    var paused=await get('paused',true),accepted=await get('accepted',null);
-   var summary=(paused?'提醒已暂停':'提醒已启用')+' · '+(accepted?'已同步':'等待 PTA 同步');
+   var summary=(paused?'提醒已暂停':'提醒已启用')+' · '+syncState(accepted);
    if(!confirmDialog||!confirmDialog(summary+'\n\n'+(paused?'恢复所有标签的提醒？':'暂停所有标签的提醒？')))return;
    await lock.run(async function(){
     if(revision(await pairing())!==revision(before)||(await get('paused',true))!==paused)throw Error('其他标签已更改状态，请重试');
@@ -226,7 +271,9 @@ if(typeof GM_registerMenuCommand==='function'){
 }
 async function receive(event){
  if(disposed||!isPTA||event.source!==window||event.origin!=='https://pintia.cn')return;
- var packet,pair;try{pair=await pairing();if(!pair)return;packet=await V.verify(crypto,pair.key,event.data,Date.now());}catch(_){return;}
+ if(!event.data||event.data.channel!==V.CHANNEL)return;
+ diagnostic.receivedAt=Date.now();
+ var packet,pair;try{pair=await pairing();if(!pair){diagnostic.issue='收到同步消息，但尚未配对';return;}packet=await V.verify(crypto,pair.key,event.data,Date.now());diagnostic.verifiedAt=Date.now();diagnostic.issue=null;}catch(_){diagnostic.issue='签名或时效校验失败；请核对配对及系统时间';return;}
  try{await lock.run(async function(){if(packet.at>Date.now()+5000||Date.now()-packet.at>90000)return;var currentPair=await pairing();if(!currentPair||currentPair.revision!==pair.revision)return;var previous=await get('accepted',null);if(previous&&packet.sequence<=previous.sequence)return;
   var ctl=packet.control,rev=packet.revocation,snap=C.snapshot(packet.snapshot,Date.now(),true);
   if(typeof rev!=='string'||rev.length>512)return;
@@ -234,7 +281,7 @@ async function receive(event){
   // Store only normalized reminder data, never arbitrary object fields from the message.
   await set('accepted',{sequence:packet.sequence,at:packet.at,control:ctl?{id:ctl.id,enabled:ctl.enabled,days:ctl.days,owner:ctl.owner,revocation:ctl.revocation}:null,revocation:rev,snapshot:snap});
   await status('已验证并同步签名配置；通知按最后同步截止时间计算');
- });tick();}catch(_){/* Busy/frozen tab: next signed heartbeat will retry. */}
+ });tick();}catch(_){diagnostic.issue='保存同步数据未完成；可能受其他标签锁或存储影响';/* Next signed heartbeat will retry. */}
 }
 if(isPTA)window.addEventListener('message',receive);
 function notification(details){
