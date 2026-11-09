@@ -20,7 +20,7 @@ export function snapDestination(tops,heights,start,end,viewport,max){
 }
 export function installSnap(){
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
- let timer=0,frame=0,releaseFrame=0,start=null,touching=false;
+ let timer=0,frame=0,releaseFrame=0,gestureReset=0,lastDirection=0,start=null,touching=false;
  const cancel=()=>{cancelAnimationFrame(frame);frame=0;document.documentElement.classList.remove('snap-animating');};
  const finish=()=>{
   timer=0;if(touching||start===null)return;
@@ -31,7 +31,12 @@ export function installSnap(){
   tops[0]=0;
   const heights=tops.map((t,i)=>(tops[i+1]??document.documentElement.scrollHeight)-t);
   const to=snapDestination(tops,heights,from,scrollY,innerHeight,document.documentElement.scrollHeight-innerHeight);
-  if(to===null||Math.abs(to-scrollY)<2)return;
+  if(to===null){
+   // A wheel gesture can contain sparse notches; retain its intent briefly, not its animation delay.
+   if(Math.abs(scrollY-from)<Math.max(120,innerHeight*.55)){start=from;clearTimeout(gestureReset);gestureReset=setTimeout(()=>{start=null;},350);}
+   return;
+  }
+  if(Math.abs(to-scrollY)<2)return;
   const y=scrollY;let began;
   document.documentElement.classList.add('snap-animating');
   const step=now=>{began??=now;const t=Math.min(1,(now-began)/SNAP_MS);window.scrollTo(0,y+(to-y)*continuationEase(t));if(t<1)frame=requestAnimationFrame(step);else cancel();};
@@ -43,11 +48,13 @@ export function installSnap(){
   if(e.target.closest('input,select,textarea,[contenteditable=true]'))return;
   // Don't hijack a locally scrollable panel.
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+2)return;}
+  clearTimeout(gestureReset);
+  if(e.type==='wheel'){const direction=Math.sign(e.deltaY);if(lastDirection&&direction!==lastDirection)start=null;lastDirection=direction;}
   cancelAnimationFrame(releaseFrame);cancel();if(start===null)start=scrollY;activity();
  };
  const touchStart=e=>{touching=true;begin(e);};
  const touchEnd=()=>{touching=false;clearTimeout(timer);cancelAnimationFrame(releaseFrame);releaseFrame=requestAnimationFrame(finish);};
- const key=()=>{clearTimeout(timer);cancelAnimationFrame(releaseFrame);start=null;cancel();};
+ const key=()=>{clearTimeout(timer);clearTimeout(gestureReset);cancelAnimationFrame(releaseFrame);start=null;cancel();};
  window.addEventListener('wheel',begin,{passive:true});window.addEventListener('touchstart',touchStart,{passive:true});window.addEventListener('touchend',touchEnd,{passive:true});window.addEventListener('touchcancel',touchEnd,{passive:true});window.addEventListener('keydown',key);window.addEventListener('resize',key);reduced.addEventListener('change',key);
  return ()=>{key();window.removeEventListener('wheel',begin);window.removeEventListener('touchstart',touchStart);window.removeEventListener('touchend',touchEnd);window.removeEventListener('touchcancel',touchEnd);window.removeEventListener('keydown',key);window.removeEventListener('resize',key);reduced.removeEventListener('change',key);};
 }
