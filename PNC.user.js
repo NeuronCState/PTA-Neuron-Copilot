@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
-// @version      2.1.0-beta.4
+// @version      2.1.0-beta.5
 // @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
 // @homepageURL  https://neuroncstate.github.io/PTA-Neuron-Copilot/
 // @supportURL   https://github.com/NeuronCState/PTA-Neuron-Copilot/issues
-// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC.user.js
-// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC.user.js
+// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC.user.js
+// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -4152,7 +4152,7 @@ return module.exports; } catch (unavailable) { return null; } })();
 
                             <p id="pta-deadline-reminder-status" class="pta-help" role="status"></p>
                             <p class="pta-help">篡改猴/脚本猫通用：点击上方复制配对码，再在 Helper 扩展菜单选择“配对”并确认（不含私钥）。Helper 使用自己的存储，不再共享主脚本缓存。普通网页全部关闭或被冻结时提醒可能延迟；只按最后同步的截止时间提醒。</p>
-                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.4</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.4/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
+                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.4</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.5/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
                         </div><div class="pta-help">配置均实时自动保存到当前浏览器本地。Key 仅保存在本地设备，不经任何中转。OpenCode Free 会自动探测 127.0.0.1:8788。</div>
                     </div>
                 </div>
@@ -4467,11 +4467,23 @@ return module.exports; } catch (unavailable) { return null; } })();
     function writeHelperPairingClipboard(value){
         return new Promise(function(resolve,reject){
             var done=false,timer=setTimeout(function(){finish(Error('未收到复制确认，请重试'));},5000);
-            function finish(error){if(done)return;done=true;clearTimeout(timer);if(error)reject(error);else resolve();}
+            function finish(error,confirmed){if(done)return;done=true;clearTimeout(timer);if(error)reject(error);else resolve({confirmed:confirmed===true});}
+            function requestManagerCopy(){
+                if(done)return;
+                try{
+                    // ScriptCat invokes the callback on failure as well. Neither this
+                    // callback nor GM.setClipboard's wrapper promise proves a write.
+                    var result=GM_setClipboard(value,'text',function(){finish(null,false);});
+                    if(result&&typeof result.then==='function')result.then(function(){finish(null,false);},function(){finish(Error('剪贴板写入失败，请重试'));});
+                }catch(_){finish(Error('剪贴板写入失败，请检查脚本管理器权限'));}
+            }
             try{
-                var result=GM_setClipboard(value,'text',function(){finish();});
-                if(result&&typeof result.then==='function')result.then(function(){finish();},function(){finish(Error('剪贴板写入失败，请重试'));});
-            }catch(_){finish(Error('剪贴板写入失败，请检查脚本管理器权限'));}
+                if(typeof navigator!=='undefined'&&navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+                    var result=navigator.clipboard.writeText(value);
+                    if(result&&typeof result.then==='function'){result.then(function(){finish(null,true);},requestManagerCopy);return;}
+                }
+            }catch(_){}
+            requestManagerCopy();
         });
     }
     async function copyHelperPairingCode(){
@@ -4482,7 +4494,13 @@ return module.exports; } catch (unavailable) { return null; } })();
         if(el)el.textContent='正在复制配对码…';
         try{
             var value=await withReminderSigningLock(async function(){var keys=await reminderSigningState();return JSON.stringify(PNCReminderProtocol.publicKey(keys.publicKey));});
-            await writeHelperPairingClipboard(value);
+            var copied=await writeHelperPairingClipboard(value);
+            if(!copied.confirmed){
+                if(button)button.textContent='已请求复制';
+                if(el)el.textContent='已请求复制，请粘贴检查；脚本管理器无法确认是否成功。';
+                else alert('已请求复制，请粘贴检查；脚本管理器无法确认是否成功。');
+                return;
+            }
             if(button)button.textContent='已复制 ✓';
             if(el)el.textContent='配对码已复制，请在 Helper 菜单选择“配对”。';
             else alert('配对码已复制。');
