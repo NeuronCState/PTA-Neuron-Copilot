@@ -52,9 +52,12 @@ export function installSnap(){
   if(e.type==='wheel'){const direction=Math.sign(e.deltaY);if(lastDirection&&direction!==lastDirection)start=null;lastDirection=direction;}
   cancelAnimationFrame(releaseFrame);cancel();if(start===null)start=scrollY;activity();
  };
+ // Native smooth-wheel movement may continue after the last wheel event.
+ // Observe progress without restarting the release timer; snap as soon as intent is clear.
+ const releaseProgress=()=>{if(start!==null&&!touching&&!timer)finish();};
  const touchStart=e=>{touching=true;begin(e);};
  const touchEnd=()=>{touching=false;clearTimeout(timer);cancelAnimationFrame(releaseFrame);releaseFrame=requestAnimationFrame(finish);};
  const key=()=>{clearTimeout(timer);clearTimeout(gestureReset);cancelAnimationFrame(releaseFrame);start=null;cancel();};
- window.addEventListener('wheel',begin,{passive:true});window.addEventListener('touchstart',touchStart,{passive:true});window.addEventListener('touchend',touchEnd,{passive:true});window.addEventListener('touchcancel',touchEnd,{passive:true});window.addEventListener('keydown',key);window.addEventListener('resize',key);reduced.addEventListener('change',key);
- return ()=>{key();window.removeEventListener('wheel',begin);window.removeEventListener('touchstart',touchStart);window.removeEventListener('touchend',touchEnd);window.removeEventListener('touchcancel',touchEnd);window.removeEventListener('keydown',key);window.removeEventListener('resize',key);reduced.removeEventListener('change',key);};
+ window.addEventListener('wheel',begin,{passive:true});window.addEventListener('touchstart',touchStart,{passive:true});window.addEventListener('touchend',touchEnd,{passive:true});window.addEventListener('touchcancel',touchEnd,{passive:true});window.addEventListener('scroll',releaseProgress,{passive:true});window.addEventListener('keydown',key);window.addEventListener('resize',key);reduced.addEventListener('change',key);
+ return ()=>{key();window.removeEventListener('wheel',begin);window.removeEventListener('touchstart',touchStart);window.removeEventListener('touchend',touchEnd);window.removeEventListener('touchcancel',touchEnd);window.removeEventListener('scroll',releaseProgress);window.removeEventListener('keydown',key);window.removeEventListener('resize',key);reduced.removeEventListener('change',key);};
 }
