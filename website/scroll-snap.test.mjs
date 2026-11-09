@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {ease,snapDestination,SNAP_MS} from './scroll-snap.mjs';
+assert.equal(SNAP_MS,700);assert(ease(.1)<.1);assert(ease(.9)>.9);assert(Math.abs(ease(.5)-.5)<.001);
+const tops=[0,800,2000,2800],heights=[800,1200,800,800];
+assert.equal(snapDestination(tops,heights,0,100,800,2800),800);
+assert.equal(snapDestination(tops,heights,800,900,800,2800),null);
+assert.equal(snapDestination(tops,heights,1100,1250,800,2800),2000);
+assert.equal(snapDestination(tops,heights,2000,1900,800,2800),800);
+assert.equal(snapDestination(tops,heights,0,20,800,2800),null);
+console.log('PASS: 700 ms symmetric easing, forward/back snap, long section traversal, small-gesture guard');
