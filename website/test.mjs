@@ -7,7 +7,7 @@ for(const k of ['window','document','HTMLElement','Element','Node','MutationObse
 Object.defineProperty(globalThis,'navigator',{value:w.navigator,configurable:true});
 w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
 globalThis.matchMedia=w.matchMedia;globalThis.requestAnimationFrame=cb=>setTimeout(cb,0);globalThis.cancelAnimationFrame=clearTimeout;
-const js=fs.readdirSync('../docs/assets-pnc').find(x=>x.startsWith('index-')&&x.endsWith('.js'));
+const js=fs.readFileSync('../docs/index.html','utf8').match(/assets-pnc\/(index-[^"]+\.js)/)[1];
 await import('../docs/assets-pnc/'+js);await new Promise(r=>setTimeout(r,150));
 assert(document.querySelector('h1').textContent.includes('少一点重复'));
 const click=async el=>{assert(el);el.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));await new Promise(r=>setTimeout(r,20));};

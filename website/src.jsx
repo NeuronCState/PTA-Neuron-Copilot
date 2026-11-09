@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Theme} from '@astryxdesign/core/theme';
 import {Button} from '@astryxdesign/core/Button';
@@ -13,11 +13,21 @@ const raw='https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/mai
 const Arrow=()=> <span aria-hidden="true">↗</span>;
 function Mark(){return <span className="mark" aria-hidden="true"><i/><i/><i/><i/></span>}
 function App(){
+ const [theme,setTheme]=useState('system');
  const [tab,setTab]=useState('catalogue'),[answer,setAnswer]=useState(false),[open,setOpen]=useState(true),[provider,setProvider]=useState('DeepSeek'),[concurrency,setConcurrency]=useState(3);
+ useEffect(()=>{
+  if(!('IntersectionObserver' in window)) return;
+  const items=[...document.querySelectorAll('.hero-grid>div,.section-intro,.workspace,.feature-line article,.helper-grid>div,.helper-caveat,.install>div')];
+  items.forEach((el,i)=>{el.classList.add('reveal-item');el.style.setProperty('--reveal-delay',`${i%3*70}ms`)});
+  document.documentElement.classList.add('reveal-ready');
+  const observer=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('is-visible',e.isIntersecting)),{threshold:.08});
+  items.forEach(el=>observer.observe(el));
+  return ()=>{observer.disconnect();document.documentElement.classList.remove('reveal-ready')};
+ },[]);
  const tabs=[['catalogue','班级题集'],['assistance','解析辅助'],['settings','模型设置']];
- return <Theme theme={neutralTheme}><div className="page">
+ return <Theme theme={neutralTheme} mode={theme}><div className="page">
  <a className="skip" href="#main">跳到正文</a>
- <header className="header wrap"><a className="brand" href="#" aria-label="PTA Neuron Copilot 首页"><Mark/><span>PNC<span className="brand-sub">PTA Neuron Copilot</span></span></a><nav aria-label="主导航"><a href="#experience">功能预览</a><a href="#helper">截止提醒</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Arrow/></a></nav><Button href="#install" label="获取脚本" variant="secondary" size="sm"/></header>
+ <header className="header wrap"><a className="brand" href="#" aria-label="PTA Neuron Copilot 首页"><Mark/><span>PNC<span className="brand-sub">PTA Neuron Copilot</span></span></a><nav aria-label="主导航"><a href="#experience">功能预览</a><a href="#helper">截止提醒</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Arrow/></a></nav><select className="theme-select" aria-label="页面配色" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select><Button href="#install" label="获取脚本" variant="secondary" size="sm"/></header>
  <main id="main"><section className="hero wrap"><div className="hero-top"><p className="eyebrow"><span className="dot"/> PNC 2.1.0 · 现已发布</p><span className="small-index">A LITTLE LESS REPETITION.</span></div><div className="hero-grid"><div><h1>少一点重复，<br/>多一点<span className="serif-word">理解。</span></h1><p className="hero-copy">题集、解析、模型和截止时间。<br/>让 PTA 练习中的琐事，留在一个轻巧的面板里。</p><div className="actions"><Button href={raw+'PNC.user.js'} label="安装 PNC 2.1.0 ↗" variant="primary" size="lg"/><a className="text-link" href="https://scriptcat.org/zh-CN/script-show-page/7287" target="_blank" rel="noreferrer">脚本猫发布页 <Arrow/></a></div><p className="fine">需要脚本猫或 Tampermonkey · 自备模型 API 配置</p></div><div className="hero-art" aria-hidden="true"><div className="orbit orbit-a"/><div className="orbit orbit-b"/><div className="orbit orbit-c"/><div className="neuron"><Mark/></div><span className="floating label-one">理解题目</span><span className="floating label-two">整理思路</span><span className="floating label-three">专注练习</span><span className="art-number">01 / STUDY COMPANION</span></div></div><div className="hero-footer"><span>为拼题 A 而做</span><span>多模型接入</span><span>本地持久缓存</span><span>可选截止提醒</span></div></section>
  <section id="experience" className="experience wrap"><div className="section-intro"><p className="eyebrow">ONE PANEL. LESS FRICTION.</p><h2>从题集到思路，<br/>不用来回切换。</h2><p>不是另一个刷题网站。PNC 就在 PTA 页面上，<br className="desktop"/>帮你整理任务，也辅助你理解答案。</p></div><div className="workspace"><div className="workspace-bar"><div className="window-dots"><i/><i/><i/></div><span>pintia.cn / PNC</span><Badge label="交互示意" variant="green"/></div><div className="workspace-body"><aside><div className="demo-brand"><Mark/>你的学习面板</div><div className="tabs" role="tablist" aria-label="功能预览">{tabs.map(([id,label])=><button key={id} role="tab" id={'tab-'+id} aria-selected={tab===id} aria-controls={'panel-'+id} onClick={()=>setTab(id)}><span>{id==='catalogue'?'▦':id==='assistance'?'✧':'☷'}</span>{label}<span className="tab-arrow">↗</span></button>)}</div><div className="aside-note"><span className="dot"/> 只演示，不读取你的 PTA 数据<br/>不请求模型，不提交答案。</div></aside><div className="preview" role="tabpanel" id={'panel-'+tab} aria-labelledby={'tab-'+tab}>
  {tab==='catalogue'&&<><div className="preview-title"><div><span className="mini-label">YOUR CLASSES</span><h3>班级题集</h3></div><span className="subtle">示例数据</span></div><button className="class-toggle" onClick={()=>setOpen(!open)} aria-expanded={open}><span><b>Java 程序设计</b><small>2 个题集</small></span><span>{open?'−':'+'}</span></button>{open&&<div className="set-list"><div className="set-row"><div><span className="tag-mini">正在进行</span><h4>字符串与常用类</h4><p>已作答 18 / 24 · 得分 72</p></div><div className="ring" style={{'--progress':'75%'}}><span>3<small>天</small></span></div></div><div className="set-row"><div><h4>异常处理</h4><p>已作答 6 / 20 · 得分 30</p></div><div className="ring" style={{'--progress':'30%'}}><span>8<small>天</small></span></div></div></div>}<div className="closed-class"><span>数据结构</span><span>▸</span></div><p className="demo-caption">按班级归类 · 截止时间排序 · 进度与分数一起看</p></>}
