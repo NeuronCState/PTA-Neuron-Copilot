@@ -1,14 +1,13 @@
 import assert from 'node:assert/strict';
-import {ease,continuationEase,snapDestination,SNAP_MS,WHEEL_RELEASE_MS} from './scroll-snap.mjs';
-assert.equal(SNAP_MS,700);assert(ease(.1)<.1);assert(ease(.9)>.9);assert(Math.abs(ease(.5)-.5)<.001);
-const tops=[0,800,2000,2800],heights=[800,1200,800,800];
-assert.equal(snapDestination(tops,heights,0,500,800,2800),800);
-assert.equal(snapDestination(tops,heights,800,900,800,2800),null);
-assert.equal(snapDestination(tops,heights,800,1300,800,2800),2000);
-assert.equal(snapDestination(tops,heights,2000,1500,800,2800),800);
-assert.equal(snapDestination(tops,heights,0,20,800,2800),null);
-console.log('PASS: 700 ms symmetric easing, forward/back snap, long section traversal, small-gesture guard');
-
-assert.equal(WHEEL_RELEASE_MS,40);assert(continuationEase(.02)>ease(.02));for(let i=1;i<=100;i++)assert(continuationEase(i/100)>=continuationEase((i-1)/100));assert(Math.abs(continuationEase(1)-1)<.001);console.log("PASS: immediate touch release, 40ms wheel release budget, monotonic velocity-continuous easing");
-
-assert.equal(snapDestination(tops,heights,0,160,800,2800),null);assert.equal(snapDestination(tops,heights,0,430,800,2800),null);
+import {ease,continuationEase,damp,routeGesture,SNAP_MS,INTENT_PX} from './scroll-snap.mjs';
+assert.equal(SNAP_MS,700);assert.equal(INTENT_PX,8);assert(ease(.1)<.1);assert(ease(.9)>.9);
+for(let i=1;i<=100;i++)assert(continuationEase(i/100)>=continuationEase((i-1)/100));
+assert(damp(20,800)>0&&damp(20,800)<20);assert(damp(10000,800)<=110);assert.equal(damp(-20,800),-damp(20,800));
+const tops=[0,800,2000,2800];
+assert.equal(routeGesture(tops,0,800,2800,1).target,800);
+assert.deepEqual(routeGesture(tops,800,800,2800,1),{reading:true,edge:1200});
+assert.equal(routeGesture(tops,1200,800,2800,1).target,2000);
+assert.equal(routeGesture(tops,2000,800,2800,-1).target,1200);
+assert.deepEqual(routeGesture(tops,1200,800,2800,-1),{reading:true,edge:800});
+assert.equal(routeGesture(tops,800,800,2800,-1).target,0);
+console.log('PASS: 700ms easing; light intent; bounded damping; long-section reading; bidirectional page boundaries');
