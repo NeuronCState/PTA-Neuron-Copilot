@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
-// @version      2.1.0-beta.5
+// @version      2.1.0-beta.6
 // @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
 // @homepageURL  https://neuroncstate.github.io/PTA-Neuron-Copilot/
 // @supportURL   https://github.com/NeuronCState/PTA-Neuron-Copilot/issues
-// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC.user.js
-// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC.user.js
+// @updateURL    https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.6/PNC.user.js
+// @downloadURL  https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.6/PNC.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -4152,7 +4152,7 @@ return module.exports; } catch (unavailable) { return null; } })();
 
                             <p id="pta-deadline-reminder-status" class="pta-help" role="status"></p>
                             <p class="pta-help">篡改猴/脚本猫通用：点击上方复制配对码，再在 Helper 扩展菜单选择“配对”并确认（不含私钥）。Helper 使用自己的存储，不再共享主脚本缓存。普通网页全部关闭或被冻结时提醒可能延迟；只按最后同步的截止时间提醒。</p>
-                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.4</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.5/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
+                            <p class="pta-help"><a href="https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.6/PNC%20Helper.user.js" target="_blank" rel="noopener noreferrer">PNC Helper 1.0.0-beta.4</a> · <a href="https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/beta/pnc-2.1.0-beta.6/notifications/README.md" target="_blank" rel="noopener noreferrer">手动配对与权限说明</a></p>
                         </div><div class="pta-help">配置均实时自动保存到当前浏览器本地。Key 仅保存在本地设备，不经任何中转。OpenCode Free 会自动探测 127.0.0.1:8788。</div>
                     </div>
                 </div>
@@ -4446,7 +4446,14 @@ return module.exports; } catch (unavailable) { return null; } })();
             // Persist sequence before publishing; a crashed send cannot reuse an old sequence.
             await Promise.resolve(GM_setValue(reminderSignedKey,keys));
             var envelope=await PNCReminderProtocol.sign(crypto,keys.privateKey,{version:1,sequence:keys.sequence,at:Date.now(),control:ctl,revocation:rev,snapshot:snapshot});
-            window.postMessage(envelope,'https://pintia.cn');
+            // Both channels carry only the same signed public envelope. DOM string events
+            // avoid userscript sandbox Window proxy identity differences.
+            var sent=false;
+            try{window.postMessage(envelope,'https://pintia.cn');sent=true;}catch(_){}
+            try{if(typeof document.dispatchEvent==='function'&&typeof CustomEvent==='function'){
+                document.dispatchEvent(new CustomEvent('pnc-helper-signed-sync-v1',{detail:JSON.stringify(envelope)}));sent=true;
+            }}catch(_){}
+            if(!sent)throw Error('签名消息发送不可用');
         });
     }
     function scheduleSignedDeadlineReminder(){
@@ -4517,11 +4524,16 @@ return module.exports; } catch (unavailable) { return null; } })();
     // This request only republishes existing signed configuration; it cannot grant permissions,
     // alter settings or export key material. Host pages can request the same public broadcast.
     var helperSyncRequestAt=0;
+    function handleHelperSyncRequest(){
+        if(location.origin!=='https://pintia.cn'||Date.now()-helperSyncRequestAt<5000)return;
+        helperSyncRequestAt=Date.now();syncDeadlineReminderV2();
+    }
     if(typeof window.addEventListener==='function')window.addEventListener('message',function(event){
-        if(event.source!==window||event.origin!=='https://pintia.cn'||!event.data||event.data.channel!=='pnc-helper-request-sync-v1')return;
-        if(Date.now()-helperSyncRequestAt<5000)return;helperSyncRequestAt=Date.now();
-        syncDeadlineReminderV2();
+        // This untrusted request only republishes existing signed state. It never grants access.
+        if(event.origin!=='https://pintia.cn'||!event.data||event.data.channel!=='pnc-helper-request-sync-v1')return;
+        handleHelperSyncRequest();
     });
+    if(typeof document.addEventListener==='function')document.addEventListener('pnc-helper-request-sync-v1',handleHelperSyncRequest);
 
     function bindUI(root) {
         bindDeadlineReminderUI();
