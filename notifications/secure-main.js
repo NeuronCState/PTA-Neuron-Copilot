@@ -20,7 +20,14 @@
             // Persist sequence before publishing; a crashed send cannot reuse an old sequence.
             await Promise.resolve(GM_setValue(reminderSignedKey,keys));
             var envelope=await PNCReminderProtocol.sign(crypto,keys.privateKey,{version:1,sequence:keys.sequence,at:Date.now(),control:ctl,revocation:rev,snapshot:snapshot});
-            window.postMessage(envelope,'https://pintia.cn');
+            // Both channels carry only the same signed public envelope. DOM string events
+            // avoid userscript sandbox Window proxy identity differences.
+            var sent=false;
+            try{window.postMessage(envelope,'https://pintia.cn');sent=true;}catch(_){}
+            try{if(typeof document.dispatchEvent==='function'&&typeof CustomEvent==='function'){
+                document.dispatchEvent(new CustomEvent('pnc-helper-signed-sync-v1',{detail:JSON.stringify(envelope)}));sent=true;
+            }}catch(_){}
+            if(!sent)throw Error('签名消息发送不可用');
         });
     }
     function scheduleSignedDeadlineReminder(){
@@ -91,8 +98,13 @@
     // This request only republishes existing signed configuration; it cannot grant permissions,
     // alter settings or export key material. Host pages can request the same public broadcast.
     var helperSyncRequestAt=0;
+    function handleHelperSyncRequest(){
+        if(location.origin!=='https://pintia.cn'||Date.now()-helperSyncRequestAt<5000)return;
+        helperSyncRequestAt=Date.now();syncDeadlineReminderV2();
+    }
     if(typeof window.addEventListener==='function')window.addEventListener('message',function(event){
-        if(event.source!==window||event.origin!=='https://pintia.cn'||!event.data||event.data.channel!=='pnc-helper-request-sync-v1')return;
-        if(Date.now()-helperSyncRequestAt<5000)return;helperSyncRequestAt=Date.now();
-        syncDeadlineReminderV2();
+        // This untrusted request only republishes existing signed state. It never grants access.
+        if(event.origin!=='https://pintia.cn'||!event.data||event.data.channel!=='pnc-helper-request-sync-v1')return;
+        handleHelperSyncRequest();
     });
+    if(typeof document.addEventListener==='function')document.addEventListener('pnc-helper-request-sync-v1',handleHelperSyncRequest);
