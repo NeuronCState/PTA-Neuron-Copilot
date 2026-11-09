@@ -15,3 +15,6 @@ Generated HTML and bundled assets are committed to `../docs/` so the existing Gi
 The interactive preview is deliberately labelled as sample data. It never connects to PTA, sends model requests, saves preferences, or submits answers. The page describes the current PNC 2.1.0 / Helper 1.0.0 release. Older documentation pages are preserved for existing links, and not presented as current install guides.
 
 Astryx and bundled dependency notices are in `../docs/THIRD-PARTY-NOTICES.txt`. Their licenses apply to those dependencies, not automatically to the PNC userscripts. Do not remove notices when rebuilding or redistributing the website.
+
+### Interaction motion (2026-11-09)
+Evaluated beUI Tabs / Animated Collapsible and Rare UI Folder. Selected continuous selection and reversible disclosure patterns, implemented specifically for PNC using MIT-licensed Motion. No beUI or Rare UI component source is copied; no Tailwind, Lenis or additional scrolling controller. Rare UI's Commons Clause and attribution restrictions are not treated as plain MIT. Motion notices are in `docs/THIRD-PARTY-NOTICES.txt`. Keyboard tab navigation, inert closed disclosures and reduced-motion handling are included.
