@@ -1,6 +1,6 @@
 # 通用 PNC Helper 测试版
 
-测试版本：PNC `2.1.0-beta.4`，PNC Helper `1.0.0-beta.4`。独立测试分支 `beta/pnc-2.1.0-beta.4`，不修改稳定版或既有测试分支。文件仍为 `PNC.user.js`、`PNC Helper.user.js`。
+测试版本：PNC `2.1.0-beta.5`，PNC Helper `1.0.0-beta.4`。独立测试分支 `beta/pnc-2.1.0-beta.5`，不修改稳定版或既有测试分支。文件仍为 `PNC.user.js`、`PNC Helper.user.js`。
 
 ## 普通网页模式：篡改猴与脚本猫
 
@@ -42,11 +42,21 @@ Helper 在普通 HTTP/HTTPS 顶层网页运行；任何其他网页仍在运行�
 
 ## 测试安装入口
 
-- [PNC 2.1.0-beta.4](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC.user.js)
-- [PNC Helper 1.0.0-beta.4](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.4/PNC%20Helper.user.js)
+- [PNC 2.1.0-beta.5](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC.user.js)
+- [PNC Helper 1.0.0-beta.4](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/beta/pnc-2.1.0-beta.5/PNC%20Helper.user.js)
 
 Helper 暂不配置自动更新地址，避免覆盖可选后台模式的手动元数据；普通模式公钥独立存储，更新代码不会覆盖。手动升级后请核对配对。
 
 ### 输入框配对
 
 配对输入框为管理器菜单触发的浏览器原生对话框，不是网页 DOM。启动时捕获用户脚本隔离环境的对话框引用，不使用 unsafeWindow；实际篡改猴/脚本猫的隔离和弹窗行为仍需实机验证。只在自己管理器的 Helper 菜单操作，不向网页索要的框粘贴凭据。配对仅接受合法 P-256 公钥，拒绝私钥和额外字段。不得将此模拟测试视为任意恶意网站上的绝对隔离保证。
+
+### 配对码复制反馈
+
+只有浏览器 `navigator.clipboard.writeText` 的 Promise 成功完成时，按钮才显示“已复制 ✓”。若浏览器接口不可用或拒绝，则尝试脚本管理器 `GM_setClipboard`；该接口的回调或 Promise 完成只显示“已请求复制”，请自行粘贴检查。不要将管理器回调等同于成功：ScriptCat [4bc187a 的实现](https://github.com/scriptscat/scriptcat/blob/4bc187aaeababf6daa38bb66c67047147464484d/src/app/service/content/gm_api/gm_api.ts#L1520-L1556) 在内部请求成功和失败时都会回调，`GM.setClipboard` 的 Promise 包装也会因此 resolve。异常、拒绝或 5 秒未完成显示未确认，不输出底层错误中的信息；迟到的回调不会覆盖超时状态。本功能不读取用户剪贴板，仅写入配对验证公钥，不复制私钥或 API Key。
+
+`node tests/helper-copy-feedback.cjs` 覆盖上述成功、失败与模糊结果路径。测试使用模拟接口，不能替代实际安装版本的 ScriptCat / Tampermonkey 浏览器验证。
+
+### beta.5 更新
+
+本次仅更新 PNC 的配对码复制反馈及回归测试。PNC Helper 保持 `1.0.0-beta.4`，文件内容未变，已安装的 Helper 无需更新。真实浏览器复制和系统通知仍需在实际使用的脚本管理器中验证。
