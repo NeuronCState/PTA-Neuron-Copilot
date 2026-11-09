@@ -33,3 +33,7 @@ This depends on the manager preserving write invocation order for a tab. A manag
 - 撤销/替换在跨标签锁下清缓存并默认暂停；每次验证捕获 pairing revision，提交前再次检查，旧标签不能写回旧配对。
 - 同步请求仅 PTA 同源发送，主脚本每 5 秒最多接受一次，仅重新广播已有签名配置，不授予权限。
 - 模拟覆盖取消、无效输入、替换/撤销并发、跨文档持久化；实际管理器沙箱与原生对话框尚需验证。
+
+## beta.6 transport compatibility patch
+
+Signed configuration additionally travels over a PTA-only DOM CustomEvent with string detail. Neither the DOM event nor Window identity is a trust source. Window messages retain the PTA origin filter; both paths validate the same paired-key signature, age and monotonic sequence, and serialize commits under the existing tab lock. DOM messages are size-bounded before parsing; other sites install no data receiver. The unsigned sync request only re-broadcasts existing state under a five-second throttle and cannot set pairing, enable notifications, or export keys. Existing page visibility of signed payloads and page ability to deny service are unchanged. Actual manager sandbox transport remains unverified; tests model different Window wrappers and dropped window messages without claiming these caused the observed failure.
