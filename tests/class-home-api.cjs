@@ -1,7 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const src=fs.readFileSync('PTA Auto Solver Pro-1.8.1-beta.1.user.js','utf8');
-const code=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    // Panel UI state only.'));
-function harness({total=72,mode='',delay=0,dom=[],storage=null,session=null}={}){
+function harness({total=72,mode='',delay=0,dom=[],storage=null,session=null,script='PTA Auto Solver Pro-1.8.1-beta.1.user.js'}={}){
+ const src=fs.readFileSync(script,'utf8'),code=src.slice(src.indexOf('    function catalogueRoute('),src.indexOf('    // Panel UI state only.'));
  const baseline=Date.UTC(2026,10,7);let now=baseline,seq=0,active=0,max=0;const timers=new Map(),calls=[],events={},intervals=[];
  const setTimer=(fn,ms)=>{timers.set(++seq,{fn,at:now+ms});return seq;};
  const ctx={URL,Set,Map,AbortController,Uint8Array,TextDecoder,Date:class extends Date{static now(){return now;}},setTimeout:setTimer,clearTimeout:id=>timers.delete(id),setInterval:fn=>intervals.push(fn),location:{origin:'https://pintia.cn',pathname:'/problem-sets/dashboard'},window:{addEventListener:(k,fn)=>events[k]=fn},document:{getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[],createElement(){throw Error('no embedded document');}},fetch:async(url,options)=>{

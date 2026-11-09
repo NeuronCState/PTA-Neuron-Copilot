@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),{webcrypto}=require('node:crypto');
+const C=require('../notifications/core'),V=require('../notifications/secure-protocol'),L=require('../notifications/tab-lock');
+const code=fs.readFileSync('notifications/universal-runtime.js','utf8'),P='pnc-helper-universal-v1:';
+(async()=>{
+ const store=new Map(),menus=new Map(),dialogs=[],alerts=[],requests=[],events={},notifications=[];let action=null,confirm=false,outcome='requested';
+ const win={postMessage:x=>requests.push(x),addEventListener:(n,f)=>events[n]=f};win.top=win;win.self=win;
+ const ctx={PNCDeadlineCore:C,PNCReminderProtocol:V,PNCReminderTabLock:L,crypto:webcrypto,Uint32Array,Date,document:{},location:{origin:'https://pintia.cn'},window:win,GM_info:{scriptHandler:'Tampermonkey'},GM_getValue:(k,d)=>store.has(k)?structuredClone(store.get(k)):d,GM_setValue:(k,v)=>store.set(k,structuredClone(v)),GM_getTabs:f=>f({}),GM_saveTab:()=>{},GM_registerMenuCommand:(n,f)=>menus.set(n,f),GM_notification:d=>{notifications.push(d);if(outcome==='failed')throw Error('private secret');if(outcome==='created')d.oncreate();return Promise.resolve();},prompt:(s)=>{dialogs.push(s);return action;},confirm:()=>confirm,alert:s=>alerts.push(s),setTimeout,clearTimeout,setInterval:()=>{}};
+ vm.runInNewContext(code,ctx);const run=()=>menus.get('测试诊断')();await run();assert.match(dialogs.at(-1),/未配对/);assert.equal(store.size,0);assert.equal(notifications.length,0);
+ store.set(P+'pairing',{key:{x:'PRIVATE_MARKER',y:'SECRET_MARKER'},revision:'one'});store.set(P+'paused',true);
+ const base={sequence:1,at:Date.now(),control:null,snapshot:null,revocation:''};store.set(P+'accepted',base);await run();assert.match(dialogs.at(-1),/缺少提醒设置/);assert.doesNotMatch(dialogs.at(-1),/PRIVATE_MARKER|SECRET_MARKER/);
+ for(const [patch,pattern] of [[{control:{enabled:false}},/提醒已关闭/],[{control:{enabled:true,revocation:'old'}},/已撤销或失效/],[{control:{enabled:true,revocation:''}},/缺少题集数据/],[{control:{enabled:true,revocation:'',owner:'1'},snapshot:{owner:'2',rows:[]}},/账号不匹配/],[{control:{enabled:true,revocation:'',owner:'1',days:3},snapshot:{owner:'1',rows:[],capturedAt:Date.now()}},/题集列表为空/]]){store.set(P+'accepted',{...base,...patch});await run();assert.match(dialogs.at(-1),pattern);}
+ action='1';await run();assert.equal(requests.length,1);assert.match(alerts.at(-1),/请求不等于同步成功/);ctx.location.origin='https://elsewhere.example';// isPTA is captured at launch, not mutable by page navigation.
+ action='2';await run();assert.equal(notifications.length,0);confirm=true;const before=JSON.stringify([...store]);await run();assert.match(alerts.at(-1),/已请求/);assert.equal(JSON.stringify([...store]),before,'test does not change paused/cache/dedupe');assert.doesNotMatch(JSON.stringify(notifications),/PRIVATE_MARKER|SECRET_MARKER/);
+ outcome='created';await run();assert.match(alerts.at(-1),/管理器回报已创建/);outcome='failed';await run();assert.match(alerts.at(-1),/调用失败/);assert.doesNotMatch(alerts.at(-1),/private secret/);
+ await events.message({source:win,origin:'https://pintia.cn',data:{channel:V.CHANNEL,raw:'bad'}});action=null;await run();assert.match(dialogs.at(-1),/签名或时效校验失败/);assert.doesNotMatch(dialogs.at(-1),/private secret/);
+ console.log('PASS diagnostics read-only, missing/disabled/revoked/mismatched/empty data, safe sync request, explicit test confirmation, no reminder-state changes, honest notification results and redaction');
+})().catch(e=>{console.error(e);process.exitCode=1});
