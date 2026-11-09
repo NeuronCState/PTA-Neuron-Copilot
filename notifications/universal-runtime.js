@@ -3,7 +3,7 @@
 'use strict';
 var C=PNCDeadlineCore,V=PNCReminderProtocol,P='pnc-helper-universal-v1:',busy=false;
 var disposed=false,tabRegistered=false;
-var diagnostic={receivedAt:0,verifiedAt:0,issue:null},diagnosticBusy=false;
+var diagnostic={receivedAt:0,verifiedAt:0,transport:null,issue:null},diagnosticBusy=false;
 function alive(){if(disposed)throw Error('page lifecycle ended; reload required');}
 var get=async function(k,d){alive();var v=await Promise.resolve(GM_getValue(P+k,d));alive();return v;},set=async function(k,v){alive();await Promise.resolve(GM_setValue(P+k,v));alive();};
 var hasDOM=typeof document!=='undefined',isPTA=hasDOM&&location.origin==='https://pintia.cn';
@@ -39,7 +39,11 @@ async function parsePair(text){
  var key=V.publicKey(j);await crypto.subtle.importKey('jwk',key,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return key;
 }
 async function pairing(){var p=await get('pairing',null);return p&&typeof p.revision==='string'&&p.key?p:null;}
-function requestSync(){if(isPTA&&typeof window.postMessage==='function')window.postMessage({channel:'pnc-helper-request-sync-v1'},'https://pintia.cn');}
+function requestSync(){
+ if(!isPTA)return;
+ try{if(isPTA&&typeof window.postMessage==='function')window.postMessage({channel:'pnc-helper-request-sync-v1'},'https://pintia.cn');}catch(_){}
+ try{if(typeof document.dispatchEvent==='function'&&typeof CustomEvent==='function')document.dispatchEvent(new CustomEvent('pnc-helper-request-sync-v1'));}catch(_){}
+}
 async function status(message){await set('status',{at:Date.now(),message:message});}
 function samePair(a,b){return !!a&&a.key.x===b.x&&a.key.y===b.y&&a.key.crv===b.crv;}
 function revision(p){return p?p.revision:null;}
@@ -67,6 +71,7 @@ async function showDiagnostics(){
    '题集缓存更新时间：'+diagnosticTime(snap&&snap.capturedAt),
    '缓存题集：'+(snap?snap.rows.length:'无')+'；阈值内未截止：'+(due===null?'不可计算':due),
    '本页最近收到同步消息：'+diagnosticTime(diagnostic.receivedAt),
+   '接收通道：'+(diagnostic.transport||'无'),
    '本页最近验签通过：'+diagnosticTime(diagnostic.verifiedAt),
    '本页最近诊断：'+(diagnostic.issue||'未发现错误（不代表通知已送达）'),
    '通知接口：'+(typeof GM_notification==='function'?'可调用，系统权限仍需测试':'不可用'),
@@ -133,10 +138,20 @@ if(typeof GM_registerMenuCommand==='function'){
  });
 }
 async function receive(event){
- if(disposed||!isPTA||event.source!==window||event.origin!=='https://pintia.cn')return;
- if(!event.data||event.data.channel!==V.CHANNEL)return;
- diagnostic.receivedAt=Date.now();
- var packet,pair;try{pair=await pairing();if(!pair){diagnostic.issue='收到同步消息，但尚未配对';return;}packet=await V.verify(crypto,pair.key,event.data,Date.now());diagnostic.verifiedAt=Date.now();diagnostic.issue=null;}catch(_){diagnostic.issue='签名或时效校验失败；请核对配对及系统时间';return;}
+ if(disposed||!isPTA||event.origin!=='https://pintia.cn')return;
+ // Event.source can be a different Window wrapper across userscript sandboxes.
+ // Origin is only a transport filter; the paired-key signature establishes trust.
+ return receiveSigned(event.data,'窗口消息');
+}
+async function receiveDOM(event){
+ if(disposed||!isPTA||typeof event.detail!=='string'||event.detail.length>8*1024*1024+1024)return;
+ var envelope;try{envelope=JSON.parse(event.detail);}catch(_){return;}
+ return receiveSigned(envelope,'DOM 字符串事件');
+}
+async function receiveSigned(envelope,transport){
+ if(disposed||!isPTA||!envelope||envelope.channel!==V.CHANNEL)return;
+ diagnostic.receivedAt=Date.now();diagnostic.transport=transport;
+ var packet,pair;try{pair=await pairing();if(!pair){diagnostic.issue='收到同步消息，但尚未配对';return;}packet=await V.verify(crypto,pair.key,envelope,Date.now());diagnostic.verifiedAt=Date.now();diagnostic.issue=null;}catch(_){diagnostic.issue='签名或时效校验失败；请核对配对及系统时间';return;}
  try{await lock.run(async function(){if(packet.at>Date.now()+5000||Date.now()-packet.at>90000)return;var currentPair=await pairing();if(!currentPair||currentPair.revision!==pair.revision)return;var previous=await get('accepted',null);if(previous&&packet.sequence<=previous.sequence)return;
   var ctl=packet.control,rev=packet.revocation,snap=C.snapshot(packet.snapshot,Date.now(),true);
   if(typeof rev!=='string'||rev.length>512)return;
@@ -147,6 +162,7 @@ async function receive(event){
  });tick();}catch(_){diagnostic.issue='保存同步数据未完成；可能受其他标签锁或存储影响';/* Next signed heartbeat will retry. */}
 }
 if(isPTA)window.addEventListener('message',receive);
+if(isPTA&&typeof document.addEventListener==='function')document.addEventListener('pnc-helper-signed-sync-v1',receiveDOM);
 function notification(details){
  alive();return new Promise(function(resolve){var finished=false;function done(state){if(!finished){finished=true;resolve(state);}}
   try{
