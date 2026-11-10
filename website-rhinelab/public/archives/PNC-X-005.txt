@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-005 / 配置模型
+MODEL SETUP
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+在 PNC 设置中选择供应商，并按其要求配置 API Key 与模型。可用模型由供应商接口返回。
+
+使用说明
+1. 界面包含 DeepSeek、MiMo 与 Opencode Zen 供应商入口。
+2. 填写配置后可刷新模型列表；模型可用性以供应商响应为准。
+3. 不要在本展示网站输入 API Key，这里没有模型连接功能。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

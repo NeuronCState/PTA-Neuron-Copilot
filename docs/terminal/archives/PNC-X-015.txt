@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-015 / 题目图片
+QUESTION IMAGES
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+设置中提供“允许发送题目图片”选项。启用前确认图片内容适合发送给所选供应商，并检查模型的图像支持。
+
+使用说明
+1. 图片属于题目数据，发送后由模型供应商处理。
+2. 不要把图片选项理解为所有模型都支持视觉输入。
+3. 图中条件、公式和标注仍可能被识别错误，需要人工核对。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

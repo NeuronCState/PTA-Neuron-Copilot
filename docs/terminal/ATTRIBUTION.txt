@@ -1,0 +1,7 @@
+PNC · FEATURE TERMINAL
+Derived from LBEILC/RhineLabUI, commit 12cc5e4013acb9408f753ff71de6b8492299b7c8.
+Copyright (c) 2026 LBEILC. MIT License: licenses/RhineLabUI-MIT.txt
+Retained original TypeScript, Three.js, Vite scene, camera, archive navigation, decryption, viewer, audio synthesis and rolling UI architecture.
+PNC content and marks replace fictional archives and branding. PV audio samples, Novecento outlines/fonts, baked lettering and double-ring model internals are not used.
+MiSans: Xiaomi, see fonts/MiSans-license.pdf. Rolling Number: licenses/rolling-number.txt. Three.js: licenses/three.txt.
+This demonstration does not contact PTA, model providers, pairing or notification APIs.

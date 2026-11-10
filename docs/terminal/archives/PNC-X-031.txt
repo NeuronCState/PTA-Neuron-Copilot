@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-031 / 测试诊断
+HELPER DIAGNOSTICS
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+测试诊断先读取本地状态，显示配对、暂停、缓存时间、阈值内题集数量以及本页面同步结果。
+
+使用说明
+1. 输入 1 在 PTA 页面请求同步，不自动启用提醒或清除数据。
+2. 输入 2 经再次确认后发送通用测试通知，不改变正式去重记录。
+3. 诊断不展示密钥、账号、题集标题或答案；取消或空输入不产生通知。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

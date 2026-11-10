@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-024 / 历史与复习
+HISTORY & REVIEW
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+当前正式版隐藏复习功能与开发者选项，并暂停相关后台任务。旧截图中出现的复习控件不代表当前可用功能。
+
+使用说明
+1. 隐藏功能不会主动删除已有持久缓存。
+2. 历史 beta.20 截图只用于说明早期界面。
+3. 不要把保留的源码或旧缓存解释为已开放的复习服务。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

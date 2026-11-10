@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-021 / 剩余时间
+TIME REMAINING
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+倒计时根据题集截止时间计算，按剩余天、小时或分钟显示。没有有效时间时显示截止未知。
+
+使用说明
+1. 整天与整小时向下取整，分钟向上取整。
+2. 剩余不足一天会采用紧急状态提示。
+3. 界面时间是读取值的计算结果，不会自动得知尚未同步的延期。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

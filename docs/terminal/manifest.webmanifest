@@ -1,0 +1,1 @@
+{"name": "PNC · 功能终端", "short_name": "PNC", "start_url": "./", "display": "standalone", "background_color": "#e8e5e1", "theme_color": "#e8e5e1", "icons": [{"src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml"}], "scope": "./"}

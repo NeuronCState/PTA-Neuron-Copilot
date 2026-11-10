@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-012 / 连续答题
+CONTINUOUS SOLVING
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+连续答题用于按当前流程处理题目。与并发数量配合使用时，应先确认题目范围和作答模式。
+
+使用说明
+1. 关闭连续答题后仅处理一题。
+2. 执行前检查是否启用“跳过已作答”。
+3. 不要把批量处理等同于答案已经正确或被平台接受。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

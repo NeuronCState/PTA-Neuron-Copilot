@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-001 / 认识 PNC
+MEET PNC
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+PNC 是面向拼题 A 的 AI 辅助答题用户脚本。正式版 2.1.0 提供多模型、小题并发、解析辅助与班级题集管理。
+
+使用说明
+1. 本网站是功能文档与交互展示，不连接 PTA 账号，也不执行答题或提交。
+2. 实际功能需在用户脚本管理器安装 PNC 后，于 PTA 网站使用。
+3. AI 结果仅作参考，使用前请确认课程与平台规则。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

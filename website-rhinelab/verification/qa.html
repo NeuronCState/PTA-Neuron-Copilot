@@ -1,0 +1,25 @@
+<!doctype html><meta charset="UTF-8"><title>PNC local QA</title><style>body{margin:20px;font:14px system-ui;background:#eee9e1;color:#222}button{padding:12px;margin:6px}iframe{border:1px solid #999;display:block;margin-top:15px;background:#e8e5e1}pre{white-space:pre-wrap}#results{max-width:1000px}</style><h1>PNC 本地验证</h1><button id="run">运行响应式与交互检查</button><button data-size="390,844">手机 390×844</button><button data-size="320,568">小屏 320×568</button><button data-size="844,390">横屏 844×390</button><button data-size="1212,799">桌面</button><pre id="results">待运行</pre><div id="frame"></div><script type="module">
+const mount=document.querySelector('#frame'),out=document.querySelector('#results');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));let frame;
+async function view(w,h){mount.replaceChildren();frame=document.createElement('iframe');frame.width=w;frame.height=h;frame.src='/?renderer=fallback';mount.append(frame);await new Promise(r=>frame.onload=r);for(let i=0;i<80;i++){if(frame.contentDocument.querySelector('#stage[data-mode="archive"]'))break;await wait(100)}return frame.contentDocument;}
+const click=(doc,s)=>{const e=doc.querySelector(s);if(!e)throw Error('Missing '+s);e.click()};const assert=(cond,label)=>{if(!cond)throw Error(label)};
+const results=[];const pass=(label,data={})=>{results.push({pass:true,label,...data});out.textContent=JSON.stringify(results,null,2)};
+document.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>view(...b.dataset.size.split(',').map(Number)));
+document.querySelector('#run').onclick=async()=>{results.length=0;try{
+ for(const [w,h] of [[1440,900],[1212,799],[1024,768],[390,844],[375,667],[320,568],[844,390]]){
+  const d=await view(w,h);assert(d.documentElement.scrollWidth<=w,'page width overflow');assert(d.documentElement.scrollHeight<=h,'page height overflow');
+  const toolbar=d.querySelector('.pnc-toolbar').getBoundingClientRect();assert(toolbar.left>=0&&toolbar.right<=w+1,'toolbar width');
+  const fields=['.system-nav','.archive-callout','.column-navigation','.archive-navigation'];for(const s of fields){const r=d.querySelector(s).getBoundingClientRect();assert(r.left>=-1&&r.right<=w+1&&r.top>=-1&&r.bottom<=h+1,s+' outside '+w+'×'+h)}
+  click(d,'[data-tour="pnc"]');await wait(500);assert(d.querySelector('#stage').dataset.mode==='detail','tour detail');assert(d.querySelector('.detail-title-cn').textContent.includes('选择处理方式'),'first PNC step');const model=d.querySelector('.pnc-fallback-world');
+  click(d,'[data-tour-control="next"]');await wait(500);assert(d.querySelector('.detail-title-cn').textContent.includes('AI 解答缓存'),'second PNC step');assert(d.querySelector('.pnc-fallback-world')===model,'persistent world');
+  click(d,'[data-tour-control="prev"]');await wait(500);assert(d.querySelector('.detail-title-cn').textContent.includes('选择处理方式'),'reversal');
+  click(d,'[data-tour="helper"]');await wait(500);assert(d.querySelector('.detail-title-cn').textContent.includes('启用倒计时'),'Helper route');
+  click(d,'[data-tab="notes"]');assert(d.querySelector('#tab-panel').textContent.includes('提醒'),'Helper explanation');
+  click(d,'[data-action="bookmark"]');assert(d.querySelector('[data-action="bookmark"]').getAttribute('aria-pressed')==='true','save');click(d,'[data-action="bookmark"]');
+  click(d,'[data-tour-control="close"]');assert(d.querySelector('#stage').dataset.mode==='archive','return');click(d,'[data-action="search"]');const input=d.querySelector('#archive-search');input.value='公钥配对';input.dispatchEvent(new Event('input',{bubbles:true}));assert(d.querySelectorAll('[data-result]').length===1,'search');click(d,'[data-action="close-modal"]');await wait(250);
+  pass(w+'×'+h+' responsive, PNC/Helper routes, same scene, reverse, notes, save, search');
+ }
+ out.dataset.complete='true';pass('ALL CHECKS PASSED');await view(390,844);
+ }catch(e){results.push({pass:false,error:e.message});out.textContent=JSON.stringify(results,null,2);out.dataset.complete='failed';}};
+await view(390,844);
+</script>

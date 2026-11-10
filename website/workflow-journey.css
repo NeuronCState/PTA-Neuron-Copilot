@@ -47,3 +47,15 @@ body:has(.screen-rhythm[data-active=true]) .horizontal-nav,body:has(.screen-help
 .large-type .workflow-journey .wf3d-heading,.large-type .journey-copy>.eyebrow,.large-type .journey-explanation{display:none}.large-type .journey-copy h2{font-size:.75rem;margin:0 0 4px}.large-type .journey-subtitle{font-size:.5rem}.large-type .workflow-journey .wf-controls{font-size:.45rem}.large-type .workflow-journey .wf-controls button{padding:3px 5px}.large-type .journey-action-slot{height:34px}.large-type .journey-sequence{font-size:.4rem}.large-type .workflow-journey .wf3d-caption{font-size:.45rem;min-height:25px}.large-type .journey-body{gap:5px}
 @media(prefers-reduced-motion:reduce){.workflow-journey .wf3d-labels>span{transition:none}}
 .journey-copy h2,.journey-copy h3,.journey-copy p,.journey-details h2,.journey-details h3,.journey-details p{color:var(--pnc-ink)}
+
+/* Natural-scroll layout: text determines height; only the decorative view is sized. */
+.workflow-journey.wf3d{height:auto;min-height:0}
+.journey-body{flex:none;align-items:center;gap:32px}
+.journey-visual{height:auto;min-width:0}
+.workflow-journey .wf3d-viewport{height:360px;flex:none}
+.journey-action-slot{height:auto;min-height:44px;flex-wrap:wrap}
+.journey-explanation,.journey-copy>.eyebrow{display:block}
+.journey-copy h2{font-size:clamp(1.5rem,2.6vw,2.25rem)}
+.journey-subtitle{font-size:.85rem}
+.workflow-journey .wf-controls{margin-top:22px;flex-wrap:wrap}
+@media(max-width:700px){.journey-body{gap:24px}.journey-copy{text-align:left}.journey-explanation{margin-top:20px}.workflow-journey .wf3d-viewport{height:280px}.journey-copy h2{font-size:1.5rem}.journey-subtitle{font-size:.85rem}.journey-copy>.eyebrow{display:block}.journey-visual{flex:none}.workflow-journey .wf-controls button{min-height:40px}}

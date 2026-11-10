@@ -12,8 +12,12 @@ globalThis.innerHeight=900;globalThis.innerWidth=1440;globalThis.scrollY=0;globa
 const js=fs.readFileSync('../docs/index.html','utf8').match(/assets-pnc\/(index-[^"]+\.js)/)[1];
 await import('../docs/assets-pnc/'+js);await new Promise(r=>setTimeout(r,150));
 assert(document.querySelector('h1').textContent.includes('少一点重复'));
+assert.equal(document.querySelector('.terminal-entry').getAttribute('href'),'./terminal/');
+assert.equal(document.querySelector('.page-nav'),null);
+assert.equal(document.querySelectorAll('main > section').length,7);
+assert.equal(document.querySelector('[data-block=preview-main-assistance]').hidden,true);
 const click=async el=>{assert(el);el.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));await new Promise(r=>setTimeout(r,450));};
-await click(document.querySelector('#tab-assistance'));await click([...document.querySelectorAll('button')].find(x=>x.textContent.includes('查看解析')));assert(document.querySelector('.answer').textContent.includes('B：1'));
+await click(document.querySelector('#tab-assistance'));assert.equal(document.querySelector('[data-block=preview-main-assistance]').hidden,false);assert.equal(document.querySelector('[data-block=preview-main-catalogue]').hidden,true);await click([...document.querySelectorAll('button')].find(x=>x.textContent.includes('查看解析')));assert(document.querySelector('.answer').textContent.includes('B：1'));
 await click(document.querySelector('#tab-settings'));await click([...document.querySelectorAll('[role=radio]')].find(x=>x.textContent==='MiMo'));assert(document.querySelector('.model-note b').textContent==='MiMo');
 await click(document.querySelector('#tab-catalogue'));await click(document.querySelector('.class-toggle'));assert(document.querySelector('#class-sets').hidden);await click(document.querySelector('.class-toggle'));assert(!document.querySelector('#class-sets').hidden);
 const links=[...document.querySelectorAll('a[href]')].map(x=>x.getAttribute('href'));assert(links.includes('https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC.user.js'));assert(links.includes('https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC%20Helper.user.js'));assert(!document.body.textContent.includes('OPEN SOURCE'));assert(document.body.textContent.includes('默认新标签页不能运行'));assert(document.querySelectorAll('.astryx-button').length>0);

@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-028 / 离开 PTA 后
+BEYOND THE PTA TAB
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+普通网页模式可在其他 HTTP/HTTPS 顶层网页运行时，依据 Helper 自己的缓存检查截止时间。
+
+使用说明
+1. 无需保持 PTA 标签一直打开，但仍依赖可注入的普通网页。
+2. 浏览器内部页与禁止注入的站点不在覆盖范围。
+3. 所有普通标签关闭、页面冻结、浏览器退出或休眠都会停止或延迟检查。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

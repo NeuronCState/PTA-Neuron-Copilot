@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-013 / 跳过已作答
+SKIP ANSWERED
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+面板提供“跳过已作答”选项，减少对已作答题目的重复处理。它不是正确性证明。
+
+使用说明
+1. 开始前检查开关是否符合本次练习目的。
+2. 已作答与答对是不同状态，仍应以 PTA 判题结果为准。
+3. 在需要重新推导时，先核对当前题目和已有输入。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-027 / 同步题集
+SYNC SET DATA
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+配对会请求同步；若在其他网站完成配对，需要打开 PTA 才能获取新的提醒数据。请求同步不等于已经同步成功。
+
+使用说明
+1. 测试诊断可区分缺设置、缺目录、账号不匹配、空目录与可用目录。
+2. 签名设置与题集缓存均可用后，才有可靠的配置依据。
+3. 离线期间无法得知服务器注销、延期或账号变化。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

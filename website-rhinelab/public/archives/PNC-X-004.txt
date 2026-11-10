@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-004 / 可选 Helper
+INSTALL HELPER
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+PNC Helper 1.0.0 用于接收题集截止提醒。普通网页模式支持脚本猫和 Tampermonkey，需要手动公钥配对。
+
+使用说明
+1. Helper 匹配普通 HTTP/HTTPS 顶层网页，不在 iframe 内运行。
+2. 安装后仍需读取班级题集、完成配对并开启倒计时提醒。
+3. 不需要截止通知时，可以只安装 PNC。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-011 / 小题并发
+QUESTION CONCURRENCY
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+并发数量控制同页请求数。1 为串行，2–10 为同页并发，并不是无限任务队列。
+
+使用说明
+1. 关闭连续答题时仅处理一题。
+2. 提高并发可能增加短时请求量，需留意供应商限流与额度。
+3. 停止操作不保证已经发出的请求停止计费。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

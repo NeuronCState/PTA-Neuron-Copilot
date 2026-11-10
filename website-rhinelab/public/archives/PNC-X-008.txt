@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-008 / 查阅与反馈
+GUIDE & SUPPORT
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+安装说明、完整指南和问题反馈均保留在 PNC 项目中。本档案按当前本地源码整理，不代替维护者后续发布说明。
+
+使用说明
+1. 项目主页：https://neuroncstate.github.io/PTA-Neuron-Copilot/
+2. 使用指南：https://neuroncstate.github.io/PTA-Neuron-Copilot/guide.html
+3. 问题反馈：https://github.com/NeuronCState/PTA-Neuron-Copilot/issues
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-033 / 数据去向
+DATA DESTINATIONS
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+使用模型功能时，脚本会把题目发送给所选供应商，并按其要求使用 API Key。了解发送内容再开始处理。
+
+使用说明
+1. Key 保存在本地；缓存使用脚本私有存储。
+2. 部分操作会使用剪贴板，公钥复制不等于读取剪贴板内容。
+3. 本展示网站没有模型请求、账号登录或真实提交接口。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

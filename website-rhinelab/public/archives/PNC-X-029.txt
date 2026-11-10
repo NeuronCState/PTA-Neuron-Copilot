@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-029 / 一题集一通知
+ONE SET PER NOTICE
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+每条正式截止通知对应一个题集，正文包含题集名称与剩余时间，点击由管理器打开对应 PTA 题集。
+
+使用说明
+1. 每轮最多请求三条，其余留到后续检查。
+2. 目标固定为 PTA HTTPS 域名与校验后的数字题集 ID。
+3. 手动测试通知不对应真实题集，不自动跳转。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

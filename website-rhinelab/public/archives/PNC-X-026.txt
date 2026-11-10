@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-026 / 公钥配对
+PUBLIC KEY PAIRING
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+点击 PNC 的“复制 Helper 配对码”，再从 Helper 管理器菜单选择“配对”，粘贴并确认来源。
+
+使用说明
+1. 配对码只包含验证公钥，不应包含 API Key、Cookie 或私钥。
+2. 取消或无效输入不修改已有配对。
+3. 同一公钥重新配对保留提醒缓存；更换公钥需确认并清空旧提醒缓存。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-039 / 后台增强边界
+BACKGROUND MODE LIMITS
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+脚本猫提供可选独立后台方案，但它与普通公钥配对模式有不同权限边界，不是默认安装步骤。
+
+使用说明
+1. 手动共享存储会授予 Helper 整个主脚本 GM 存储的读写能力。
+2. 不要把普通模式的存储隔离保证套用到共享后台模式。
+3. 必须核实实际管理器支持，不与另一份普通 Helper 同时启用。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

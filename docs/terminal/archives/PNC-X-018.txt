@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-018 / 分组浏览
+GROUPED SETS
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+目录按题集所属分组组织内容，分组可以展开或收起。分组信息缺失时不应自行推断所属班级。
+
+使用说明
+1. 分组展开状态只影响浏览方式，不改变 PTA 题集。
+2. 历史分组的归档判断需要可信、完整的目录数据。
+3. 若题集未出现在预期分组，先核对读取状态与账号。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

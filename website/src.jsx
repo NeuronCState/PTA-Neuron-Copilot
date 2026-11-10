@@ -1,4 +1,4 @@
-import React,{useState,useEffect,useLayoutEffect,useRef} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import {motion,useReducedMotion} from 'motion/react';
 import {createRoot} from 'react-dom/client';
 import {Theme} from '@astryxdesign/core/theme';
@@ -13,7 +13,7 @@ import '@astryxdesign/core/astryx.css';
 import '@astryxdesign/theme-neutral/theme.css';
 import './style.css';
 import NeuronBackground from './NeuronBackground.jsx';
-import {installSnap} from './scroll-snap.mjs';
+import {observeSections} from './native-scroll.mjs';
 import {WorkflowTabs,workflowBlocks} from './WorkflowShowcase.jsx';
 const repo='https://github.com/NeuronCState/PTA-Neuron-Copilot';
 const raw='https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/';
@@ -21,109 +21,25 @@ const Arrow=()=> <span aria-hidden="true">↗</span>;
 function Mark(){return <span className="mark" aria-hidden="true"><i/><i/><i/><i/></span>}
 const block=(id,node,wide=false)=>({id,node,wide});
 const intro=(id,eyebrow,title,copy)=>block(id,<div className="section-intro"><p className="eyebrow">{eyebrow}</p><h2>{title}</h2>{copy&&<p>{copy}</p>}</div>,true);
-// Break an oversized card at real content boundaries, preserving text size.
-function splitNode(node){
- if(!React.isValidElement(node)||typeof node.type!=='string')return [];
- let children=React.Children.toArray(node.props.children).filter(c=>!(React.isValidElement(c)&&c.type==='br'));
- if(children.length===1&&typeof children[0]==='string')children=children[0].match(/[^。！？；]+[。！？；]?/g)||children;
- if(children.length>1)return children.map((child,i)=>React.cloneElement(node,{id:i?undefined:node.props.id},child));
- if(children.length===1){const parts=splitNode(children[0]);return parts.map((child,i)=>React.cloneElement(node,{id:i?undefined:node.props.id},child));}
- return [];
-}
-// Pack measured content rows, never scale text or turn a chapter into a scroll area.
-// Smaller viewports and larger type get more complete, viewport-sized pages.
-function ViewportPages({groups}){
- const [splits,setSplits]=useState({});
- const expand=item=>{const parts=splits[item.id]?splitNode(item.node):[];return parts.length>1?parts.flatMap((node,i)=>expand({...item,id:item.id+'.'+i,node})):[item];};
- const effectiveGroups=groups.map(g=>({...g,blocks:g.blocks.flatMap(expand)}));
- const [pages,setPages]=useState(()=>groups.map(g=>({group:g.id,ids:g.blocks.map(b=>b.id)})));
- const pendingFocus=useRef(null),signature=useRef(null),host=useRef(null),latest=useRef(effectiveGroups);latest.current=effectiveGroups;
- const rememberFocus=()=>{
-  const active=document.activeElement,block=active?.closest?.('.content-block');if(!block)return;
-  const origin=block.dataset.originBlock,controls=[...host.current.querySelectorAll('[data-origin-block="'+origin+'"] a,[data-origin-block="'+origin+'"] button,[data-origin-block="'+origin+'"] input,[data-origin-block="'+origin+'"] select,[data-origin-block="'+origin+'"] [role=slider]')];
-  pendingFocus.current={id:active.id,origin,index:controls.indexOf(active)};
- };
- useLayoutEffect(()=>{
-  let raf=0,disposed=false;
-  const pack=()=>{
-   if(disposed)return;
-   const root=document.documentElement,header=document.querySelector('.header'),pager=document.querySelector('.page-nav');
-   root.classList.toggle('large-type',parseFloat(getComputedStyle(root).fontSize)>20);
-   root.classList.toggle('compact-header',innerWidth<400&&parseFloat(getComputedStyle(root).fontSize)>20);
-   const nextSignature=[innerWidth,innerHeight,getComputedStyle(root).fontSize].join('|');
-   if(signature.current!==nextSignature){
-    const previous=signature.current;signature.current=nextSignature;
-    if(previous&&Object.keys(splits).length){rememberFocus();setSplits({});setPages(groups.map(g=>({group:g.id,ids:g.blocks.map(b=>b.id)})));return;}
-   }
-   const top=header.getBoundingClientRect().bottom+18,bottom=innerHeight-pager.getBoundingClientRect().top+18;
-   root.style.setProperty('--screen-top',`${top}px`);root.style.setProperty('--screen-bottom',`${bottom}px`);
-   const available=Math.max(80,innerHeight-top-bottom),grid=host.current.querySelector('.screen-content');
-   const toolbarHeights=new Map([...host.current.querySelectorAll('.chapter-toolbar')].map(el=>[el.closest('.screen').id,el.getBoundingClientRect().height+18]));
-   for(const screen of host.current.querySelectorAll('.screen'))screen.style.setProperty('--toolbar-space',`${toolbarHeights.get(screen.id)||0}px`);
-   const columns=getComputedStyle(grid).gridTemplateColumns.split(' ').length,gap=parseFloat(getComputedStyle(grid).rowGap)||18;
-   const heights=new Map([...host.current.querySelectorAll('.content-block')].map(el=>[el.dataset.block,el.getBoundingClientRect().height]));
-   const oversized=latest.current.flatMap(g=>g.blocks).filter(item=>(heights.get(item.id)||0)>available-(toolbarHeights.get(latest.current.find(g=>g.blocks.includes(item))?.id)||0)&&splitNode(item.node).length>1);
-   if(oversized.length){rememberFocus();setSplits(old=>({...old,...Object.fromEntries(oversized.map(item=>[item.id,true]))}));return;}
-   const result=[];
-   for(const group of latest.current){
-    const rows=[];let row=[],used=0,feature;
-    const capacity=available-(toolbarHeights.get(group.id)||0);
-    for(const item of group.blocks){
-     const span=item.wide?columns:1;
-     if(row.length&&feature!==item.feature){rows.push(row);row=[];used=0;}
-     feature=item.feature;
-     if(row.length&&used+span>columns){rows.push(row);row=[];used=0;}
-     row.push(item);used+=span;
-     if(used===columns){rows.push(row);row=[];used=0;}
-    }
-    if(row.length)rows.push(row);
-    let ids=[],height=0,pageFeature;
-    for(const row of rows){
-     const h=Math.max(...row.map(item=>heights.get(item.id)||0));
-     if(ids.length&&(height+gap+h>capacity||pageFeature!==row[0].feature)){result.push({group:group.id,ids,feature:pageFeature});ids=[];height=0;}
-     pageFeature=row[0].feature;
-     height+=(ids.length?gap:0)+h;ids.push(...row.map(item=>item.id));
-    }
-    if(ids.length)result.push({group:group.id,ids,feature:pageFeature});
-   }
-   if(JSON.stringify(pages)!==JSON.stringify(result)){rememberFocus();setPages(result);}
-  };
-  const schedule=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(pack);};
-  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(schedule):null;
-  for(const el of [...host.current.querySelectorAll('.content-block'),...host.current.querySelectorAll('.chapter-toolbar'),document.querySelector('.header'),document.querySelector('.page-nav')])observer?.observe(el);
-  window.addEventListener('resize',schedule);document.fonts?.ready.then(schedule);schedule();
-  return()=>{disposed=true;cancelAnimationFrame(raf);observer?.disconnect();window.removeEventListener('resize',schedule);};
- },[groups,pages,splits]);
- useLayoutEffect(()=>{
-  window.dispatchEvent(new CustomEvent('pnc:layout'));
-  const saved=pendingFocus.current;if(!saved)return;pendingFocus.current=null;
-  const controls=[...host.current.querySelectorAll('[data-origin-block="'+saved.origin+'"] a,[data-origin-block="'+saved.origin+'"] button,[data-origin-block="'+saved.origin+'"] input,[data-origin-block="'+saved.origin+'"] select,[data-origin-block="'+saved.origin+'"] [role=slider]')];
-  const target=(saved.id&&document.getElementById(saved.id))||controls[saved.index];
-  if(target){const screen=target.closest('.screen'),slide=target.closest('.chapter-slide');window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:[...host.current.querySelectorAll(':scope>.screen')].indexOf(screen),xIndex:[...screen.querySelectorAll('.chapter-slide')].indexOf(slide),instant:true}}));target.focus({preventScroll:true});}
- },[pages,splits]);
- return <main id="main" ref={host}>{effectiveGroups.map(group=>{
-  const groupPages=pages.filter(page=>page.group===group.id);
-  return <section className={'screen screen-'+group.id} key={group.id} id={group.id} data-screen-key={group.id} aria-label={group.label}>
-   {group.toolbar&&<div className="chapter-toolbar">{group.toolbar}</div>}
-   <div className="chapter-track">{groupPages.map((page,pageIndex)=><div className="chapter-slide" key={page.ids[0]} data-slide-key={page.ids[0]} data-feature={page.feature} aria-label={group.label+'，第 '+(pageIndex+1)+' 屏'}>
-    {group.id==='home'&&pageIndex===0&&<div className="hero-art" aria-hidden="true"><Mark/></div>}
-    <div className="screen-content">{page.ids.flatMap(id=>group.blocks.filter(b=>b.id===id||b.id.startsWith(id+'.'))).map((item,itemIndex)=><div className={'content-block'+(item.wide?' block-wide':'')} style={{'--enter-order':itemIndex}} data-block={item.id} data-origin-block={item.id.split('.')[0]} key={item.id}>{item.node}</div>)}</div>
-   </div>)}</div>
-  </section>;
- })}</main>;
+// Content remains in normal document flow. Visibility only controls rendering cost;
+// it never intercepts wheel, touch, keyboard, focus, anchors or browser history.
+function NaturalSections({groups,tab}){
+ const host=useRef(null);
+ useEffect(()=>observeSections(host.current),[]);
+ return <main id="main" ref={host} tabIndex={-1}>{groups.map(group=><section className={'screen screen-'+group.id} key={group.id} id={group.id} aria-label={group.label}>
+  {group.toolbar&&<div className="chapter-toolbar">{group.toolbar}</div>}
+  <div className="chapter-slide">
+   {group.id==='home'&&<div className="hero-art" aria-hidden="true"><Mark/></div>}
+   <div className="screen-content">{group.blocks.map(item=><div className={'content-block'+(item.wide?' block-wide':'')} hidden={!!item.feature&&item.feature!==tab} data-block={item.id} key={item.id}>{item.node}</div>)}</div>
+  </div>
+ </section>)}</main>;
 }
 
 function App(){
  const reduce=useReducedMotion();
- const [theme,setTheme]=useState('system'),[tab,setTab]=useState('catalogue'),[answer,setAnswer]=useState(false),[open,setOpen]=useState(true),[provider,setProvider]=useState('DeepSeek'),[concurrency,setConcurrency]=useState(3),[page,setPage]=useState({index:0,count:1,xIndex:0,xCount:1,label:'首页'});
- useEffect(()=>{const update=e=>{setPage(old=>JSON.stringify(old)===JSON.stringify(e.detail)?old:e.detail);const feature=document.querySelectorAll('main>.screen')[e.detail.index]?.querySelectorAll('.chapter-slide')[e.detail.xIndex]?.dataset.feature;if(feature&&e.detail.index===1)setTab(feature)};window.addEventListener('pnc:page',update);return()=>window.removeEventListener('pnc:page',update)},[]);
- useEffect(installSnap,[]);
+ const [theme,setTheme]=useState('system'),[tab,setTab]=useState('catalogue'),[answer,setAnswer]=useState(false),[open,setOpen]=useState(true),[provider,setProvider]=useState('DeepSeek'),[concurrency,setConcurrency]=useState(3);
  const tabs=[['catalogue','班级题集'],['assistance','解析辅助'],['settings','模型设置']];
- const chooseTab=id=>{
-  const screen=document.getElementById('experience'),slides=[...screen.querySelectorAll('.chapter-slide')],xIndex=slides.findIndex(el=>el.dataset.feature===id);
-  if(xIndex>=0)window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:[...document.querySelectorAll('main>.screen')].indexOf(screen),xIndex}}));
-  setTab(id);
- };
+ const chooseTab=id=>setTab(id);
  const previewToolbar=<><div className="preview-heading"><span className="eyebrow">ONE PANEL. LESS FRICTION.</span><span className="preview-disclaimer">交互示意 · 不请求模型，不提交答案</span></div><div className="tabs" role="tablist" aria-label="功能预览">{tabs.map(([id,label])=><button key={id} role="tab" id={'tab-'+id} aria-selected={tab===id} aria-controls={'panel-'+id} tabIndex={tab===id?0:-1} onKeyDown={e=>{if(!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const i=tabs.findIndex(t=>t[0]===id),n=e.key==='Home'?0:e.key==='End'?2:(i+(['ArrowRight','ArrowDown'].includes(e.key)?1:2))%3;chooseTab(tabs[n][0]);document.getElementById('tab-'+tabs[n][0])?.focus()}} onClick={()=>chooseTab(id)}>{tab===id&&<motion.span aria-hidden="true" className="tab-selection" layoutId="selected-preview-tab" transition={{duration:reduce?0:.34,ease:[.22,1,.36,1]}}/>}{label}</button>)}</div></>;
  const previewBlocks=[];
  const addPreview=(feature,...items)=>previewBlocks.push(...items.map(item=>({...item,feature})));
@@ -169,6 +85,6 @@ function App(){
    block('footer',<footer className="footer"><span>© 2026 NeuronCState</span><span>界面基于 <a href="https://github.com/meta/astryx">Astryx</a> · <a href="THIRD-PARTY-NOTICES.txt">第三方许可</a></span></footer>,true)
   ]}
  ];
- return <Theme theme={neutralTheme} mode={theme}><div className="page"><NeuronBackground/><a className="skip" href="#main">跳到正文</a><header className="header"><a className="brand" href="#home" aria-label="PTA Neuron Copilot 首页"><Mark/><span>PNC</span></a><nav aria-label="主导航"><a href="#experience">功能预览</a><a href="#rhythm">工作原理</a><a href="#helper">Helper</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Arrow/></a></nav><select className="theme-select" aria-label="页面配色" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select><Button href="#install" label="获取脚本" variant="secondary" size="sm"/></header><ViewportPages groups={groups}/><div className="page-nav" aria-label="整屏导航"><div className="horizontal-nav" aria-label="本章节横向内容"><button className="page-arrow" aria-label="上一屏内容" disabled={!page.xIndex} onClick={()=>window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{xIndex:page.xIndex-1}}))}>←</button><span className="horizontal-count" aria-live="polite">{page.label} <b>{(page.xIndex||0)+1} / {page.xCount||1}</b></span><button className="page-arrow" aria-label="下一屏内容" disabled={page.xIndex>=page.xCount-1} onClick={()=>window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{xIndex:page.xIndex+1}}))}>→</button></div><div className="vertical-nav"><button className="page-arrow" aria-label="上一页" disabled={page.index===0} onClick={()=>window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:page.index-1}}))}>↑</button><span className="page-count" aria-live="polite">{String(page.index+1).padStart(2,'0')} <span>/ {String(page.count).padStart(2,'0')}</span></span><span className="page-hint">上下切章节</span><button className="page-arrow" aria-label="下一页" disabled={page.index>=page.count-1} onClick={()=>window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:page.index+1}}))}>↓</button></div></div></div></Theme>;
+ return <Theme theme={neutralTheme} mode={theme}><div className="page"><NeuronBackground/><a className="skip" href="#main">跳到正文</a><header className="header"><a className="brand" href="#home" aria-label="PTA Neuron Copilot 首页"><Mark/><span>PNC</span></a><nav aria-label="主导航"><a href="#experience">功能预览</a><a href="#rhythm">工作原理</a><a href="#helper">Helper</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Arrow/></a></nav><select className="theme-select" aria-label="页面配色" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select><Button href="#install" label="获取脚本" variant="secondary" size="sm"/><a className="terminal-entry" href="./terminal/">3D 终端 <Arrow/></a></header><NaturalSections groups={groups} tab={tab}/></div></Theme>;
 }
 createRoot(document.getElementById('root')).render(<App/>);

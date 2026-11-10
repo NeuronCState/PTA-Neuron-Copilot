@@ -148,3 +148,22 @@ pause/resume, reversal, details focus, cache routing, local notification,
 context loss/recovery, reduced motion and responsive layouts. The cloud browser
 exercises the software path; native GPU, physical mobile devices and Safari
 remain unverified. Existing bundle-size and dependency directive warnings remain.
+
+### Native-scroll homepage and separate terminal (2026-11-10)
+
+The latest homepage replaces the historical two-axis controller and measured page
+packing with ordinary document sections. Wheel, touch, keyboard, anchors and
+Back/Forward use browser defaults. Preview tabs hide only the inactive preview
+content; all other sections remain in the document flow. Text is not split,
+shrunk or constrained to viewport height. The original PNC and Helper journeys
+retain one canvas each, with IntersectionObserver activating their renderers
+while their section is visible. The header links to the separate `./terminal/`.
+The old snap-controller files and older QA fixtures are historical only and are
+not imported into the homepage or included in the current test command.
+
+`npm run build && npm test` checks the built homepage, native visibility lifecycle,
+preview interactions, installation URLs and renderer mathematics. The new
+`native-qa.html` development harness covers responsive native flow, 200% text,
+non-cancelled gestures, arbitrary scroll positions, anchor history, persistent
+canvases, details focus and sample notification reversal. Browser results must
+be reported separately from node checks; synthetic input is not physical-device QA.

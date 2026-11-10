@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-006 / 检查连接
+CHECK CONNECTION
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+正式脚本面板提供测试入口，适合在开始处理题目前确认配置。一次成功连接不代表所有题型都能得到正确答案。
+
+使用说明
+1. 先在普通练习页检查模型、语言与运行状态。
+2. 请求失败时核对 API Key、所选模型及供应商服务状态。
+3. 涉及供应商的请求可能消耗额度，具体费用以供应商规则为准。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

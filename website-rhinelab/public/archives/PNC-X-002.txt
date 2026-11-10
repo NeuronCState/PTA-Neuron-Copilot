@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-002 / 安装前准备
+BEFORE INSTALLING
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+先安装脚本猫或 Tampermonkey，再从项目正式入口安装脚本。PNC 与 Helper 是两个独立条目。
+
+使用说明
+1. PNC 仅匹配 https://pintia.cn/*。
+2. Helper 为可选组件，安装主脚本并不等于已启用跨网页提醒。
+3. 脚本猫发布页由维护者单独更新，安装前核对页面版本。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

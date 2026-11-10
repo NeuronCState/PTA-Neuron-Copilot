@@ -59,8 +59,6 @@ export default function WorkflowJourney({kind,stages}) {
   }
   function start(){if(!active||document.hidden||!renderer||lost){stop();return;}if(frame)return;last=performance.now();if(reduce)draw();else frame=requestAnimationFrame(tick);}
   function resize(){
-   const s=getComputedStyle(screen),available=screen.getBoundingClientRect().height-['--screen-top','--screen-bottom','--toolbar-space'].reduce((sum,key)=>sum+(parseFloat(s.getPropertyValue(key))||0),0);
-   el.style.setProperty('--journey-available',Math.max(120,available-2)+'px');
    const rect=viewport.getBoundingClientRect();width=Math.max(1,rect.width);height=Math.max(1,rect.height);palette();start();
   }
   function activate(){const next=screen?.dataset.active==='true';if(next===active)return;active=next;if(!active){stop();renderer?.dispose();renderer=null;setRendererType('idle');return;}try{renderer=createSceneRenderer(cv);}catch{renderer=null;}setRendererType(renderer?.type||'fallback');resize();}

@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-017 / 班级目录
+CLASS CATALOGUE
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+班级题集管理把分组、作答进度、分数与剩余时间集中展示，帮助安排练习顺序。
+
+使用说明
+1. 目录数据由 PNC 在 PTA 页面读取。
+2. 本站仅解释目录字段，不读取真实班级或学生记录。
+3. 提醒依赖题集数据，先读取目录再检查 Helper 同步。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

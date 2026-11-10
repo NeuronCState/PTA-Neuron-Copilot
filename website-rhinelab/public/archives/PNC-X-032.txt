@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-032 / 取消配对
+REMOVE PAIRING
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+从 Helper 管理器菜单取消配对，需要明确确认。该操作清除 Helper 提醒缓存，不影响 PNC 答题缓存。
+
+使用说明
+1. 更换主脚本身份或管理器后，可能需要重新配对。
+2. Helper 当前未配置自动更新地址，手动升级后核对配对。
+3. 不要同时启用普通模式与另一份旧后台 Helper。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

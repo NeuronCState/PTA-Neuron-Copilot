@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-025 / 启用倒计时
+ENABLE REMINDERS
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+在 PNC 中读取班级题集，再到设置底部开启倒计时提醒并选择提前天数。提醒需要 Helper 配合。
+
+使用说明
+1. 提前天数选项为 1–30 天。
+2. 只有阈值内尚未截止的题集参与提醒。
+3. 设置完成后进入 Helper 测试诊断，核对数据是否可用。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

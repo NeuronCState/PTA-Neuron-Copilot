@@ -1,0 +1,698 @@
+{
+  "categories": [
+    "入门安装",
+    "题目处理",
+    "班级题集",
+    "Helper 提醒",
+    "安全与排查"
+  ],
+  "columns": [
+    "入门安装",
+    "题目处理",
+    "班级题集",
+    "Helper 提醒",
+    "安全与排查"
+  ],
+  "records": [
+    {
+      "id": "X-001",
+      "title": "认识 PNC",
+      "en": "MEET PNC",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "PNC 是面向拼题 A 的 AI 辅助答题用户脚本。正式版 2.1.0 提供多模型、小题并发、解析辅助与班级题集管理。",
+      "findings": [
+        "本网站是功能文档与交互展示，不连接 PTA 账号，也不执行答题或提交。",
+        "实际功能需在用户脚本管理器安装 PNC 后，于 PTA 网站使用。",
+        "AI 结果仅作参考，使用前请确认课程与平台规则。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-002",
+      "title": "安装前准备",
+      "en": "BEFORE INSTALLING",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "先安装脚本猫或 Tampermonkey，再从项目正式入口安装脚本。PNC 与 Helper 是两个独立条目。",
+      "findings": [
+        "PNC 仅匹配 https://pintia.cn/*。",
+        "Helper 为可选组件，安装主脚本并不等于已启用跨网页提醒。",
+        "脚本猫发布页由维护者单独更新，安装前核对页面版本。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-003",
+      "title": "主脚本入口",
+      "en": "INSTALL PNC",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "正式主脚本入口为 PNC.user.js，当前读取到的版本为 2.1.0。安装后刷新 PTA，检查脚本是否正常启用。",
+      "findings": [
+        "管理器中的脚本名称为 PTA-Neuron-Copilot。",
+        "仅保留一份启用的主脚本，避免新旧版本同时注入。",
+        "源码入口与更新地址均指向项目 main 分支的 PNC.user.js。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-004",
+      "title": "可选 Helper",
+      "en": "INSTALL HELPER",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "PNC Helper 1.0.0 用于接收题集截止提醒。普通网页模式支持脚本猫和 Tampermonkey，需要手动公钥配对。",
+      "findings": [
+        "Helper 匹配普通 HTTP/HTTPS 顶层网页，不在 iframe 内运行。",
+        "安装后仍需读取班级题集、完成配对并开启倒计时提醒。",
+        "不需要截止通知时，可以只安装 PNC。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-005",
+      "title": "配置模型",
+      "en": "MODEL SETUP",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "在 PNC 设置中选择供应商，并按其要求配置 API Key 与模型。可用模型由供应商接口返回。",
+      "findings": [
+        "界面包含 DeepSeek、MiMo 与 Opencode Zen 供应商入口。",
+        "填写配置后可刷新模型列表；模型可用性以供应商响应为准。",
+        "不要在本展示网站输入 API Key，这里没有模型连接功能。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-006",
+      "title": "检查连接",
+      "en": "CHECK CONNECTION",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "正式脚本面板提供测试入口，适合在开始处理题目前确认配置。一次成功连接不代表所有题型都能得到正确答案。",
+      "findings": [
+        "先在普通练习页检查模型、语言与运行状态。",
+        "请求失败时核对 API Key、所选模型及供应商服务状态。",
+        "涉及供应商的请求可能消耗额度，具体费用以供应商规则为准。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-007",
+      "title": "升级与保留",
+      "en": "UPGRADE SAFELY",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "从 Beta 或 2.0.2 升级时，手动打开正式安装链接，先核对更新对象，不要先卸载旧条目。",
+      "findings": [
+        "新版不主动清除设置、API Key、题集与答案缓存或配对。",
+        "不同脚本身份、不同管理器之间不保证自动迁移。",
+        "若生成新副本，停用旧副本并核对设置；Helper 必要时重新配对。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-008",
+      "title": "查阅与反馈",
+      "en": "GUIDE & SUPPORT",
+      "department": "入门安装",
+      "category": "入门安装",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "安装说明、完整指南和问题反馈均保留在 PNC 项目中。本档案按当前本地源码整理，不代替维护者后续发布说明。",
+      "findings": [
+        "项目主页：https://neuroncstate.github.io/PTA-Neuron-Copilot/",
+        "使用指南：https://neuroncstate.github.io/PTA-Neuron-Copilot/guide.html",
+        "问题反馈：https://github.com/NeuronCState/PTA-Neuron-Copilot/issues"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-009",
+      "title": "选择处理方式",
+      "en": "CHOOSE A MODE",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "PNC 区分自动解题与作答辅助。开始前先看清模式，避免把参考解析与真实作答流程混为一谈。",
+      "findings": [
+        "未启用作答辅助时，主按钮为“开始解题”。",
+        "启用作答辅助后，为本页题目准备参考解析。",
+        "自动提交会留下真实 PTA 记录；本站中的档案操作不会提交答案。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-010",
+      "title": "只看参考解析",
+      "en": "REFERENCE EXPLANATIONS",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "作答辅助为本页题目准备参考解析，不填写、不保存、不提交。适合先理解题意与推导，再自行作答。",
+      "findings": [
+        "启动辅助前需停止正在进行的自动解题。",
+        "清除本页解析只针对当前页面解析展示。",
+        "解析由 AI 生成，仍需核对条件、边界情况与推导。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-011",
+      "title": "小题并发",
+      "en": "QUESTION CONCURRENCY",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "并发数量控制同页请求数。1 为串行，2–10 为同页并发，并不是无限任务队列。",
+      "findings": [
+        "关闭连续答题时仅处理一题。",
+        "提高并发可能增加短时请求量，需留意供应商限流与额度。",
+        "停止操作不保证已经发出的请求停止计费。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-012",
+      "title": "连续答题",
+      "en": "CONTINUOUS SOLVING",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "连续答题用于按当前流程处理题目。与并发数量配合使用时，应先确认题目范围和作答模式。",
+      "findings": [
+        "关闭连续答题后仅处理一题。",
+        "执行前检查是否启用“跳过已作答”。",
+        "不要把批量处理等同于答案已经正确或被平台接受。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-013",
+      "title": "跳过已作答",
+      "en": "SKIP ANSWERED",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "面板提供“跳过已作答”选项，减少对已作答题目的重复处理。它不是正确性证明。",
+      "findings": [
+        "开始前检查开关是否符合本次练习目的。",
+        "已作答与答对是不同状态，仍应以 PTA 判题结果为准。",
+        "在需要重新推导时，先核对当前题目和已有输入。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-014",
+      "title": "编程语言",
+      "en": "LANGUAGE SELECTION",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "编程语言可以自动检测，也可以手动选择 C、C++、Python、Java 或 Pascal。所选语言应与题目要求一致。",
+      "findings": [
+        "检查 PTA 当前编译器与脚本语言设置是否匹配。",
+        "切换前保留重要代码，不要依赖刷新后恢复未保存输入。",
+        "生成代码后核对输入输出格式、复杂度与边界条件。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-015",
+      "title": "题目图片",
+      "en": "QUESTION IMAGES",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "设置中提供“允许发送题目图片”选项。启用前确认图片内容适合发送给所选供应商，并检查模型的图像支持。",
+      "findings": [
+        "图片属于题目数据，发送后由模型供应商处理。",
+        "不要把图片选项理解为所有模型都支持视觉输入。",
+        "图中条件、公式和标注仍可能被识别错误，需要人工核对。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-016",
+      "title": "AI 解答缓存",
+      "en": "ANSWER CACHE",
+      "department": "题目处理",
+      "category": "题目处理",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "PNC 在本地保存 AI 解答缓存，界面标注保留 7 天、刷新保留并按账号隔离。缓存不代表答案已经验证。",
+      "findings": [
+        "设置中提供“清除 AI 解答缓存”按钮。",
+        "缓存使用用户脚本私有存储，不是本站提供的云端题库。",
+        "题目或模型结果有疑问时，重新核对题意和 PTA 判题信息。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-017",
+      "title": "班级目录",
+      "en": "CLASS CATALOGUE",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "班级题集管理把分组、作答进度、分数与剩余时间集中展示，帮助安排练习顺序。",
+      "findings": [
+        "目录数据由 PNC 在 PTA 页面读取。",
+        "本站仅解释目录字段，不读取真实班级或学生记录。",
+        "提醒依赖题集数据，先读取目录再检查 Helper 同步。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-018",
+      "title": "分组浏览",
+      "en": "GROUPED SETS",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "目录按题集所属分组组织内容，分组可以展开或收起。分组信息缺失时不应自行推断所属班级。",
+      "findings": [
+        "分组展开状态只影响浏览方式，不改变 PTA 题集。",
+        "历史分组的归档判断需要可信、完整的目录数据。",
+        "若题集未出现在预期分组，先核对读取状态与账号。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-019",
+      "title": "作答进度",
+      "en": "SAVED PROGRESS",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "目录展示已作答数量与进度；环形进度表示已保存作答完成度，而不是答题正确率。",
+      "findings": [
+        "有效进度需要可用的已作答数和题目总数。",
+        "数据缺失时显示未知或未提供，不用零分代替缺失值。",
+        "缓存进度会标明来源，可能不包含刚刚完成的作答。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-020",
+      "title": "分数状态",
+      "en": "SCORE STATUS",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "题集条目分别展示进度和分数。读取中、未能读取、未提供等状态说明数据尚不完整。",
+      "findings": [
+        "“未提供”不表示分数为零。",
+        "分数与作答数量含义不同，不能互相替代。",
+        "需要确认最终成绩时，以 PTA 题集实际结果为准。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-021",
+      "title": "剩余时间",
+      "en": "TIME REMAINING",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "倒计时根据题集截止时间计算，按剩余天、小时或分钟显示。没有有效时间时显示截止未知。",
+      "findings": [
+        "整天与整小时向下取整，分钟向上取整。",
+        "剩余不足一天会采用紧急状态提示。",
+        "界面时间是读取值的计算结果，不会自动得知尚未同步的延期。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-022",
+      "title": "开放与截止",
+      "en": "SET AVAILABILITY",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "目录区分未开放、已开放和已关闭。时间变化会更新本地显示，但题集访问仍受 PTA 实际规则限制。",
+      "findings": [
+        "已截止的条目不能据倒计时界面推断仍可提交。",
+        "没有截止时间时，不把未知状态当成已结束。",
+        "平台临时调整开放时间后，应重新核对目录。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-023",
+      "title": "本地题集缓存",
+      "en": "CATALOGUE CACHE",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "目录可使用本地缓存，缓存进度会显示来源提示。已有数据有助于浏览，但不等于当前服务端状态。",
+      "findings": [
+        "“进度来自缓存”和“历史缓存”用于区分旧数据。",
+        "已结束题集的历史指标不应被当作持续实时刷新。",
+        "目录提供清除本地题集缓存入口；清除前确认确实需要重新读取。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js"
+    },
+    {
+      "id": "X-024",
+      "title": "历史与复习",
+      "en": "HISTORY & REVIEW",
+      "department": "班级题集",
+      "category": "班级题集",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "当前正式版隐藏复习功能与开发者选项，并暂停相关后台任务。旧截图中出现的复习控件不代表当前可用功能。",
+      "findings": [
+        "隐藏功能不会主动删除已有持久缓存。",
+        "历史 beta.20 截图只用于说明早期界面。",
+        "不要把保留的源码或旧缓存解释为已开放的复习服务。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-025",
+      "title": "启用倒计时",
+      "en": "ENABLE REMINDERS",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "在 PNC 中读取班级题集，再到设置底部开启倒计时提醒并选择提前天数。提醒需要 Helper 配合。",
+      "findings": [
+        "提前天数选项为 1–30 天。",
+        "只有阈值内尚未截止的题集参与提醒。",
+        "设置完成后进入 Helper 测试诊断，核对数据是否可用。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-026",
+      "title": "公钥配对",
+      "en": "PUBLIC KEY PAIRING",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "点击 PNC 的“复制 Helper 配对码”，再从 Helper 管理器菜单选择“配对”，粘贴并确认来源。",
+      "findings": [
+        "配对码只包含验证公钥，不应包含 API Key、Cookie 或私钥。",
+        "取消或无效输入不修改已有配对。",
+        "同一公钥重新配对保留提醒缓存；更换公钥需确认并清空旧提醒缓存。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-027",
+      "title": "同步题集",
+      "en": "SYNC SET DATA",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "配对会请求同步；若在其他网站完成配对，需要打开 PTA 才能获取新的提醒数据。请求同步不等于已经同步成功。",
+      "findings": [
+        "测试诊断可区分缺设置、缺目录、账号不匹配、空目录与可用目录。",
+        "签名设置与题集缓存均可用后，才有可靠的配置依据。",
+        "离线期间无法得知服务器注销、延期或账号变化。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-028",
+      "title": "离开 PTA 后",
+      "en": "BEYOND THE PTA TAB",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "普通网页模式可在其他 HTTP/HTTPS 顶层网页运行时，依据 Helper 自己的缓存检查截止时间。",
+      "findings": [
+        "无需保持 PTA 标签一直打开，但仍依赖可注入的普通网页。",
+        "浏览器内部页与禁止注入的站点不在覆盖范围。",
+        "所有普通标签关闭、页面冻结、浏览器退出或休眠都会停止或延迟检查。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-029",
+      "title": "一题集一通知",
+      "en": "ONE SET PER NOTICE",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "每条正式截止通知对应一个题集，正文包含题集名称与剩余时间，点击由管理器打开对应 PTA 题集。",
+      "findings": [
+        "每轮最多请求三条，其余留到后续检查。",
+        "目标固定为 PTA HTTPS 域名与校验后的数字题集 ID。",
+        "手动测试通知不对应真实题集，不自动跳转。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-030",
+      "title": "暂停与恢复",
+      "en": "PAUSE & RESUME",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "Helper 的“提醒状态”菜单显示同步与启停状态，确认后切换所有标签的暂停或恢复。",
+      "findings": [
+        "取消弹窗不会改变提醒状态。",
+        "需要可靠地停止请求时，直接从 Helper 扩展菜单暂停。",
+        "已请求的通知不能撤回，仅关闭 PTA 页面也不等于暂停提醒。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-031",
+      "title": "测试诊断",
+      "en": "HELPER DIAGNOSTICS",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "测试诊断先读取本地状态，显示配对、暂停、缓存时间、阈值内题集数量以及本页面同步结果。",
+      "findings": [
+        "输入 1 在 PTA 页面请求同步，不自动启用提醒或清除数据。",
+        "输入 2 经再次确认后发送通用测试通知，不改变正式去重记录。",
+        "诊断不展示密钥、账号、题集标题或答案；取消或空输入不产生通知。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-032",
+      "title": "取消配对",
+      "en": "REMOVE PAIRING",
+      "department": "Helper 提醒",
+      "category": "Helper 提醒",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "从 Helper 管理器菜单取消配对，需要明确确认。该操作清除 Helper 提醒缓存，不影响 PNC 答题缓存。",
+      "findings": [
+        "更换主脚本身份或管理器后，可能需要重新配对。",
+        "Helper 当前未配置自动更新地址，手动升级后核对配对。",
+        "不要同时启用普通模式与另一份旧后台 Helper。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-033",
+      "title": "数据去向",
+      "en": "DATA DESTINATIONS",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "使用模型功能时，脚本会把题目发送给所选供应商，并按其要求使用 API Key。了解发送内容再开始处理。",
+      "findings": [
+        "Key 保存在本地；缓存使用脚本私有存储。",
+        "部分操作会使用剪贴板，公钥复制不等于读取剪贴板内容。",
+        "本展示网站没有模型请求、账号登录或真实提交接口。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-034",
+      "title": "真实提交风险",
+      "en": "REAL SUBMISSIONS",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "PNC 的自动解题流程可能提交真实答案并留下 PTA 记录。AI 生成内容可能错误，操作责任不能由缓存或解析替代。",
+      "findings": [
+        "遵守课程、考试与平台对辅助工具的规定。",
+        "需要只看解析时，明确启用作答辅助模式。",
+        "重要输入与代码自行保存，刷新后不保证恢复。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    },
+    {
+      "id": "X-035",
+      "title": "通知不是送达",
+      "en": "REQUESTED IS NOT DELIVERED",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "管理器显示“已请求”或“已创建”，都不能证明操作系统实际展示了通知。提醒不应成为唯一截止保障。",
+      "findings": [
+        "Tampermonkey 缺少脚本猫的 oncreate 回执，请求未抛错仍可能结果未知。",
+        "检查系统通知权限与勿扰设置，并在实际设备上验证显示和点击。",
+        "未知结果不会盲目重发；极端崩溃边界下可能漏提醒。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-036",
+      "title": "休眠与多标签",
+      "en": "SLEEP & MULTIPLE TABS",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "Helper 用管理器标签记录协调多标签请求。冻结的持锁标签可能阻塞其他实例，直到恢复或关闭。",
+      "findings": [
+        "没有使用超时抢锁，避免多个实例同时重复请求。",
+        "浏览器后退恢复旧文档后，需要刷新才重新参与提醒。",
+        "模拟测试不代表实机生命周期验收，不能承诺严格只提醒一次。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-037",
+      "title": "签名与边界",
+      "en": "SIGNATURE BOUNDARIES",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "普通模式中，主脚本保留签名私钥，Helper 只持公钥及自己的提醒缓存，并验证签名、时效与序号。",
+      "findings": [
+        "配对需要浏览器支持 Web Crypto 与 Web Locks。",
+        "无法取得安全写锁时同步失败，不降级成不安全计数器。",
+        "签名可校验数据，却不能阻止恶意宿主拦截同步或保证通知送达。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-038",
+      "title": "复制反馈",
+      "en": "COPY FEEDBACK",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "只有浏览器剪贴板 Promise 成功完成时，按钮才显示“已复制”。管理器回调仅确认已请求复制。",
+      "findings": [
+        "看到“已请求复制”后，需要自行粘贴核对配对码。",
+        "异常、拒绝或超时表示结果未确认，不应当成复制成功。",
+        "只在自己的 Helper 管理器菜单粘贴公钥，不向网页输入凭据。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-039",
+      "title": "后台增强边界",
+      "en": "BACKGROUND MODE LIMITS",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "脚本猫提供可选独立后台方案，但它与普通公钥配对模式有不同权限边界，不是默认安装步骤。",
+      "findings": [
+        "手动共享存储会授予 Helper 整个主脚本 GM 存储的读写能力。",
+        "不要把普通模式的存储隔离保证套用到共享后台模式。",
+        "必须核实实际管理器支持，不与另一份普通 Helper 同时启用。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md"
+    },
+    {
+      "id": "X-040",
+      "title": "排查顺序",
+      "en": "TROUBLESHOOTING ORDER",
+      "department": "安全与排查",
+      "category": "安全与排查",
+      "date": "PNC 2.1.0 / Helper 1.0.0",
+      "lead": "NeuronCState",
+      "clearance": "PUBLIC GUIDE",
+      "abstract": "先核对版本与重复脚本，再检查模型配置或 Helper 同步状态，最后在实际设备验证通知。逐项排查比反复重装更可控。",
+      "findings": [
+        "正式配套版本为 PNC 2.1.0 与 Helper 1.0.0，升级后刷新 PTA。",
+        "先保留设置与缓存；不要把卸载作为第一步。",
+        "反馈时说明管理器、版本、复现步骤和可见状态，不发送 API Key、Cookie 或私钥。"
+      ],
+      "source": "https://github.com/NeuronCState/PTA-Neuron-Copilot#readme"
+    }
+  ]
+}

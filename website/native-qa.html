@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>PNC native scroll QA</title>
+<style>body{font:14px system-ui;margin:20px;background:#ddd}iframe{border:0;display:block;transform-origin:top left}button{padding:10px;margin:5px}pre{white-space:pre-wrap}</style>
+<button id="run">Run native layout and interaction checks</button><pre id="results">Ready. Development-only harness. Synthetic events test cancellation, not physical scrolling.</pre><iframe id="preview" width="390" height="844" src="./"></iframe>
+<script>
+const f=document.querySelector('iframe'),r=document.querySelector('pre'),sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const logs=[];const check=(name,pass,extra)=>{logs.push({name,pass,...extra});r.textContent=JSON.stringify(logs,null,2)};
+async function size(width,height,scale){f.width=width;f.height=height;f.src='./?nativeQA='+Math.random();await new Promise(resolve=>f.onload=resolve);await sleep(500);f.contentDocument.documentElement.style.fontSize=16*scale+'px';await sleep(300)}
+window.runNativeQA=async()=>{logs.length=0;for(const [width,height,scale] of [[1440,900,1],[1024,768,1],[390,844,1],[320,568,1],[844,390,1],[390,844,2],[320,568,2]]){
+ await size(width,height,scale);const d=f.contentDocument,w=f.contentWindow;
+ check('no document overflow '+[width,height,scale],d.documentElement.scrollWidth<=width+1,{scrollWidth:d.documentElement.scrollWidth});
+ check('all content in flow '+[width,height,scale],[...d.querySelectorAll('.screen')].every(el=>w.getComputedStyle(el).overflow!=='hidden')&&!d.querySelector('.page-nav'));
+ const entry=d.querySelector('.terminal-entry'),b=entry.getBoundingClientRect();check('visible terminal entry '+[width,height,scale],entry.getAttribute('href')==='./terminal/'&&b.left>=0&&b.right<=width&&b.top>=0);
+ for(const id of ['catalogue','assistance','settings']){d.getElementById('tab-'+id).click();await sleep(60);check('preview '+id+' '+width,d.getElementById('tab-'+id).getAttribute('aria-selected')==='true'&&d.querySelector('[data-block=preview-main-'+id+']').offsetHeight>0)}
+ d.getElementById('tab-assistance').click();await sleep(50);[...d.querySelectorAll('button')].find(b=>b.textContent.includes('查看解析')).click();await sleep(60);check('answer expands '+width,!d.getElementById('sample-answer').hidden);
+ for(const type of ['wheel','touchmove']){const e=new w.Event(type,{bubbles:true,cancelable:true});d.body.dispatchEvent(e);check('native '+type+' '+width,!e.defaultPrevented)}
+ w.scrollTo(0,157);await sleep(550);check('arbitrary scroll stays '+width,Math.abs(w.scrollY-157)<2,{y:w.scrollY});
+ d.querySelector('a[href="#install"]').click();await sleep(300);check('native anchor '+width,w.location.hash==='#install'&&d.getElementById('install').getBoundingClientRect().top>=0);w.history.back();await sleep(300);check('native back '+width,w.location.hash==='');
+ d.getElementById('rhythm').scrollIntoView();await sleep(200);const canvas=d.querySelector('#wf-panel-pnc canvas');for(const id of ['read','model','write']){d.getElementById('wf-tab-'+id).click();await sleep(60);check('persistent PNC '+id+' '+width,d.querySelector('#wf-panel-pnc canvas')===canvas&&d.querySelector('#wf-panel-pnc').dataset.stage===id)}
+ const panel=d.querySelector('#wf-panel-pnc'),detail=[...panel.querySelectorAll('button')].find(b=>b.textContent.includes('详细说明'));detail.click();await sleep(100);check('details '+width,panel.querySelector('dialog').open);panel.querySelector('dialog button').click();await sleep(100);check('detail focus returns '+width,d.activeElement===detail);
+ d.getElementById('helper').scrollIntoView();await sleep(200);d.getElementById('wf-tab-jump').click();await sleep(60);const jump=d.querySelector('#wf-panel-helper .wf3d-jump');jump.click();await sleep(60);check('sample notification opens '+width,jump.getAttribute('aria-pressed')==='true');jump.click();await sleep(60);check('sample notification closes '+width,jump.getAttribute('aria-pressed')==='false');
+ check('no overflow after interactions '+[width,height,scale],d.documentElement.scrollWidth<=width+1);
+}r.textContent='DONE '+logs.filter(l=>!l.pass).length+' FAILURES\n'+JSON.stringify(logs,null,2);return logs};document.getElementById('run').onclick=window.runNativeQA;
+</script>

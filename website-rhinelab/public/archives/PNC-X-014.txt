@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-014 / 编程语言
+LANGUAGE SELECTION
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+编程语言可以自动检测，也可以手动选择 C、C++、Python、Java 或 Pascal。所选语言应与题目要求一致。
+
+使用说明
+1. 检查 PTA 当前编译器与脚本语言设置是否匹配。
+2. 切换前保留重要代码，不要依赖刷新后恢复未保存输入。
+3. 生成代码后核对输入输出格式、复杂度与边界条件。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

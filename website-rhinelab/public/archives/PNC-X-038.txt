@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-038 / 复制反馈
+COPY FEEDBACK
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+只有浏览器剪贴板 Promise 成功完成时，按钮才显示“已复制”。管理器回调仅确认已请求复制。
+
+使用说明
+1. 看到“已请求复制”后，需要自行粘贴核对配对码。
+2. 异常、拒绝或超时表示结果未确认，不应当成复制成功。
+3. 只在自己的 Helper 管理器菜单粘贴公钥，不向网页输入凭据。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

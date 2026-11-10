@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-030 / 暂停与恢复
+PAUSE & RESUME
+
+功能模块：Helper 提醒
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+Helper 的“提醒状态”菜单显示同步与启停状态，确认后切换所有标签的暂停或恢复。
+
+使用说明
+1. 取消弹窗不会改变提醒状态。
+2. 需要可靠地停止请求时，直接从 Helper 扩展菜单暂停。
+3. 已请求的通知不能撤回，仅关闭 PTA 页面也不等于暂停提醒。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

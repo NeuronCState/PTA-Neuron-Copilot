@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-023 / 本地题集缓存
+CATALOGUE CACHE
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+目录可使用本地缓存，缓存进度会显示来源提示。已有数据有助于浏览，但不等于当前服务端状态。
+
+使用说明
+1. “进度来自缓存”和“历史缓存”用于区分旧数据。
+2. 已结束题集的历史指标不应被当作持续实时刷新。
+3. 目录提供清除本地题集缓存入口；清除前确认确实需要重新读取。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

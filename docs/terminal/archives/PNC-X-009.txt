@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-009 / 选择处理方式
+CHOOSE A MODE
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+PNC 区分自动解题与作答辅助。开始前先看清模式，避免把参考解析与真实作答流程混为一谈。
+
+使用说明
+1. 未启用作答辅助时，主按钮为“开始解题”。
+2. 启用作答辅助后，为本页题目准备参考解析。
+3. 自动提交会留下真实 PTA 记录；本站中的档案操作不会提交答案。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

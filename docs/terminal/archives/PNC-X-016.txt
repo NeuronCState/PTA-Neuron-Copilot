@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-016 / AI 解答缓存
+ANSWER CACHE
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+PNC 在本地保存 AI 解答缓存，界面标注保留 7 天、刷新保留并按账号隔离。缓存不代表答案已经验证。
+
+使用说明
+1. 设置中提供“清除 AI 解答缓存”按钮。
+2. 缓存使用用户脚本私有存储，不是本站提供的云端题库。
+3. 题目或模型结果有疑问时，重新核对题意和 PTA 判题信息。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

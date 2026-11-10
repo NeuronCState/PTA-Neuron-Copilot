@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-040 / 排查顺序
+TROUBLESHOOTING ORDER
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+先核对版本与重复脚本，再检查模型配置或 Helper 同步状态，最后在实际设备验证通知。逐项排查比反复重装更可控。
+
+使用说明
+1. 正式配套版本为 PNC 2.1.0 与 Helper 1.0.0，升级后刷新 PTA。
+2. 先保留设置与缓存；不要把卸载作为第一步。
+3. 反馈时说明管理器、版本、复现步骤和可见状态，不发送 API Key、Cookie 或私钥。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

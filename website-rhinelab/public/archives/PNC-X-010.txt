@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-010 / 只看参考解析
+REFERENCE EXPLANATIONS
+
+功能模块：题目处理
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+作答辅助为本页题目准备参考解析，不填写、不保存、不提交。适合先理解题意与推导，再自行作答。
+
+使用说明
+1. 启动辅助前需停止正在进行的自动解题。
+2. 清除本页解析只针对当前页面解析展示。
+3. 解析由 AI 生成，仍需核对条件、边界情况与推导。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

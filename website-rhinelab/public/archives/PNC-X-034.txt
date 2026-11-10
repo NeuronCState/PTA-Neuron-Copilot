@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-034 / 真实提交风险
+REAL SUBMISSIONS
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+PNC 的自动解题流程可能提交真实答案并留下 PTA 记录。AI 生成内容可能错误，操作责任不能由缓存或解析替代。
+
+使用说明
+1. 遵守课程、考试与平台对辅助工具的规定。
+2. 需要只看解析时，明确启用作答辅助模式。
+3. 重要输入与代码自行保存，刷新后不保证恢复。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

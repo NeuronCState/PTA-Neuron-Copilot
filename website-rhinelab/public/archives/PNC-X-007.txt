@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-007 / 升级与保留
+UPGRADE SAFELY
+
+功能模块：入门安装
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+从 Beta 或 2.0.2 升级时，手动打开正式安装链接，先核对更新对象，不要先卸载旧条目。
+
+使用说明
+1. 新版不主动清除设置、API Key、题集与答案缓存或配对。
+2. 不同脚本身份、不同管理器之间不保证自动迁移。
+3. 若生成新副本，停用旧副本并核对设置；Helper 必要时重新配对。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot#readme
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

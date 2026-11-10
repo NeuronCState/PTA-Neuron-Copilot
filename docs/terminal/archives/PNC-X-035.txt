@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-035 / 通知不是送达
+REQUESTED IS NOT DELIVERED
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+管理器显示“已请求”或“已创建”，都不能证明操作系统实际展示了通知。提醒不应成为唯一截止保障。
+
+使用说明
+1. Tampermonkey 缺少脚本猫的 oncreate 回执，请求未抛错仍可能结果未知。
+2. 检查系统通知权限与勿扰设置，并在实际设备上验证显示和点击。
+3. 未知结果不会盲目重发；极端崩溃边界下可能漏提醒。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

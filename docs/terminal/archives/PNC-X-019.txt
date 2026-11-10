@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-019 / 作答进度
+SAVED PROGRESS
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+目录展示已作答数量与进度；环形进度表示已保存作答完成度，而不是答题正确率。
+
+使用说明
+1. 有效进度需要可用的已作答数和题目总数。
+2. 数据缺失时显示未知或未提供，不用零分代替缺失值。
+3. 缓存进度会标明来源，可能不包含刚刚完成的作答。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

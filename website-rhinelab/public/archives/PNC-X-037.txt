@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-037 / 签名与边界
+SIGNATURE BOUNDARIES
+
+功能模块：安全与排查
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+普通模式中，主脚本保留签名私钥，Helper 只持公钥及自己的提醒缓存，并验证签名、时效与序号。
+
+使用说明
+1. 配对需要浏览器支持 Web Crypto 与 Web Locks。
+2. 无法取得安全写锁时同步失败，不降级成不安全计数器。
+3. 签名可校验数据，却不能阻止恶意宿主拦截同步或保证通知送达。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/notifications/README.md
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。

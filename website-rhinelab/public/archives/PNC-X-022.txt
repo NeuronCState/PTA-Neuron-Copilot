@@ -1,0 +1,18 @@
+﻿PNC · FEATURE DATABASE
+FILE X-022 / 开放与截止
+SET AVAILABILITY
+
+功能模块：班级题集
+编目范围：PNC 2.1.0 / Helper 1.0.0
+适用范围：NeuronCState
+访问范围：PUBLIC GUIDE
+
+目录区分未开放、已开放和已关闭。时间变化会更新本地显示，但题集访问仍受 PTA 实际规则限制。
+
+使用说明
+1. 已截止的条目不能据倒计时界面推断仍可提交。
+2. 没有截止时间时，不把未知状态当成已结束。
+3. 平台临时调整开放时间后，应重新核对目录。
+
+源码与说明：https://github.com/NeuronCState/PTA-Neuron-Copilot/blob/main/PNC.user.js
+本页为 PNC 功能展示，不连接 PTA、模型服务或系统通知。
