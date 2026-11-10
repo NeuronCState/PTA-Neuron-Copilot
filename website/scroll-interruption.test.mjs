@@ -16,7 +16,7 @@ const key=(key,target=window,extra={})=>emit('keydown',{key,...extra},target);
 const navigate=index=>window.dispatchEvent(new window.CustomEvent('pnc:navigate',{detail:{index}}));
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 let last;window.addEventListener('pnc:page',e=>last=e.detail);
-let stop=installSnap();assert.deepEqual(last,{index:0,count:3});
+let stop=installSnap();assert.deepEqual(last,{index:0,count:3,xIndex:0,xCount:1,label:''});
 async function midway(){navigate(0);end();await pause(180);wheel();await pause(65);tick(0);tick(350);assert(scrollY>0&&scrollY<800);}
 for(const k of ['Shift','a','Control','Meta','Alt']){await midway();key(k);tick(700);assert.equal(scrollY,800,k+' must not strand animation');}
 await midway();const beforeLayout=scrollY;emit('pnc:layout');assert.equal(scrollY,beforeLayout,'unchanged layout must not jump to destination');assert.equal(frames.size,1);tick(700);assert.equal(scrollY,800);
@@ -32,7 +32,7 @@ reduce=true;navigate(0);assert.equal(scrollY,0);await pause(180);wheel();await p
 emit('focusin',{},screens[2].querySelector('button'));assert.equal(scrollY,1600,'focus cannot leave page between screens');
 emit('click',{button:0},document.querySelector('a'));assert.equal(location.hash,'#install');assert.equal(scrollY,1600);
 location.hash='#helper';emit('hashchange');assert.equal(scrollY,800);
-const inserted=document.createElement('section');inserted.className='screen';inserted.id='inserted';screens[0].after(inserted);screens=[...document.querySelectorAll('.screen')];screens.forEach((s,i)=>s.getBoundingClientRect=()=>({top:i*800-scrollY}));emit('pnc:layout');assert.deepEqual(last,{index:2,count:4});assert.equal(scrollY,1600,'layout preserves current section identity');
+const inserted=document.createElement('section');inserted.className='screen';inserted.id='inserted';screens[0].after(inserted);screens=[...document.querySelectorAll('.screen')];screens.forEach((s,i)=>s.getBoundingClientRect=()=>({top:i*800-scrollY}));emit('pnc:layout');assert.deepEqual(last,{index:2,count:4,xIndex:0,xCount:1,label:''});assert.equal(scrollY,1600,'layout preserves current section identity');
 const current=screens[2];current.dataset.screenKey='helper-content';emit('pnc:layout');
 const replacement=current.cloneNode(true);replacement.dataset.screenKey='helper-content.0';current.replaceWith(replacement);replacement.getBoundingClientRect=()=>({top:1600-scrollY});
 const split=document.createElement('section');split.className='screen';split.dataset.screenKey='earlier-content.0';replacement.before(split);
@@ -42,3 +42,40 @@ const field=document.querySelector('input');assert(!emit('wheel',{deltaX:0,delta
 scrollY=1735;emit('scroll');await pause(180);assert.equal(scrollY,1600,'scroll debounce recovers when scrollend is unavailable');
 reduce=false;navigate(3);tick(0);tick(350);const moving=scrollY;emit('scrollend');assert.equal(scrollY,moving,'scroll recovery cannot interrupt active animation');tick(700);assert.equal(scrollY,2400);
 stop();assert.equal(frames.size,0);console.log('PASS: keyboard interruption, local tabs, locked touch, pinch, momentum, reduced motion, focus, anchors, layout identity');
+// Exercise both axes with the same DOM contract used by the React chapters.
+screens=[...document.querySelectorAll('.screen')];
+screens.forEach((s,i)=>{s.dataset.screenKey=`group-${i}`;s.innerHTML=`<div class="chapter-track"><article class="chapter-slide" data-slide-key="a" data-label="First"><button>A</button></article><article class="chapter-slide" data-slide-key="b" data-label="Second" id="slide-${i}-b"><button>B</button><div role="tablist"><button role="tab">Local</button></div><div contenteditable="true">Edit</div><div role="slider" tabindex="0"></div></article><article class="chapter-slide" data-slide-key="c" data-label="Third"><button>C</button></article></div>`;});
+location.hash='';scrollY=0;stop=installSnap();
+const swipe=(dx,dy,release=true)=>{emit('touchstart',{touches:[{clientX:200,clientY:200}]});emit('touchmove',{touches:[{clientX:200-dx,clientY:200-dy}]});if(release)emit('touchend',{touches:[]});};
+const currentTrack=()=>screens[last.index].querySelector('.chapter-track');
+assert.equal(last.xCount,3);assert.equal(last.label,'First');
+swipe(7,6);end();assert.equal(last.xIndex,0);assert.equal(last.index,0,'subthreshold diagonal stays put');
+swipe(20,12);assert.equal(last.xIndex,1,'target activates immediately on release');assert.equal(last.index,0);assert.equal(screens[0].querySelectorAll('.chapter-slide')[1].dataset.active,'true');assert(screens[0].querySelectorAll('.chapter-slide')[0].hasAttribute('inert'));end();assert.equal(scrollY,0);assert.equal(currentTrack().dataset.offset,String(window.innerWidth));
+// Initial horizontal lock survives a later, larger vertical motion.
+emit('touchstart',{touches:[{clientX:200,clientY:200}]});emit('touchmove',{touches:[{clientX:190,clientY:194}]});emit('touchmove',{touches:[{clientX:180,clientY:90}]});emit('touchend',{touches:[]});end();assert.equal(last.index,0);assert.equal(last.xIndex,2);
+swipe(12,20);end();assert.equal(last.index,1);assert.equal(last.xIndex,0);key('ArrowUp');end();assert.equal(last.xIndex,2,'each chapter remembers horizontal position');
+key('ArrowLeft');tick(0);tick(200);const midwayX=Number(currentTrack().dataset.offset);assert(midwayX>window.innerWidth&&midwayX<2*window.innerWidth);
+swipe(-30,4);end();assert.equal(last.xIndex,0,'new finger gesture can retry during an active animation');
+await pause(180);emit('wheel',{deltaX:30,deltaY:12,deltaMode:0});await pause(65);end();assert.equal(last.xIndex,1);assert.equal(last.index,0);emit('wheel',{deltaX:30,deltaY:1,deltaMode:0});await pause(65);assert.equal(last.xIndex,1,'horizontal wheel tail cannot repeat');
+await pause(180);emit('wheel',{deltaX:0,deltaY:30,deltaMode:0,shiftKey:true});await pause(65);end();assert.equal(last.xIndex,2,'shift wheel navigates horizontally');
+const localTab=screens[0].querySelector('[role=tab]');assert(!key('ArrowLeft',localTab).defaultPrevented);assert(!key('ArrowDown',localTab).defaultPrevented);
+for(const selector of ['[role=slider]','[contenteditable]']){const control=screens[0].querySelector(selector);assert(!key('ArrowLeft',control).defaultPrevented);assert(!emit('wheel',{deltaX:30,deltaY:0,deltaMode:0},control).defaultPrevented);}
+const navigateX=xIndex=>window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{xIndex}}));
+reduce=true;navigateX(1);assert.equal(last.xIndex,1);assert.equal(frames.size,0);assert.equal(currentTrack().dataset.offset,String(window.innerWidth));
+emit('focusin',{},screens[2].querySelectorAll('.chapter-slide')[1].querySelector('button'));assert.equal(last.index,2);assert.equal(last.xIndex,1,'focus resolves both coordinates');
+location.hash='#slide-0-b';emit('hashchange');assert.equal(last.index,0);assert.equal(last.xIndex,1,'anchors resolve both coordinates');
+const track=currentTrack(),b=track.children[1];track.prepend(b);emit('pnc:layout');assert.equal(last.xIndex,0,'reordering preserves slide identity');
+navigateX(2);emit('pnc:horizontal-reset');assert.equal(last.xIndex,0);const replacementSlide=b.cloneNode(true);replacementSlide.dataset.slideKey='new';b.replaceWith(replacementSlide);emit('pnc:layout');assert.equal(last.xIndex,0,'horizontal reset survives React slide replacement');
+window.innerWidth=640;emit('resize');assert.equal(currentTrack().dataset.offset,'0');navigateX(1);assert.equal(currentTrack().dataset.offset,'640','resize uses new viewport width');
+reduce=false;navigateX(2);tick(0);tick(200);emit('pnc:layout');assert.equal(frames.size,1,'equivalent slide layout does not interrupt');tick(440);assert.equal(currentTrack().dataset.offset,'1280');
+navigateX(0);tick(0);tick(200);emit('focusin',{},screens[0]);assert.equal(frames.size,1,'focusing a shared chapter toolbar preserves the running slide animation');tick(440);
+await pause(0);window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:1,xIndex:2,instant:true}}));assert.equal(last.index,1);assert.equal(last.xIndex,2);assert.equal(scrollY,800);assert.equal(currentTrack().dataset.offset,'1280');assert.equal(frames.size,0,'instant navigation resolves both coordinates without animation');
+const zoomTarget={...last};
+emit('touchstart',{touches:[{clientX:200,clientY:200}]});emit('touchmove',{touches:[{clientX:196,clientY:197}]});
+window.visualViewport={scale:2};
+assert(!emit('touchmove',{touches:[{clientX:120,clientY:100}]}).defaultPrevented,'zoomed single-finger pan remains native after an existing gesture');
+emit('touchend',{touches:[]});assert.deepEqual(last,zoomTarget);
+emit('touchstart',{touches:[{clientX:200,clientY:200}]});assert(!emit('touchmove',{touches:[{clientX:100,clientY:100}]}).defaultPrevented,'zoomed fresh finger pan remains native');emit('touchend',{touches:[]});
+assert(!emit('wheel',{deltaX:60,deltaY:40,deltaMode:0}).defaultPrevented,'zoomed wheel pan remains native');await pause(65);assert.deepEqual(last,zoomTarget);assert.equal(frames.size,0);
+window.visualViewport.scale=1;emit('touchmove',{touches:[{clientX:0,clientY:0}]});emit('touchend',{touches:[]});assert.deepEqual(last,zoomTarget,'zoom release clears stale gesture and touch state');
+stop();assert.equal(frames.size,0);console.log('PASS: two-axis direction lock, fresh gesture retry, horizontal momentum, controls, reduced motion, focus, anchors, slide identity, reset and resize');

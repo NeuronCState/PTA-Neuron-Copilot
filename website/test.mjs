@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', {url:'https://neuroncstate.github.io/PTA-Neuron-Copilot/'});
 const w=dom.window;
 for(const k of ['window','document','HTMLElement','SVGElement','Element','Node','MutationObserver','CustomEvent','Event','MouseEvent','getComputedStyle'])globalThis[k]=w[k];
+globalThis.ResizeObserver=class{observe(){} unobserve(){} disconnect(){}};
+w.HTMLCanvasElement.prototype.getContext=()=>null;
 Object.defineProperty(globalThis,'navigator',{value:w.navigator,configurable:true});
 w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
 globalThis.innerHeight=900;globalThis.innerWidth=1440;globalThis.scrollY=0;globalThis.location=w.location;globalThis.history=w.history;w.scrollTo=()=>{};globalThis.matchMedia=w.matchMedia;globalThis.requestAnimationFrame=cb=>setTimeout(cb,0);globalThis.cancelAnimationFrame=clearTimeout;
@@ -15,5 +17,11 @@ await click(document.querySelector('#tab-assistance'));await click([...document.
 await click(document.querySelector('#tab-settings'));await click([...document.querySelectorAll('[role=radio]')].find(x=>x.textContent==='MiMo'));assert(document.querySelector('.model-note b').textContent==='MiMo');
 await click(document.querySelector('#tab-catalogue'));await click(document.querySelector('.class-toggle'));assert(document.querySelector('#class-sets').hidden);await click(document.querySelector('.class-toggle'));assert(!document.querySelector('#class-sets').hidden);
 const links=[...document.querySelectorAll('a[href]')].map(x=>x.getAttribute('href'));assert(links.includes('https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC.user.js'));assert(links.includes('https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC%20Helper.user.js'));assert(!document.body.textContent.includes('OPEN SOURCE'));assert(document.body.textContent.includes('默认新标签页不能运行'));assert(document.querySelectorAll('.astryx-button').length>0);
+const stages=['read','model','write','pair','sync','remind','jump'];
+for(const id of stages){await click(document.getElementById('wf-tab-'+id));assert.equal(document.getElementById('wf-tab-'+id).getAttribute('aria-selected'),'true');assert(document.getElementById('wf-panel-'+id));}
+await click(document.querySelector('#wf-panel-jump .wf-controls button'));assert(document.querySelector('.wf-jump-scene.is-open'));assert(document.querySelector('#wf-panel-jump [role=status]').textContent.includes('已在示意画面中打开'));await click(document.querySelector('#wf-panel-jump .wf-controls button'));assert(!document.querySelector('.wf-jump-scene.is-open'));
+await click(document.getElementById('wf-tab-read'));await click(document.querySelector('[aria-label="暂停读取题目动效"]'));assert(document.querySelector('#wf-panel-read [data-paused]'));await click(document.querySelector('[aria-label="重播读取题目动效"]'));assert(!document.querySelector('#wf-panel-read [data-paused]'));
+assert(document.body.textContent.includes('配对码只包含验证公钥'));assert(document.body.textContent.includes('“已请求”不等于系统一定送达'));assert(document.body.textContent.includes('本页目标任务全部成功后'));
+console.log('PASS: seven workflow stages, independent tabs, local reversible notification, pause/replay, factual boundaries');
 console.log('PASS: render, actual Astryx components, tabs, answer reveal, provider switch, class toggle, current install URLs, reminder limitations');
 dom.window.close();
