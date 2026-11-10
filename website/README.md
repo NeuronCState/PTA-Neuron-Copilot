@@ -47,3 +47,45 @@ Each stage uses original DOM/CSS miniatures, staged data packets/tags, a finite 
 The decorative miniatures fit the measured space; readable explanation text continues at its normal size onto additional horizontal pages. Reduced-motion mode shows the completed static diagrams and disables timeline controls. `reduced-qa.html` is a development-only matchMedia fixture for that fallback, not a native OS setting test or a production entry.
 
 Validation adds seven-stage/tab selection, reversible notification, pause/replay and factual-copy checks to `npm test`; `/qa.html` includes workflow keyboard, inactive-animation and toolbar accessibility tests. All 20 normal/expanded viewport cases (including 320×568, 844×390 and 200% root text) fit without content-height or width overflow. Synthetic browser tests do not replace physical mobile/Safari or authenticated userscript acceptance. Local only; no publication is performed.
+
+### Actual 3D workflow scenes (2026-11-10)
+
+Replaces the previous DOM/CSS flow miniatures with seven original 3D scenes.
+The browser, input sheets, cache stack, model core, verification gates, public-key
+transfer, signed snapshot, clock and destination are meshes with real xyz
+coordinates. A perspective camera, directional lighting and depth testing make
+objects occlude one another correctly. Animated data travels through the same
+3D coordinates as its connectors. The model scene lets visitors choose cache
+hit or miss: a hit follows the bypass and leaves the model core inactive.
+
+WebGL is preferred. When no WebGL context is available, a small software
+rasterizer renders the same meshes with a per-pixel depth buffer, at a capped
+resolution and 18 fps. If neither context is available, a labelled static
+fallback preserves the workflow explanation. Only the active scene owns
+renderer resources and runs its finite timeline. Hidden documents and inactive
+pages stop animation; resources and observers are cleaned up. Reduced motion
+shows the final static scene. Rotation is an explicit button, so it does not
+consume the site's existing horizontal/vertical swipe gestures.
+
+The viewport measures available height and shrinks only the decorative canvas;
+controls remain usable and explanation text flows onto the existing horizontal
+pages. Existing neural background, 440 ms two-axis navigation, site audience,
+installation links and userscripts are unchanged. No new dependencies, external
+models, textures, fonts or API requests are added.
+
+Factual corrections: the automatic single-choice result is B, not an assistance
+explanation; saving follows all targeted page jobs succeeding, illustrated as
+3/3; pairing shows an abstract public key rather than an invented pairing-code
+format; the reminder example is strictly less than the configured three days.
+Nothing in the scene performs real pairing, model calls, notifications or PTA
+navigation.
+
+Validation: build and npm test pass, including perspective/mesh tests,
+software depth occlusion, connector orientation and cache-hit inactivity.
+The browser harness passes all 26 3D interaction checks, all 20 viewport cases
+(320x568 through 1440x900, 844x390 landscape, and 200% root-font cases), and
+all 14 retained gesture checks. Light/dark desktop scenes and reduced-motion
+output were inspected. The current cloud browser does not expose WebGL, so
+browser visual checks exercised the software 3D path; native GPU rendering and
+physical mobile/Safari remain unverified. Publication uses the existing
+GitHub Pages build output in docs/, without changing the deployment pipeline.

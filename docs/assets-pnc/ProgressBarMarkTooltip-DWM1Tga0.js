@@ -1,0 +1,1 @@
+import{Tooltip as e}from"./Tooltip-COALh1eR.js";import{i as t}from"./index-1ZRxruSL.js";var n=t();function r({content:t,children:r}){return(0,n.jsx)(e,{content:t,placement:`above`,focusTrigger:`always`,children:r})}export{r as default};
