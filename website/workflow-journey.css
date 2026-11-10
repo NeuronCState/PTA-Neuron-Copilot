@@ -1,0 +1,49 @@
+/* A persistent world, not a carousel: one canvas and one chapter-sized layout. */
+.workflow-journey.wf3d{height:min(var(--journey-available,510px),550px);display:flex;flex-direction:column;min-height:0;gap:0}
+.journey-body{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr);align-items:center;gap:44px;flex:1;min-height:0}
+.journey-visual{height:100%;min-height:0;display:flex;flex-direction:column}
+.workflow-journey .wf3d-viewport{height:auto;min-height:0;flex:1;margin:0;overflow:hidden}
+.workflow-journey .wf3d-heading{height:20px;flex-shrink:0;padding:0}
+.workflow-journey .wf3d-labels>span{font-size:10px;letter-spacing:.02em;transition:opacity .18s linear;max-width:100%;white-space:nowrap}
+.workflow-journey .wf3d-caption{min-height:25px;flex-shrink:0;margin-top:5px}
+.journey-copy{color:var(--pnc-ink);min-width:0}
+.journey-copy>.eyebrow{opacity:.55;margin-bottom:14px}
+.journey-copy h2{font-size:clamp(1.6rem,2.6vw,2.25rem);line-height:1.35;letter-spacing:-.045em;margin:0 0 14px}
+.journey-subtitle{font-size:.78rem;line-height:1.8;opacity:.65}
+.journey-explanation{margin-top:24px;max-width:32em}
+.journey-explanation h3{font-size:.85rem;margin:0 0 10px;line-height:1.6}
+.journey-explanation p{font-size:.78rem;line-height:1.9}
+.journey-explanation .workflow-note{font-size:.7rem;opacity:.65;margin-top:18px}
+.journey-action-slot{height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;max-width:100%}
+.journey-action-slot .wf3d-branch,.journey-action-slot .wf3d-jump{margin:0}
+.journey-sequence{font-size:.6rem;opacity:.5;letter-spacing:.025em}
+.workflow-journey .wf-controls{margin:0;padding:0;min-height:34px;flex-shrink:0;font-size:.64rem}
+.workflow-journey .wf-controls button{min-height:34px;padding:5px 11px}
+.workflow-journey .wf-controls>span{font-size:.59rem}
+.journey-details{width:min(560px,calc(100vw - 36px));max-height:75dvh;overflow:auto;padding:30px;border:1px solid var(--pnc-c56);border-radius:16px;background:var(--pnc-surface);color:var(--pnc-ink);box-shadow:0 20px 70px #0003;margin:auto;line-height:1.8}
+.journey-details::backdrop{background:#13221955;backdrop-filter:blur(7px)}
+.journey-details h2{font-size:1.35rem;margin:20px 0 14px}.journey-details h3{font-size:.95rem;margin:12px 0}.journey-details p{font-size:.85rem;margin:12px 0}.journey-close{display:block;margin-left:auto;border:0;background:var(--pnc-c24);color:inherit;padding:7px 12px;border-radius:8px;font-size:.75rem}
+body:has(.screen-rhythm[data-active=true]) .horizontal-nav,body:has(.screen-helper[data-active=true]) .horizontal-nav{display:none}
+@media(max-width:700px){
+ .workflow-journey.wf3d{height:var(--journey-available,440px)}
+ .journey-body{display:flex;flex-direction:column;gap:6px;align-items:stretch;min-height:0}
+ .journey-copy{order:-1;text-align:center;flex-shrink:0}
+ .journey-copy>.eyebrow,.journey-explanation{display:none}
+ .journey-copy h2{font-size:1.2rem;margin:0 0 5px;line-height:1.45}
+ .journey-subtitle{font-size:.66rem;line-height:1.6}
+ .journey-visual{flex:1;min-height:60px}
+ .workflow-journey .wf3d-heading{display:none}
+ .workflow-journey .wf3d-caption{font-size:.64rem;min-height:22px;margin-top:3px}
+ .workflow-journey .wf3d-labels>span{font-size:8px}
+ .journey-action-slot{height:34px}
+ .journey-sequence{font-size:.55rem}
+ .workflow-journey .wf-controls{justify-content:center;font-size:.64rem}
+ .workflow-journey .wf-controls>span{display:none}
+ .workflow-journey .wf-controls button{min-height:34px;padding:4px 12px}
+ .workflow-journey .wf3d-jump{font-size:.61rem;padding:4px 10px;min-height:28px}
+ .workflow-journey .wf3d-branch{font-size:.58rem}.workflow-journey .wf3d-branch button{padding:4px 10px;min-height:28px}
+}
+@media(max-height:540px){.journey-body{gap:16px}.journey-copy>.eyebrow,.journey-explanation{display:none}.journey-copy h2{font-size:1.1rem;margin:0 0 6px}.journey-subtitle{font-size:.65rem;line-height:1.6}.journey-action-slot{height:30px}.workflow-journey .wf-controls,.workflow-journey .wf-controls button{min-height:28px}.workflow-journey .wf3d-caption{font-size:.59rem;min-height:19px}}
+.large-type .workflow-journey .wf3d-heading,.large-type .journey-copy>.eyebrow,.large-type .journey-explanation{display:none}.large-type .journey-copy h2{font-size:.75rem;margin:0 0 4px}.large-type .journey-subtitle{font-size:.5rem}.large-type .workflow-journey .wf-controls{font-size:.45rem}.large-type .workflow-journey .wf-controls button{padding:3px 5px}.large-type .journey-action-slot{height:34px}.large-type .journey-sequence{font-size:.4rem}.large-type .workflow-journey .wf3d-caption{font-size:.45rem;min-height:25px}.large-type .journey-body{gap:5px}
+@media(prefers-reduced-motion:reduce){.workflow-journey .wf3d-labels>span{transition:none}}
+.journey-copy h2,.journey-copy h3,.journey-copy p,.journey-details h2,.journey-details h3,.journey-details p{color:var(--pnc-ink)}

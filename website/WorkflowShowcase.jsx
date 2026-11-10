@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import WorkflowScene3D from './WorkflowScene3D.jsx';
+import WorkflowJourney from './WorkflowJourney.jsx';
 import {motion,useReducedMotion} from 'motion/react';
 import './workflow-showcase.css';
 // Local illustrations only. Sources: PNC.user.js 1918–2104, 4404–4456,
@@ -11,20 +11,17 @@ export const workflows={
   {id:'write',label:'填写与进度',title:'答案落位，进度跟上。',subtitle:'回填、更新进度，再统一保存本页。',heading:'每一步都有实际状态',copy:'写入前检查页面和原答案是否变化；成功回填后更新进度。本页目标任务全部成功后，再统一保存。',note:'进度表示已处理，不代表答案正确。保存失败会提示检查，不显示“已保存”。',tags:['检查页面变化','更新处理进度','本页统一保存']}
  ]},
  helper:{id:'helper',name:'Helper 工作原理',stages:[
-  {id:'pair',label:'配对',title:'先认识，才能接收。',subtitle:'主脚本负责题集，Helper 负责提醒。',heading:'用公钥建立配对',copy:'在 PNC 开启提醒、设置提前天数并复制配对码。在 Helper 管理器菜单粘贴，确认来源并启用提醒。',note:'配对码只包含验证公钥，不是模型 API Key。这里不会读取剪贴板或修改真实配对。',tags:['PNC 配对码','手动确认','验证公钥']},
-  {id:'sync',label:'同步',title:'把截止时间，带到下一页。',subtitle:'验证来源，保存最近一次题集快照。',heading:'同步的，是题集截止信息',copy:'PNC 发送已核验账号的完整题集目录，包括题集 ID、标题和截止时间。Helper 验证签名、时间与序号后保存。',note:'同步后可以离开 PTA；但延期或账号变化，需要重新同步才能获知。',tags:['签名验证','题集与截止时间','本地缓存']},
+  {id:'pair',label:'配对',title:'先认识，才能接收。',subtitle:'主脚本负责题集，Helper 负责提醒。',heading:'用公钥建立配对',copy:'在 PNC 核验当前账号题集后，开启提醒、设置提前天数并复制配对码。在 Helper 管理器菜单粘贴，确认来源并启用提醒。',note:'配对码只包含验证公钥，不是模型 API Key。这里不会读取剪贴板或修改真实配对。',tags:['PNC 配对码','手动确认','验证公钥']},
+  {id:'sync',label:'同步',title:'把截止时间，带到下一页。',subtitle:'验证来源，保存最近一次题集快照。',heading:'同步的，是题集截止信息',copy:'PNC 发送已核验账号的完整题集目录，包括题集 ID、标题和截止时间。Helper 验证签名、时间与序号后保存。',note:'同步后可以离开 PTA。延期需重新同步；账号变化后需重新核验并启用提醒。',tags:['签名验证','题集与截止时间','本地缓存']},
   {id:'remind',label:'提醒',title:'到了提醒窗口，就轻轻提醒。',subtitle:'按最近同步的数据检查，避免重复请求。',heading:'从截止时间，到系统通知',copy:'Helper 每 30 秒检查最近同步的数据。在你设置的提前天数内，请求对应题集的系统通知，并进行去重。',note:'需有可运行脚本的普通网页。退出浏览器、页面冻结、系统休眠或通知权限都可能影响提醒。',tags:['提前天数','定时检查','通知去重']},
   {id:'jump',label:'跳转',title:'一条提醒，回到那份题集。',subtitle:'点击通知，打开对应的 PTA 题集。',heading:'不必重新翻找目录',copy:'每条通知对应一个题集，点击后打开它的 PTA 页面。试着点击示意通知，看看这一步如何衔接。',note:'这里只在本页演示跳转，不打开真实 PTA、不发送系统通知。“已请求”不等于系统一定送达。',tags:['一条通知一个题集','对应 PTA 页面','示意数据']}
  ]}
 };
 export function WorkflowTabs({kind}){
  const flow=workflows[kind],reduce=useReducedMotion(),[active,setActive]=useState(flow.stages[0].id);
- useEffect(()=>{const update=()=>{const slide=document.querySelector(`#${flow.id} .chapter-slide[data-active="true"]`);if(slide?.dataset.feature)setActive(slide.dataset.feature)};window.addEventListener('pnc:page',update);update();return()=>window.removeEventListener('pnc:page',update)},[flow.id]);
- const choose=id=>{const screen=document.getElementById(flow.id),slides=[...screen.querySelectorAll('.chapter-slide')],xIndex=slides.findIndex(el=>el.dataset.feature===id);if(xIndex>=0)window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:[...document.querySelectorAll('main>.screen')].indexOf(screen),xIndex}}));setActive(id)};
- return <><div className="preview-heading"><span className="eyebrow">{flow.name}</span><span className="preview-disclaimer">三维流程示意 · 无真实请求</span></div><div className="tabs workflow-tabs" role="tablist" aria-label={flow.name+'步骤'}>{flow.stages.map((stage,i)=><button key={stage.id} id={`wf-tab-${stage.id}`} role="tab" aria-selected={active===stage.id} aria-controls={`wf-panel-${stage.id}`} tabIndex={active===stage.id?0:-1} onClick={()=>choose(stage.id)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const next=e.key==='Home'?0:e.key==='End'?flow.stages.length-1:(i+(['ArrowRight','ArrowDown'].includes(e.key)?1:flow.stages.length-1))%flow.stages.length;choose(flow.stages[next].id);document.getElementById(`wf-tab-${flow.stages[next].id}`)?.focus()}}>{active===stage.id&&<motion.span className="tab-selection" aria-hidden="true" layoutId={'wf-tabs-'+kind} transition={{duration:reduce?0:.3,ease:[.22,1,.36,1]}}/>}<span className="workflow-step-number" aria-hidden="true">0{i+1}</span>{stage.label}</button>)}</div></>;
+ useEffect(()=>{const update=e=>{if(e.detail.kind===kind)setActive(e.detail.id)};window.addEventListener('pnc:workflow-state',update);return()=>window.removeEventListener('pnc:workflow-state',update)},[kind]);
+ const choose=id=>{const screen=document.getElementById(flow.id);window.dispatchEvent(new CustomEvent('pnc:navigate',{detail:{index:[...document.querySelectorAll('main>.screen')].indexOf(screen),xIndex:0}}));window.dispatchEvent(new CustomEvent('pnc:workflow-select',{detail:{kind,id}}));setActive(id)};
+ return <><div className="preview-heading"><span className="eyebrow">{flow.name}</span><span className="preview-disclaimer">同一空间 · 连续运镜 · 无真实请求</span></div><div className="tabs workflow-tabs" role="tablist" aria-label={flow.name+'步骤'}>{flow.stages.map((stage,i)=><button key={stage.id} id={`wf-tab-${stage.id}`} role="tab" aria-selected={active===stage.id} aria-controls={`wf-panel-${kind}`} tabIndex={active===stage.id?0:-1} onClick={()=>choose(stage.id)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const next=e.key==='Home'?0:e.key==='End'?flow.stages.length-1:(i+(['ArrowRight','ArrowDown'].includes(e.key)?1:flow.stages.length-1))%flow.stages.length;choose(flow.stages[next].id);document.getElementById(`wf-tab-${flow.stages[next].id}`)?.focus()}}>{active===stage.id&&<motion.span className="tab-selection" aria-hidden="true" layoutId={'wf-tabs-'+kind} transition={{duration:reduce?0:.3,ease:[.22,1,.36,1]}}/>}<span className="workflow-step-number" aria-hidden="true">0{i+1}</span>{stage.label}</button>)}</div></>;
 }
-export const WorkflowGraphic=WorkflowScene3D;
-export function workflowBlocks(kind,block){const flow=workflows[kind];return flow.stages.flatMap((stage,i)=>[
- block(`wf-visual-${stage.id}`,<div role="tabpanel" id={`wf-panel-${stage.id}`} aria-labelledby={`wf-tab-${stage.id}`}><WorkflowGraphic stage={stage}/></div>),
- block(`wf-copy-${stage.id}`,<article className="detail-card workflow-copy"><p className="eyebrow">{kind==='pnc'?'PNC':'PNC HELPER'} · 0{i+1} / 0{flow.stages.length}</p><h2>{stage.title}</h2><div className="workflow-tags">{stage.tags.map(tag=><span key={tag}>{tag}</span>)}</div><h3>{stage.heading}</h3><p>{stage.copy}</p><p className="workflow-note">{stage.note}</p></article>)
- ].map(item=>({...item,feature:stage.id})));}
+export const WorkflowGraphic=WorkflowJourney;
+export function workflowBlocks(kind,block){const flow=workflows[kind];return [block(`wf-journey-${kind}`,<WorkflowJourney kind={kind} stages={flow.stages}/>,true)];}

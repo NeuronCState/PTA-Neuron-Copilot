@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "test": "node test.mjs && node scroll-snap.test.mjs && node scroll-interruption.test.mjs && node workflow-3d.test.mjs"
+    "test": "node test.mjs && node scroll-snap.test.mjs && node scroll-interruption.test.mjs && node workflow-3d.test.mjs && node workflow-journey.test.mjs"
   },
   "dependencies": {
     "@astryxdesign/core": "0.7.11",

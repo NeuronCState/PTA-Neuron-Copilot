@@ -89,3 +89,62 @@ output were inspected. The current cloud browser does not expose WebGL, so
 browser visual checks exercised the software 3D path; native GPU rendering and
 physical mobile/Safari remain unverified. Publication uses the existing
 GitHub Pages build output in docs/, without changing the deployment pipeline.
+
+### Open-space floating models (2026-11-10, local candidate)
+
+Rebuilds the seven workflow illustrations as independent floating objects: a
+question tablet and extracted sheets, memory stack and neural processor,
+checked answer page, public-key handoff, signed snapshot seal, deadline clock,
+and notification destination. There is no shared floor, grid, plinth, scene
+frame or enclosing illustration card. The existing neural background becomes
+quiet in the two model chapters; navigation and all other homepage functions
+are retained. The reference site's open composition informed the direction;
+no reference code, model, image, texture or other asset was copied.
+
+The original renderer now includes real rounded meshes, correct parent/local
+rotation composition, studio lighting, smoother normals and higher-resolution
+software rendering. The fallback is capped at 12 fps, has a 1.5-million-pixel
+budget, and only runs for the active finite timeline. GPU geometry is retained;
+no runtime dependencies were added. Controls, cache bypass, reversible local
+notification, hidden-tab suspension and reduced-motion static views remain.
+Labels are clamped by their measured width rather than a guessed fixed margin.
+
+Source review clarified that account changes require re-verification and
+manually re-enabling reminders; ordinary deadline extensions need re-syncing.
+The demonstrations do not send model requests, pair devices or issue actual
+system notifications. Production userscripts are unchanged.
+
+Validation: npm test and npm run build pass. Actual Chromium inspection covered
+light/dark desktop and mobile, 320×568 reduced-motion fixture, all 26 workflow
+interaction assertions, all 14 retained gesture assertions, and all 20 normal /
+expanded viewport matrix cases (including 200% root text) with zero overflow.
+The cloud browser uses software rendering; native GPU, Safari, physical mobile
+hardware and authenticated PTA/OS notification integration are not verified.
+Build warnings about existing large bundles and dependency “use client”
+directives remain. `visual-qa.html` is a development-only visual review fixture,
+not an additional production route. This candidate has not been published.
+
+
+### Single-screen continuous camera journey (2026-11-10)
+
+PNC and Helper now each use one persistent canvas inside a single viewport.
+Every model group remains at fixed coordinates in the same 3D world. The camera
+moves between the groups with eased translation, changing orientation and a
+real pull-back in the projection. The steps select camera stops rather than
+horizontal pages. Automatic playback, pause/resume, replay and rapid reversal
+share the same camera state. Other homepage chapters retain their navigation.
+
+The cache route and reversible sample notification remain local demonstrations.
+A details dialog pauses playback and restores focus when closed. Reduced motion
+uses static camera stops. Leaving the chapter releases renderer resources, and
+hidden tabs suspend playback. Software rendering rejects offscreen geometry
+conservatively while keeping the complete world intact. No reference-site code
+or assets, new dependencies, deployment changes, or userscript edits are included.
+
+Validation: production build and the complete npm test suite pass, including
+persistent-world geometry and actual projection pull-back regression checks.
+Browser checks cover the seven camera stops, uninterrupted canvas identity,
+pause/resume, reversal, details focus, cache routing, local notification,
+context loss/recovery, reduced motion and responsive layouts. The cloud browser
+exercises the software path; native GPU, physical mobile devices and Safari
+remain unverified. Existing bundle-size and dependency directive warnings remain.

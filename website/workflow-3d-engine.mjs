@@ -30,6 +30,18 @@ export function transform(p = [0, 0, 0], s = [1, 1, 1], r = [0, 0, 0]) {
   m[14] = p[2];
   return m;
 }
+// Child positions are already in world space. Only compose their orientations:
+// T(world position) * R(parent) * R(local) * S, never R(parent) * T(world).
+export function objectTransform(object, normalOnly = false) {
+  const scale = object.s || [1, 1, 1],
+    s = normalOnly ? scale.map(v => 1 / (v || .001)) : scale,
+    p = normalOnly ? [0, 0, 0] : object.p;
+  if (!object.parentRotation) return transform(p, s, object.r);
+  const m = multiply(transform([0, 0, 0], [1, 1, 1], object.parentRotation),
+    transform([0, 0, 0], s, object.localRotation || [0, 0, 0]));
+  [m[12], m[13], m[14]] = p || [0, 0, 0];
+  return m;
+}
 const sub = (a, b) => a.map((v, i) => v - b[i]),
   dot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0),
   cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]],
@@ -37,17 +49,17 @@ const sub = (a, b) => a.map((v, i) => v - b[i]),
     const n = Math.hypot(...a) || 1;
     return a.map(x => x / n);
   };
-export function camera(aspect, yaw = -.25, pitch = .6) {
-  const distance = 8.2 * Math.max(1, 1.9 / aspect),
-    eye = [Math.sin(yaw) * Math.cos(pitch) * distance, Math.sin(pitch) * distance, Math.cos(yaw) * Math.cos(pitch) * distance],
-    target = [0, .35, 0],
+export function camera(aspect, yaw = -.12, pitch = .18, focus = [0, 0, 0], zoom = 1) {
+  const distance = Math.max(5.9, 7.6 * 1.48 / aspect) * Math.max(.5, zoom),
+    eye = [Math.sin(yaw) * Math.cos(pitch) * distance + focus[0], Math.sin(pitch) * distance + focus[1], Math.cos(yaw) * Math.cos(pitch) * distance + focus[2]],
+    target = [focus[0], .35 + focus[1], focus[2]],
     z = unit(sub(eye, target)),
     x = unit(cross([0, 1, 0], z)),
     y = cross(z, x),
     view = [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -dot(x, eye), -dot(y, eye), -dot(z, eye), 1];
   const f = 1 / Math.tan(.56 / 2),
     near = .1,
-    far = 40;
+    far = 160;
   const projection = [f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) / (near - far), -1, 0, 0, 2 * far * near / (near - far), 0];
   return multiply(projection, view);
 }
@@ -80,7 +92,38 @@ export function boxGeometry() {
   }
   return g;
 }
-export function cylinderGeometry(segments = 32) {
+// A rounded cube with genuine curved edges and vertex normals. The face grid
+// concentrates subdivisions at the bevel instead of tessellating flat interiors.
+export function roundedBoxGeometry(radius = .1, segments = 3) {
+  const g = mesh(), r = clamp(radius, .001, .25), inner = .5 - r;
+  const axis = segments <= 2
+    ? [-.5, -inner - r * .5, -inner, inner, inner + r * .5, .5]
+    : [-.5, -inner - r * .75, -inner - r * .4, -inner,
+      inner, inner + r * .4, inner + r * .75, .5];
+  const frames = [[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+    [[-1, 0, 0], [0, -1, 0], [0, 0, 1]],
+    [[0, 1, 0], [0, 0, 1], [1, 0, 0]],
+    [[0, -1, 0], [0, 0, -1], [1, 0, 0]],
+    [[0, 0, 1], [1, 0, 0], [0, 1, 0]],
+    [[0, 0, -1], [-1, 0, 0], [0, 1, 0]]];
+  for (const [n, u, v] of frames) {
+    const vertexAt = (x, y) => {
+      const p = n.map((q, k) => q * .5 + x * u[k] + y * v[k]);
+      const core = p.map(q => clamp(q, -inner, inner));
+      const normal = unit(sub(p, core));
+      return { p: core.map((q, k) => q + normal[k] * r), n: normal };
+    };
+    for (let y = 0; y < axis.length - 1; y++) for (let x = 0; x < axis.length - 1; x++) {
+      const a = vertexAt(axis[x], axis[y]), b = vertexAt(axis[x + 1], axis[y]),
+        c = vertexAt(axis[x + 1], axis[y + 1]), d = vertexAt(axis[x], axis[y + 1]);
+      triangle(g, a.p, b.p, c.p, a.n, b.n, c.n);
+      triangle(g, a.p, c.p, d.p, a.n, c.n, d.n);
+    }
+  }
+  return g;
+}
+export const bevelBoxGeometry = roundedBoxGeometry;
+export function cylinderGeometry(segments = 64) {
   const g = mesh();
   for (let i = 0; i < segments; i++) {
     const a = i / segments * Math.PI * 2,
@@ -99,7 +142,7 @@ export function cylinderGeometry(segments = 32) {
   }
   return g;
 }
-export function sphereGeometry(segments = 20, rings = 12) {
+export function sphereGeometry(segments = 32, rings = 20) {
   const g = mesh(),
     p = (u, v) => [Math.sin(v) * Math.cos(u), Math.cos(v), Math.sin(v) * Math.sin(u)];
   for (let j = 0; j < rings; j++) for (let i = 0; i < segments; i++) {
@@ -112,7 +155,7 @@ export function sphereGeometry(segments = 20, rings = 12) {
   }
   return g;
 }
-export function torusGeometry(segments = 48, sides = 8) {
+export function torusGeometry(segments = 64, sides = 12) {
   const g = mesh(),
     v = (u, a) => {
       const n = [Math.cos(u) * Math.cos(a), Math.sin(a), Math.sin(u) * Math.cos(a)];
@@ -141,7 +184,7 @@ export function octahedronGeometry() {
   return g;
 }
 const vertex = `attribute vec3 aPosition;attribute vec3 aNormal;uniform mat4 uModel;uniform mat4 uVP;uniform mat4 uNormal;varying vec3 normal;varying vec3 world;void main(){vec4 p=uModel*vec4(aPosition,1.);world=p.xyz;normal=normalize(mat3(uNormal)*aNormal);gl_Position=uVP*p;}`;
-const fragment = `precision mediump float;uniform vec3 uColor;uniform float uAlpha;uniform float uEmissive;varying vec3 normal;varying vec3 world;void main(){vec3 n=normalize(normal);float key=max(dot(n,normalize(vec3(-.5,1.,.65))),0.);float rim=max(dot(n,normalize(vec3(.8,.25,-.7))),0.);float light=.53+.4*key+.12*rim;vec3 color=uColor*mix(light,1.,uEmissive);gl_FragColor=vec4(color,uAlpha);}`;
+const fragment = `precision mediump float;uniform vec3 uColor;uniform float uAlpha;uniform float uEmissive;varying vec3 normal;varying vec3 world;void main(){vec3 n=normalize(normal);float key=max(dot(n,normalize(vec3(-.5,1.,.65))),0.);float rim=max(dot(n,normalize(vec3(.8,.25,-.7))),0.);float shine=pow(max(dot(n,normalize(vec3(-.35,.6,1.))),0.),28.)*.18;float light=.63+.32*key+.12*rim;vec3 color=uColor*mix(light,1.,uEmissive)+vec3(shine*(1.-uEmissive));gl_FragColor=vec4(color,uAlpha);}`;
 export function createRenderer(canvas) {
   const gl = canvas.getContext('webgl', {
     antialias: true,
@@ -184,6 +227,8 @@ export function createRenderer(canvas) {
   const geometries = {};
   for (const [name, g] of Object.entries({
     box: boxGeometry(),
+    roundedBox: roundedBoxGeometry(),
+    bevelBox: roundedBoxGeometry(),
     cylinder: cylinderGeometry(),
     sphere: sphereGeometry(),
     torus: torusGeometry(),
@@ -226,9 +271,8 @@ export function createRenderer(canvas) {
           gl.enableVertexAttribArray(a);
           gl.vertexAttribPointer(a, 3, gl.FLOAT, false, 0, 0);
         });
-        const s = o.s || [1, 1, 1],
-          m = transform(o.p, s, o.r),
-          normal = transform([0, 0, 0], s.map(v => 1 / (v || .001)), o.r);
+        const m = objectTransform(o),
+          normal = objectTransform(o, true);
         gl.uniformMatrix4fv(uniforms.Model, false, new Float32Array(m));
         gl.uniformMatrix4fv(uniforms.Normal, false, new Float32Array(normal));
         gl.uniform3fv(uniforms.Color, new Float32Array(o.color));
@@ -251,6 +295,27 @@ export function createRenderer(canvas) {
   };
 }
 
+// Conservative world-space sphere/frustum rejection. Each sphere encloses the
+// complete transformed mesh, including rotated thin parts and torus tube width.
+// Reject only when the whole sphere is beyond a clip plane, never by its center.
+const geometryRadius = { box: Math.sqrt(3) / 2, roundedBox: Math.sqrt(3) / 2,
+  bevelBox: Math.sqrt(3) / 2, cylinder: Math.SQRT1_2, sphere: 1,
+  octahedron: 1, torus: 1.05 };
+function frustumPlanes(vp) {
+  const planes = [];
+  for (let axis = 0; axis < 3; axis++) for (const sign of [-1, 1]) {
+    const p = [0, 1, 2, 3].map(i => vp[i * 4 + 3] + sign * vp[i * 4 + axis]);
+    const length = Math.hypot(p[0], p[1], p[2]);
+    planes.push(p.map(v => v / length));
+  }
+  return planes;
+}
+function objectInFrustum(o, planes) {
+  const p = o.p || [0, 0, 0], s = o.s || [1, 1, 1],
+    radius = (geometryRadius[o.shape || 'box'] || 1.1) * Math.max(...s.map(Math.abs));
+  return planes.every(v => v[0] * p[0] + v[1] * p[1] + v[2] * p[2] + v[3] >= -radius - .001);
+}
+
 // Compatibility path rasterizes the same xyz meshes with a per-pixel depth
 // buffer. No flat-card substitute, and no dependency on a GPU driver.
 export function createSoftwareRenderer(canvas) {
@@ -260,9 +325,12 @@ export function createSoftwareRenderer(canvas) {
   if (!context) return null;
   const geometries = {
     box: boxGeometry(),
-    cylinder: cylinderGeometry(16),
-    sphere: sphereGeometry(10, 6),
-    torus: torusGeometry(24, 6),
+    roundedBox: roundedBoxGeometry(.1, 2),
+    bevelBox: roundedBoxGeometry(.1, 2),
+    cylinder: cylinderGeometry(48),
+    sphere: sphereGeometry(24, 16),
+    smallSphere: sphereGeometry(12, 8),
+    torus: torusGeometry(40, 10),
     octahedron: octahedronGeometry()
   };
   let disposed = false,
@@ -270,12 +338,14 @@ export function createSoftwareRenderer(canvas) {
     depth = null;
   const point = (p, m, w = 1) => [m[0] * p[0] + m[4] * p[1] + m[8] * p[2] + m[12] * w, m[1] * p[0] + m[5] * p[1] + m[9] * p[2] + m[13] * w, m[2] * p[0] + m[6] * p[1] + m[10] * p[2] + m[14] * w];
   const lightA = unit([-.5, 1, .65]),
-    lightB = unit([.8, .25, -.7]);
+    lightB = unit([.8, .25, -.7]),
+    highlight = unit([-.35, .6, 1]);
   return {
     type: 'software',
     draw(objects, vp, w, h, dpr = 1) {
       if (disposed) return;
-      const ratio = Math.min(dpr, 1.25, 640 / w),
+      // Supersample CSS pixels even on 1x displays; bound the pixel budget.
+      const ratio = Math.min(Math.max(1, dpr), 2.5, Math.sqrt(1500000 / Math.max(1, w * h))),
         width = Math.max(1, Math.round(w * ratio)),
         height = Math.max(1, Math.round(h * ratio));
       if (canvas.width !== width || canvas.height !== height || !pixels) {
@@ -286,19 +356,28 @@ export function createSoftwareRenderer(canvas) {
       }
       pixels.data.fill(0);
       depth.fill(Infinity);
+      const planes = frustumPlanes(vp);
       for (const o of objects) {
-        const g = geometries[o.shape || 'box'],
-          s = o.s || [1, 1, 1],
-          m = transform(o.p, s, o.r),
-          nm = transform([0, 0, 0], s.map(x => 1 / (x || .001)), o.r);
+        if ((o.alpha ?? 1) <= 0 || !objectInFrustum(o, planes)) continue;
+        // Tiny particle meshes need smooth normals, not hundreds of subpixel triangles.
+        const size = o.s || [1, 1, 1], center = o.p || [0, 0, 0],
+          a = o.shape === 'sphere' ? project(center, vp, width, height) : null,
+          b = a ? project([center[0] + Math.max(...size), center[1], center[2]], vp, width, height) : null,
+          tinySphere = a && Math.hypot(b[0] - a[0], b[1] - a[1]) < 12,
+          g = geometries[tinySphere ? 'smallSphere' : o.shape || 'box'],
+          m = objectTransform(o),
+          nm = objectTransform(o, true);
         for (let i = 0; i < g.positions.length; i += 9) {
           const v = [0, 3, 6].map(k => project(point(g.positions.slice(i + k, i + k + 3), m), vp, width, height)),
             [a, b, c] = v,
-            normal = unit(point(g.normals.slice(i, i + 3), nm, 0)),
-            shade = mix(.53 + .4 * Math.max(0, dot(normal, lightA)) + .12 * Math.max(0, dot(normal, lightB)), 1, o.emissive || 0),
-            color = o.color.map(x => Math.round(clamp(x * shade) * 255));
+            normals = [0, 3, 6].map(k => unit(point(g.normals.slice(i + k, i + k + 3), nm, 0)));
+          if (v.some(p => p[2] <= 0)) continue;
           const den = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
           if (Math.abs(den) < .001) continue;
+          const flat = normals[0].every((n, k) => Math.abs(n - normals[1][k]) < 1e-6 && Math.abs(n - normals[2][k]) < 1e-6),
+            emission = o.emissive || 0,
+            flatShade = flat ? mix(.63 + .32 * Math.max(0, dot(normals[0], lightA)) + .12 * Math.max(0, dot(normals[0], lightB)), 1, emission) : 0,
+            flatShine = flat ? Math.pow(Math.max(0, dot(normals[0], highlight)), 28) * .18 * (1 - emission) : 0;
           const minX = Math.max(0, Math.floor(Math.min(a[0], b[0], c[0]))),
             maxX = Math.min(width - 1, Math.ceil(Math.max(a[0], b[0], c[0]))),
             minY = Math.max(0, Math.floor(Math.min(a[1], b[1], c[1]))),
@@ -313,9 +392,28 @@ export function createSoftwareRenderer(canvas) {
             if (z >= depth[idx]) continue;
             depth[idx] = z;
             const off = idx * 4;
-            pixels.data[off] = color[0];
-            pixels.data[off + 1] = color[1];
-            pixels.data[off + 2] = color[2];
+            if (flat) {
+              pixels.data[off] = Math.round(clamp(o.color[0] * flatShade + flatShine) * 255);
+              pixels.data[off + 1] = Math.round(clamp(o.color[1] * flatShade + flatShine) * 255);
+              pixels.data[off + 2] = Math.round(clamp(o.color[2] * flatShade + flatShine) * 255);
+              pixels.data[off + 3] = Math.round(255 * (o.alpha ?? 1));
+              continue;
+            }
+            // Perspective-correct normal interpolation removes faceting from
+            // spheres and bevels while retaining a real per-pixel depth test.
+            const wa = u / a[2], wb = bb / b[2], wc = cc / c[2];
+            let nx = normals[0][0] * wa + normals[1][0] * wb + normals[2][0] * wc,
+              ny = normals[0][1] * wa + normals[1][1] * wb + normals[2][1] * wc,
+              nz = normals[0][2] * wa + normals[1][2] * wb + normals[2][2] * wc;
+            const inv = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz);
+            nx *= inv; ny *= inv; nz *= inv;
+            const key = Math.max(0, nx * lightA[0] + ny * lightA[1] + nz * lightA[2]),
+              rim = Math.max(0, nx * lightB[0] + ny * lightB[1] + nz * lightB[2]),
+              shade = mix(.63 + .32 * key + .12 * rim, 1, emission),
+              shine = Math.pow(Math.max(0, nx * highlight[0] + ny * highlight[1] + nz * highlight[2]), 28) * .18 * (1 - emission);
+            pixels.data[off] = Math.round(clamp(o.color[0] * shade + shine) * 255);
+            pixels.data[off + 1] = Math.round(clamp(o.color[1] * shade + shine) * 255);
+            pixels.data[off + 2] = Math.round(clamp(o.color[2] * shade + shine) * 255);
             pixels.data[off + 3] = Math.round(255 * (o.alpha ?? 1));
           }
         }

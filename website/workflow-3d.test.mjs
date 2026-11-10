@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { boxGeometry, cylinderGeometry, sphereGeometry, torusGeometry, octahedronGeometry, camera, project, transform, multiply, identity, createRenderer, createSoftwareRenderer } from './workflow-3d-engine.mjs';
+import { boxGeometry, roundedBoxGeometry, objectTransform, cylinderGeometry, sphereGeometry, torusGeometry, octahedronGeometry, camera, project, transform, multiply, identity, createRenderer, createSoftwareRenderer } from './workflow-3d-engine.mjs';
 import { buildScene, sceneLabels, phaseFor, segmentRotation } from './workflow-3d-scenes.mjs';
-for (const geometry of [boxGeometry(), cylinderGeometry(), sphereGeometry(), torusGeometry(), octahedronGeometry()]) {
+for (const geometry of [boxGeometry(), roundedBoxGeometry(), cylinderGeometry(), sphereGeometry(), torusGeometry(), octahedronGeometry()]) {
   assert.equal(geometry.positions.length, geometry.normals.length);
   assert.equal(geometry.positions.length % 9, 0);
   assert(geometry.positions.every(Number.isFinite));
@@ -81,6 +81,21 @@ for (const v of [[1.1, 0, .3], [1, 2, 3], [-1, -2, -3], [0, 0, 1], [1, 0, 0], [0
 }
 const core = t => buildScene('model', t, {
   cacheHit: true
-}).objects.find(o => o.shape === 'octahedron');
+}).objects.filter(o => Math.abs(o.p[0]) < .9 && o.p[1] > -.4);
 assert.deepEqual(core(3), core(5));
 console.log('PASS: 3D segment orientation and inactive AI core on cache hits');
+
+assert(core(3).length > 10, 'cache hit assertion must inspect actual processor meshes');
+for (const stage of Object.keys(sceneLabels)) {
+  const scene = buildScene(stage, 9);
+  assert(!scene.objects.some(o => o.s[0] > 4 && o.s[2] > 2), 'models have no shared ground');
+  assert(scene.objects.some(o => o.shape === 'roundedBox'), 'floating models use rounded geometry');
+}
+console.log('PASS: open-space models have no floors and cache-hit core is actually checked');
+
+const nested = {p: [1, 2, 3], s: [2, .1, 1], parentRotation: [.2, -.4, .1], localRotation: [Math.PI / 2, 0, 0]};
+const composed = objectTransform(nested);
+const expected = multiply(transform([0,0,0], [1,1,1], nested.parentRotation), transform([0,0,0], nested.s, nested.localRotation));
+for (let i=0;i<12;i++) assert(Math.abs(composed[i]-expected[i])<1e-10);
+assert.deepEqual(composed.slice(12,15), nested.p);
+console.log('PASS: parent and local rotations compose without rotating world positions twice');

@@ -23,215 +23,169 @@ export function phaseFor(stage, t, options = {}) {
   if (stage === 'jump') return options.opened ? 2 : 0;
   return Math.min(2, Math.floor(t / 3));
 }
-export function buildScene(stage, t, {
-  dark = false,
-  cacheHit = false,
-  opened = false
-} = {}) {
+// Original floating product models. No room, ground, grid, plinth or stage.
+// Every small detail shares its parent object's transform, including in orbit view.
+export function buildScene(stage, t, { dark = false, cacheHit = false, opened = false } = {}) {
   const p = {
-    white: dark ? [.46, .55, .5] : [.91, .94, .88],
-    side: dark ? [.28, .37, .31] : [.7, .79, .66],
-    base: dark ? [.2, .27, .23] : [.79, .84, .75],
-    ink: dark ? [.72, .83, .65] : [.28, .4, .26],
-    green: dark ? [.64, .83, .48] : [.47, .65, .34],
-    mint: dark ? [.4, .65, .57] : [.61, .8, .66],
-    gold: dark ? [.85, .7, .38] : [.8, .65, .34],
-    dark: dark ? [.15, .21, .18] : [.35, .45, .35]
+    shell: dark ? [.57, .68, .62] : [.91, .94, .90],
+    paper: dark ? [.80, .88, .81] : [.985, .99, .965],
+    edge: dark ? [.28, .41, .35] : [.58, .70, .62],
+    ink: dark ? [.16, .25, .21] : [.20, .32, .27],
+    faint: dark ? [.48, .61, .53] : [.72, .80, .73],
+    green: dark ? [.48, .85, .64] : [.29, .57, .41],
+    mint: dark ? [.43, .65, .54] : [.65, .82, .70],
+    gold: dark ? [.89, .72, .43] : [.77, .58, .27],
   };
-  const objects = [],
-    labels = [],
-    phase = phaseFor(stage, t, {
-      opened
-    }),
-    q = t / 9;
-  const add = (shape, pos, size, color = p.white, r = [0, 0, 0], extra = {}) => objects.push({
-    shape,
-    p: pos,
-    s: size,
-    color,
-    r,
-    ...extra
+  const objects = [], labels = [], phase = phaseFor(stage, t, { opened });
+  let origin = [0, 0, 0], rotation = [0, 0, 0];
+  const rotate = (v, r) => {
+    let [x,y,z] = v; const [a,b,c] = r;
+    [y,z]=[y*Math.cos(a)-z*Math.sin(a),y*Math.sin(a)+z*Math.cos(a)];
+    [x,z]=[x*Math.cos(b)+z*Math.sin(b),-x*Math.sin(b)+z*Math.cos(b)];
+    return [x*Math.cos(c)-y*Math.sin(c), x*Math.sin(c)+y*Math.cos(c), z];
+  };
+  // Rotation composition is supplied to the engine as an optional parent matrix.
+  const add = (shape, pos, size, color=p.paper, r=[0,0,0], extra={}) => {
+    const local = {shape,p:pos,s:size,color,r,...extra};
+    if (origin.some(Boolean) || rotation.some(Boolean)) {
+      const world=rotate(pos,rotation).map((v,i)=>v+origin[i]);
+      objects.push({...local,p:world,parentRotation:rotation.slice(),localRotation:r.slice(),r:r.map((v,i)=>v+rotation[i])});
+    } else objects.push(local);
+  };
+  const group = (pos,r,fn) => {origin=pos;rotation=r;fn();origin=[0,0,0];rotation=[0,0,0];};
+  const box = (pos,size,color=p.paper,r=[0,0,0]) => add('roundedBox',pos,size,color,r);
+  const ball = (pos,r,color=p.green) => add('sphere',pos,[r,r,r],color);
+  const tube = (a,b,w=.025,color=p.edge) => {
+    const v=b.map((x,i)=>x-a[i]);add('cylinder',a.map((x,i)=>(x+b[i])/2),[w,Math.hypot(...v),w],color,segmentRotation(v));
+  };
+  const ring = (pos,r,color=p.edge,rotation=[Math.PI/2,0,0]) => add('torus',pos,[r,r,r],color,rotation);
+  const tick = (x,y,z,s=.2,color=p.green) => {tube([x-s*.55,y,z],[x-s*.12,y-s*.4,z],s*.22,color);tube([x-s*.12,y-s*.4,z],[x+s*.7,y+s*.5,z],s*.22,color);};
+  const lines = (x,y,z,width=1,count=3) => {for(let i=0;i<count;i++)box([x-(i%2)*width*.08,y-i*.2,z],[width*(i%2?.76:1),.047,.019],p.faint);};
+  const page = (x,y,z,scale=1,r=[-.07,-.2,.06],selected=false) => group([x,y,z],r,()=>{
+    box([0,0,0],[1.72*scale,2.05*scale,.13],p.edge);
+    box([0,.015,.075],[1.65*scale,1.98*scale,.08],p.paper);
+    box([0,.82*scale,.124],[1.49*scale,.18*scale,.02],p.mint);
+    for(let i=0;i<3;i++)ball([(-.61+i*.09)*scale,.82*scale,.147],.021*scale,i? p.paper:p.green);
+    lines(-.08*scale,.54*scale,.129,1.12*scale,2);
+    for(let i=0;i<3;i++){
+      box([0,(-.05-i*.29)*scale,.133],[1.34*scale,.22*scale,.024],selected&&i===1?p.mint:p.shell);
+      ring([-.48*scale,(-.05-i*.29)*scale,.162],.043*scale,selected&&i===1?p.green:p.edge);
+      box([.05*scale,(-.05-i*.29)*scale,.16],[.69*scale,.035,.018],selected&&i===1?p.green:p.faint);
+      if(selected&&i===1)ball([-.48*scale,(-.05-i*.29)*scale,.169],.025*scale);
+    }
   });
-  const box = (pos, size, color, r) => add('box', pos, size, color, r),
-    sphere = (pos, r, color) => add('sphere', pos, [r, r, r], color),
-    ring = (pos, r, color, rotation) => add('torus', pos, [r, r, r], color, rotation);
-  const tube = (a, b, width = .035, color = p.side) => {
-    const v = b.map((x, i) => x - a[i]),
-      len = Math.hypot(...v);
-    add('cylinder', a.map((x, i) => (x + b[i]) / 2), [width, len, width], color, segmentRotation(v));
-  };
-  const route = (points, color = p.side) => {
-    for (let i = 1; i < points.length; i++) tube(points[i - 1], points[i], .035, color);
-  };
-  const travel = (points, u, size = .09, color = p.green) => {
-    u = clamp(u);
-    const piece = Math.min(points.length - 2, Math.floor(u * (points.length - 1))),
-      a = points[piece],
-      b = points[piece + 1],
-      f = u === 1 ? 1 : u * (points.length - 1) - piece;
-    sphere(a.map((v, i) => mix(v, b[i], f)), size, color);
-  };
-  const stack = (x, z, count = 3) => {
-    for (let i = 0; i < count; i++) add('cylinder', [x, -.17 + i * .18, z], [.95, .13, .95], i === count - 1 ? p.mint : p.white);
-  };
-  const pedestal = (x, z, w = 1.5) => {
-    box([x, -.43, z], [w, .18, 1.35], p.side);
-    box([x, -.32, z], [w - .08, .05, 1.27], p.white);
-  };
-  const sheet = (x, y, z, w = 1.2, h = .9, rotation = [0, 0, 0]) => {
-    box([x, y, z], [w, .07, h], p.white, rotation);
-    for (let j = 0; j < 3; j++) box([x - .05, y + .045, z - .22 + j * .18], [w * .66, .014, .04], j === 0 ? p.green : p.side, rotation);
-  };
-  const browser = (x, z) => {
-    pedestal(x, z, 1.8);
-    box([x, .48, z - .25], [1.7, 1.25, .13], p.side);
-    box([x, .51, z - .16], [1.53, 1.05, .04], p.white);
-    box([x, .91, z - .128], [1.39, .09, .015], p.green);
-    for (let j = 0; j < 3; j++) box([x - .12, .65 - j * .21, z - .128], [1.04 - j * .13, .045, .018], p.side);
-    box([x, -.14, z + .1], [1.75, .08, .8], p.white);
-  };
-  const label = (text, pos, tone = '') => labels.push({
-    text,
-    pos,
-    tone
+  const sheet = (x,y,z,scale=1,r=[-.08,-.22,.08],seal=false) => group([x,y,z],r,()=>{
+    box([0,0,0],[1.38*scale,1.66*scale,.085],p.paper);
+    box([-.43*scale,.54*scale,.052],[.22*scale,.18*scale,.025],p.mint);
+    lines(.02*scale,.23*scale,.055,.95*scale,3);
+    if(seal){ball([.38*scale,-.49*scale,.07],.19*scale,p.green);tick(.38*scale,-.49*scale,.085+.19*scale,.14*scale,p.paper);}
   });
-  // A shared physical stage makes depth and each object's role legible.
-  box([0, -.61, 0], [6.65, .12, 3.35], p.base);
-  box([0, -.53, 0], [6.55, .035, 3.25], p.white);
-  for (let i = -6; i <= 6; i++) box([i * .5, -.508, 0], [.008, .004, 3.1], p.base);
-  for (let i = -3; i <= 3; i++) box([0, -.508, i * .5], [6.4, .004, .008], p.base);
-  if (stage === 'read') {
-    browser(-2, -.15);
-    const progress = smooth((t - 1) / 5);
-    for (let i = 0; i < 3; i++) {
-      const u = smooth((t - 1 - i * .65) / 3.5);
-      sheet(mix(-1.4, .7 + i * .34, u), mix(.35 + i * .15, .1 + i * .27, u) + Math.sin(u * Math.PI) * .8, mix(-.15, .3 - i * .34, u), .9, .65, [0, -.15 + i * .12, 0]);
+  const track = (a,b,u,{active=true,arc=.25}={}) => {
+    const at=v=>[mix(a[0],b[0],v),mix(a[1],b[1],v)+Math.sin(v*Math.PI)*arc,mix(a[2],b[2],v)];
+    for(let i=0;i<15;i++)ball(at(i/14),.019,active?p.faint:p.edge);
+    if(active){const pos=at(clamp(u));ball(pos,.08,p.green);ball([pos[0]-.035,pos[1]+.025,pos[2]+.045],.027,p.paper);}
+  };
+  const label=(text,pos,tone='')=>labels.push({text,pos,tone});
+  const u=smooth((t-1)/6);
+  if(stage==='read'){
+    page(-1.7,.32,-.08,1.05,[-.09,.19,-.08]);
+    // Three extracted fields separate and settle into one structured input.
+    for(let i=0;i<3;i++){
+      const k=smooth((t-1-i*.55)/4);
+      sheet(mix(-1.3,1.38+i*.23,k),mix(.2,.2+i*.20,k)+Math.sin(k*Math.PI)*.24,mix(.1,-.2+i*.19,k),.76,[-.12,-.34,-.08+i*.04]);
     }
-    pedestal(1.7, .1);
-    box([1.7, -.12, .1], [1.2, .35, .95], p.side);
-    box([1.7, .09, .1], [1.25, .07, 1], p.mint);
-    // Scan bar moves over the real depth of the question model.
-    box([-2, .88 - progress * .65, -.105], [1.4, .045, .04], p.green);
-    route([[-1.1, -.12, .7], [0, -.12, 1], [1.7, -.12, .7]]);
-    travel([[-1.1, -.12, .7], [0, -.12, 1], [1.7, -.12, .7]], progress);
-    label(sceneLabels.read[0], [-2, 1.48, -.15]);
-    label(sceneLabels.read[1], [1.75, .85, .1]);
-    label(sceneLabels.read[2], [.1, -.4, 1.45]);
-  } else if (stage === 'model') {
-    pedestal(-2, 0);
-    stack(-2, 0);
-    pedestal(2, 0);
-    sheet(2, .1, 0, 1.1, 1);
-    box([2, .17, 0], [.5, .05, .45], phase === 2 ? p.green : p.side);
-    const rotate = cacheHit ? 1.95 : phase === 1 ? t * .65 : 1.95;
-    add('octahedron', [0, .65, 0], [.55, .67, .55], cacheHit ? p.side : p.green, [.2, rotate, .1]);
-    ring([0, .65, 0], .92, p.side, [.55, rotate * .2, .25]);
-    ring([0, .65, 0], 1.03, cacheHit ? p.side : p.mint, [1.1, -rotate * .2, -.55]);
-    const path = cacheHit ? [[-2, .32, 0], [-1, .3, 1.05], [1, .3, 1.05], [2, .32, 0]] : [[-2, .32, 0], [-1, .32, 0], [0, .65, 0], [1, .32, 0], [2, .32, 0]];
-    route(path, cacheHit ? p.green : p.side);
-    travel(path, smooth((t - 1) / 6), .12);
-    label('本地缓存', [-2, .85, 0]);
-    label(cacheHit ? '缓存命中 · 跳过模型' : '你的 AI 模型', [0, 1.8, 0]);
-    label(phase === 2 ? '候选答案 B' : '候选答案', [2, .9, 0]);
-  } else if (stage === 'write') {
-    pedestal(-2, -.1, 1.3);
-    ring([-2, .55, -.1], .62, p.mint, [Math.PI / 2, 0, 0]);
-    box([-2, .55, -.1], [.55, .7, .14], p.green, [0, t < 3 ? t * .4 : 1.2, 0]);
-    pedestal(0, 0, 1.5);
-    for (let i = 0; i < 3; i++) {
-      box([0, -.13, -.48 + i * .46], [1.1, .18, .32], i === 1 && t > 3 ? p.mint : p.white);
-      sphere([-.32, -.01, -.48 + i * .46], .065, i === 1 && t > 3 ? p.green : p.side);
-    }
-    const u = smooth((t - 1) / 4);
-    add('octahedron', [mix(-2, 0, u), .55 + Math.sin(u * Math.PI) * .55, mix(-.1, 0, u)], [.16, .16, .16], p.green, [0, t, 0]);
-    pedestal(2, 0);
-    box([2, -.07, 0], [1.1, .5, .9], p.side);
-    const lid = 1 - smooth((t - 6.5) / 1.3);
-    box([2, .22 + lid * .55, -lid * .15], [1.18, .09, .98], p.white, [lid * -.3, 0, 0]);
-    for (let i = 0; i < 3; i++) {
-      const h = .08 + .24 * smooth((t - 3.2 - i * .9) / .8);
-      box([1.68 + i * .32, .3 + h / 2, .15], [.21, h, .4], p.green);
-    }
-    route([[-1.4, .2, -.1], [-.8, .2, -.1]]);
-    route([[.7, -.1, .7], [1.4, -.1, .7]]);
-    label('页面变化检查', [-2, 1.48, -.1]);
-    label('填写选项 B', [0, .65, .2]);
-    label(t > 7.8 ? '目标题目 3/3 · 本页已保存' : '全部目标成功后保存', [2, 1.25, 0]);
-  } else if (stage === 'pair') {
-    pedestal(-2, 0);
-    pedestal(2, 0);
-    box([-2, .2, 0], [1.1, 1.05, .9], p.side);
-    box([-2, .77, 0], [1.18, .12, .98], p.mint);
-    box([2, .14, 0], [1.1, .9, .9], p.white);
-    box([2, .64, 0], [1.18, .1, .98], p.side);
-    // Private signing key remains physically anchored in the PNC side.
-    sphere([-2, .85, 0], .11, p.gold);
-    const u = smooth((t - 1.5) / 5),
-      kx = mix(-1.9, 2, u),
-      ky = .97 + Math.sin(u * Math.PI) * .45;
-    ring([kx, ky, 0], .19, p.gold, [Math.PI / 2, 0, 0]);
-    box([kx + .28, ky, 0], [.34, .09, .09], p.gold);
-    box([kx + .4, ky - .09, 0], [.07, .18, .09], p.gold);
-    route([[-1.2, .12, .75], [0, .12, 1.05], [1.3, .12, .75]]);
-    label('PNC · 私钥留在本地', [-2, 1.6, 0]);
-    label('手动复制验证公钥', [0, 2, 0]);
-    label(t > 6.5 ? 'Helper · 已确认来源' : 'Helper', [2, 1.35, 0]);
-  } else if (stage === 'sync') {
-    pedestal(-2, 0);
-    stack(-2, 0, 4);
-    pedestal(2, 0);
-    stack(2, 0, t > 6 ? 4 : 2);
-    // Validation gate is a seal, never an encryption lock.
-    ring([0, .55, 0], .67, p.mint, [Math.PI / 2, 0, 0]);
-    ring([0, .55, 0], .78, p.side, [Math.PI / 2, 0, 0]);
-    box([0, -.25, 0], [.18, .4, .3], p.side);
-    const u = smooth((t - 1) / 6),
-      x = mix(-2, 2, u);
-    box([x, .55, 0], [.43, .32, .43], p.white, [.1, q * 2, .1]);
-    sphere([x, .78, 0], .1, p.gold);
-    route([[-1.4, .55, 0], [1.4, .55, 0]]);
-    label('PNC · 签名题集快照', [-2, 1.15, 0]);
-    label('验签 · 时间 · 序号', [0, 1.65, 0]);
-    label('Helper · 本地保存', [2, 1.15, 0]);
-  } else if (stage === 'remind') {
-    pedestal(-2, 0);
-    stack(-2, 0);
-    ring([0, .45, 0], .82, p.side, [Math.PI / 2, 0, 0]);
-    ring([0, .45, .02], .72, p.green, [Math.PI / 2, 0, 0]);
-    add('cylinder', [0, .45, 0], [1.45, .07, 1.45], p.white, [Math.PI / 2, 0, 0]);
-    const angle = mix(-1.2, .4, smooth(t / 6));
-    tube([0, .45, .07], [Math.sin(angle) * .55, .45 + Math.cos(angle) * .55, .07], .045, p.ink);
-    tube([0, .45, .08], [.3, .52, .08], .04, p.green);
-    sphere([0, .45, .1], .07, p.gold);
-    pedestal(2, 0);
-    const rise = smooth((t - 5) / 2.2);
-    box([2, -.15 + rise * .6, 0], [1.15, .75, .16], p.white, [0, -.12, 0]);
-    for (let i = 0; i < 2; i++) box([2, .02 + rise * .6 - i * .18, .11], [.8 - i * .2, .045, .03], p.green);
-    ring([1.45, .25, .55], .18, p.gold, [Math.PI / 2, 0, 0]);
-    route([[-1.4, .05, .7], [-.7, .05, .7]]);
-    route([[.8, .05, .7], [1.5, .05, .7]]);
-    travel([[-1.4, .05, .7], [-.7, .05, .7], [.8, .05, .7], [1.5, .05, .7]], smooth(t / 7));
-    label('最近同步的快照', [-2, .9, 0]);
-    label(t < 4 ? '每 30 秒检查' : '少于 3 天 · 示例', [0, 1.55, 0]);
-    label(t < 6 ? '去重检查' : '已请求 · 非送达', [2, 1.45, 0]);
-  } else if (stage === 'jump') {
-    pedestal(-2, 0);
-    box([-2, .4, 0], [1.65, .8, .18], p.white, [0, .14, 0]);
-    for (let i = 0; i < 2; i++) box([-2, .54 - i * .22, .13], [1.25 - i * .2, .045, .03], p.green);
-    sphere([-2.62, .65, .13], .08, p.gold);
-    browser(1.75, 0);
-    const u = opened ? smooth(t / 1.8) : 0,
-      path = [[-1.1, .4, .2], [-.3, .7, .7], [.5, .7, .7], [1.75, .55, .1]];
-    route(path, opened ? p.green : p.side);
-    if (opened) travel(path, u, .14, p.green);
-    if (opened && u > .7) box([1.75, .51, -.12], [1.3, .65, .02], p.mint);
-    label('题集截止提醒', [-2, 1.25, 0]);
-    label(opened ? '在本页演示打开' : '等待用户点击', [0, 1.65, 0]);
-    label('对应 PTA 题集', [1.75, 1.55, 0]);
+    track([-.67,-.85,.1],[1.08,-.85,.24],u,{arc:-.20});
+    label('PTA 当前题目',[-1.7,1.75,0]);
+    label('结构化输入',[1.68,1.72,0]);
+    label('题面 · 选项 · 上下文',[.1,-1.34,.1]);
+  }else if(stage==='model'){
+    // A compact memory stack, a processing core, and a single answer leaf.
+    group([-2.18,.18,0],[.22,0,-.08],()=>{
+      for(let i=0;i<4;i++){
+        add('cylinder',[0,-.45+i*.28,0],[1.08,.20,1.08],i===3?p.mint:p.shell);
+        box([.12,-.45+i*.28,.52],[.38,.035,.018],p.green);
+      }
+    });
+    const spin=cacheHit?-.18: -.18+Math.sin(Math.PI*smooth((t-3)/3))*.18;
+    group([0,.35,-.10],[-.12,spin,.08],()=>{
+      box([0,0,0],[1.37,1.37,.34],p.edge);
+      box([0,0,.20],[1.25,1.25,.11],cacheHit?p.shell:p.mint);
+      box([0,0,.28],[.95,.95,.12],p.ink);
+      for(let k=0;k<4;k++)for(let i=0;i<5;i++){
+        const x=-.47+i*.235, y=.79, z=.02;
+        const angle=k*Math.PI/2, q=rotate([x,y,z],[0,0,angle]);
+        box(q,[k%2?.22:.085,k%2?.085:.22,.08],p.shell);
+      }
+      const nodes=[[-.28,.20,.37],[.24,.29,.37],[-.05,-.04,.40],[-.28,-.28,.37],[.28,-.24,.37]];
+      for(const [a,b] of [[0,1],[0,2],[1,2],[2,3],[2,4],[3,4]])tube(nodes[a],nodes[b],.025,cacheHit?p.faint:p.mint);
+      nodes.forEach((n,i)=>ball(n,.075,cacheHit?p.faint:(phase===1&&i===Math.floor(t*2)%5?p.paper:p.green)));
+    });
+    sheet(2.17,.19,.04,.75,[-.08,-.3,.1],phase===2);
+    if(cacheHit)track([-1.6,-.55,.18],[1.61,-.55,.2],u,{arc:-.52});
+    else {track([-1.57,.32,.12],[-.85,.32,.12],smooth((t-1)/2),{arc:.08});track([.83,.32,.12],[1.65,.32,.12],smooth((t-4)/2.5),{arc:.08,active:t>=3});}
+    label('本地缓存',[-2.15,1.40,0]);
+    label(cacheHit?'缓存命中 · 跳过模型':'你的 AI 模型',[0,1.65,0]);
+    label(phase===2?'候选答案 B':'候选答案',[2.15,1.4,0]);
+  }else if(stage==='write'){
+    page(0,.3,0,1.03,[-.05,-.16,-.035],t>=3);
+    group([-2.08,.35,.05],[0,.12,-.13],()=>{
+      box([0,0,0],[.94,1.18,.18],p.mint);ring([0,.06,.13],.29,p.green);tick(0,.06,.18,.24);
+      box([0,-.46,.11],[.32,.04,.02],p.green);
+    });
+    group([2.04,.28,.1],[-.1,-.27,.06],()=>{
+      box([0,0,0],[1.12,1.34,.20],p.edge);box([0,.06,.13],[1.02,1.15,.08],p.paper);
+      for(let i=0;i<3;i++){const on=t>3.2+i*1.1;ball([-.3,.4-i*.3,.22],.065,on?p.green:p.faint);box([.13,.4-i*.3,.2],[.42,.055,.022],on?p.green:p.faint);}
+      box([0,-.43,.2],[.67,.17,.05],t>7.8?p.green:p.shell);
+    });
+    track([-1.49,-.55,.15],[-.96,-.55,.15],smooth((t-1)/2),{arc:.1});
+    track([.97,-.55,.15],[1.46,-.55,.15],smooth((t-5)/2),{arc:.1,active:t>=3});
+    label('页面变化检查',[-2.07,1.40,0]);label('填写选项 B',[0,1.75,0]);label(t>7.8?'目标题目 3/3 · 本页已保存':'全部目标成功后保存',[2.05,-.86,0]);
+  }else if(stage==='pair'){
+    page(-1.92,.23,-.08,.85,[-.06,.22,-.07]);
+    page(1.92,.23,-.08,.85,[-.06,-.25,.07]);
+    // Public key passes through open air. No private key or API credential moves.
+    group([mix(-.35,.35,u),.35,.65],[0,-.13,-.42],()=>{
+      ring([-.19,0,0],.28,p.gold);
+      box([.27,0,0],[.66,.12,.11],p.gold);
+      box([.44,-.13,0],[.11,.24,.11],p.gold);box([.23,-.1,0],[.10,.19,.11],p.gold);
+    });
+    track([-.96,-.52,.15],[.95,-.52,.15],u,{arc:-.24});
+    label('PNC',[-1.92,1.53,0]);label('仅验证公钥',[0,1.31,.2]);label('Helper',[1.92,1.53,0]);
+  }else if(stage==='sync'){
+    for(let i=0;i<3;i++)sheet(-2.13+i*.13,.13+i*.13,-.3+i*.16,.72,[-.06,.18,-.07],true);
+    group([0,.40,.15],[0,-.17,.08],()=>{
+      ring([0,0,0],.68,p.edge);ring([0,0,.04],.56,p.mint);
+      tick(0,0,.08,.42,t>=4?p.green:p.faint);
+      for(let i=0;i<3;i++)ball([-.30+i*.30,-.88,.06],.07,t>=2+i*1.4?p.green:p.faint);
+    });
+    sheet(2.05,.24,.04,.86,[-.07,-.27,.07],t>=6);
+    track([-1.32,.34,.1],[-.76,.34,.1],smooth((t-1)/2),{arc:.08});track([.76,.34,.1],[1.39,.34,.1],smooth((t-5)/2),{arc:.08,active:t>=4});
+    label('PNC 签名快照',[-1.94,1.52,0]);label('验签 · 时间 · 序号',[0,1.52,0]);label('Helper 本地快照',[2.05,1.52,0]);
+  }else if(stage==='remind'){
+    sheet(-2.10,.13,-.1,.71,[-.06,.23,-.08]);
+    group([0,.35,.03],[0,-.18,-.08],()=>{
+      add('cylinder',[0,0,0],[1.91,.20,1.91],p.edge,[Math.PI/2,0,0]);
+      add('cylinder',[0,0,.12],[1.78,.05,1.78],p.paper,[Math.PI/2,0,0]);
+      ring([0,0,.16],.81,p.mint);
+      for(let i=0;i<12;i++){const a=i*Math.PI/6;box([Math.sin(a)*.69,Math.cos(a)*.69,.18],[.025,i%3===0?.13:.07,.02],p.edge,[0,0,-a]);}
+      const a=-.9+smooth((t-1)/4)*.8; tube([0,0,.21],[Math.sin(a)*.52,Math.cos(a)*.52,.21],.055,p.green);tube([0,0,.22],[.30,-.16,.22],.065,p.ink);ball([0,0,.24],.075,p.green);
+    });
+    group([2.1,.25,.12],[-.09,-.27,.08],()=>{
+      box([0,0,0],[1.25,1.01,.17],p.paper);
+      box([0,.29,.10],[1.09,.20,.03],p.mint);lines(.08,.02,.1,.73,2);
+      ball([.47,.44,.14],.11,t>=6?p.green:p.faint);
+    });
+    track([.95,-.53,.1],[1.47,-.35,.1],smooth((t-5)/2),{arc:.03,active:t>=5});
+    label('最近同步的截止时间',[-2.1,1.37,0]);label('少于 3 天',[0,1.66,0]);label('请求通知 · 不保证送达',[2.1,-.71,0]);
+  }else if(stage==='jump'){
+    const n=opened?smooth(t/2):0;
+    group([-1.58,.39,.16],[-.09,.17,-.08],()=>{
+      box([0,0,0],[2.05,1.31,.20],p.edge);box([0,.02,.12],[1.95,1.22,.07],p.paper);
+      box([-.68,.24,.18],[.36,.36,.07],p.mint);ball([-.68,.24,.23],.10,p.green);lines(.30,.27,.17,.89,2);box([.02,-.31,.17],[1.48,.06,.018],p.faint);
+    });
+    page(1.61,.27,-.10,.94,[-.05,-.25,.075],opened);
+    track([-.44,-.6,.14],[.63,-.6,.14],n,{arc:-.18,active:opened});
+    label('示意通知',[-1.58,1.57,0]);label(opened?'已打开示意题集':'由你点击打开',[0,-1.13,.1]);label(opened?'字符串与常用类':'对应 PTA 题集',[1.61,1.70,0]);
   }
-  return {
-    objects,
-    labels,
-    phase
-  };
+  return { objects, labels, phase };
 }

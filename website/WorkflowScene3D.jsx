@@ -34,8 +34,8 @@ export default function WorkflowScene3D({
       raf = 0,
       last = 0,
       time = reduce ? DURATION : 0,
-      yaw = -.27,
-      pitch = .6,
+      yaw = -.12,
+      pitch = .16,
       active = false,
       disposed = false,
       lost = false,
@@ -68,14 +68,15 @@ export default function WorkflowScene3D({
           opened
         }),
         vp = camera(width / height, yaw, pitch);
-      renderer.draw(scene.objects, vp, width, height, Math.min(devicePixelRatio || 1, coarse.matches ? 1.25 : 1.5));
+      renderer.draw(scene.objects, vp, width, height, Math.min(Math.max(devicePixelRatio || 1, 1.5), coarse.matches ? 1.75 : 2));
       scene.labels.forEach((l, i) => {
         const node = labels.current?.children[i];
         if (!node) return;
         const [x, y] = project(l.pos, vp, width, height);
-        node.style.left = Math.max(42, Math.min(width - 42, x)) + 'px';
-        node.style.top = Math.max(12, Math.min(height - 12, y)) + 'px';
         node.textContent = l.text;
+        const half = Math.min(width / 2, node.offsetWidth / 2 + 4);
+        node.style.left = Math.max(half, Math.min(width - half, x)) + 'px';
+        node.style.top = Math.max(12, Math.min(height - 12, y)) + 'px';
       });
       if (phaseSeen !== scene.phase) {
         phaseSeen = scene.phase;
@@ -87,13 +88,13 @@ export default function WorkflowScene3D({
     function tick(now) {
       raf = 0;
       if (disposed || !active || document.hidden || lost) return;
-      const dt = last ? Math.min((now - last) / 1000, .08) : 0;
-      if (last && dt < 1 / (renderer?.type === 'software' ? 18 : coarse.matches ? 24 : 30)) {
+      const dt = last ? Math.min((now - last) / 1000, renderer?.type === 'software' ? .3 : .08) : 0;
+      if (last && dt < 1 / (renderer?.type === 'software' ? 12 : coarse.matches ? 24 : 30)) {
         raf = requestAnimationFrame(tick);
         return;
       }
       last = now;
-      const targetYaw = live.current.view ? .48 : -.27,
+      const targetYaw = live.current.view ? .35 : -.12,
         drift = targetYaw - yaw;
       yaw += drift * (reduce ? 1 : Math.min(1, dt * 6));
       const limit = stage.id === 'jump' ? 2.3 : DURATION;
@@ -214,7 +215,7 @@ export default function WorkflowScene3D({
     setRun(n => n + 1);
   };
   return <div ref={root} className="workflow-graphic wf3d" data-renderer={rendererType} data-paused={paused || undefined} data-static={staticMode || undefined} data-stage={stage.id}>
-  <div className="wf3d-heading"><span><i />{rendererType === 'fallback' ? 'STATIC FALLBACK' : '3D WORKFLOW'}</span><span>0{Object.keys(sceneLabels).indexOf(stage.id) + 1} / 07</span></div>
+  <div className="wf3d-heading"><span><i />{rendererType === 'fallback' ? 'STATIC FALLBACK' : 'FLOATING / 3D'}</span><span>0{Object.keys(sceneLabels).indexOf(stage.id) + 1} / 07</span></div>
   <div className="wf3d-viewport" aria-hidden="true"><canvas ref={canvas} /><div ref={labels} className="wf3d-labels">{sceneLabels[stage.id].map((label, i) => <span key={i}>{label}</span>)}</div>{rendererType === 'fallback' && <div className="wf3d-fallback">{sceneLabels[stage.id].map((label, i) => <div key={label}><i style={{
             '--tile-order': i
           }} /><span>{label}</span></div>)}</div>}</div>
