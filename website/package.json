@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "node test.mjs && node scroll-snap.test.mjs && node scroll-interruption.test.mjs"
   },
   "dependencies": {
     "@astryxdesign/core": "0.7.11",

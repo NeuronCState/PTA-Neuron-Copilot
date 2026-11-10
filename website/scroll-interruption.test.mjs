@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import {JSDOM} from 'jsdom';
+import {installSnap} from './scroll-snap.mjs';
+const dom=new JSDOM('<main id="main"><section class="screen" id="experience"><button>Focus</button></section><section class="screen" id="helper"><div role="tablist"><button role="tab">Tab</button></div><input type="range"></section><section class="screen" id="install"><button>Last</button></section></main><a href="#install">Install</a>',{url:'https://example.test/'});
+const {window}=dom;for(const name of ['window','document','CustomEvent','location','history'])globalThis[name]=window[name];
+let frames=new Map(),seq=0,reduce=false;globalThis.scrollY=0;globalThis.innerHeight=800;
+window.scrollTo=(x,y)=>{globalThis.scrollY=y;};
+globalThis.matchMedia=()=>({get matches(){return reduce},addEventListener(){},removeEventListener(){}});
+globalThis.requestAnimationFrame=f=>{frames.set(++seq,f);return seq;};globalThis.cancelAnimationFrame=id=>frames.delete(id);
+let screens=[...document.querySelectorAll('.screen')];screens.forEach((s,i)=>s.getBoundingClientRect=()=>({top:i*800-scrollY}));
+const tick=t=>{const jobs=[...frames.values()];frames.clear();jobs.forEach(f=>f(t));};
+const end=()=>{tick(0);tick(700);};
+const emit=(name,props={},target=window)=>{const e=new window.Event(name,{cancelable:true,bubbles:true});Object.assign(e,props);target.dispatchEvent(e);return e;};
+const wheel=()=>emit('wheel',{deltaX:0,deltaY:25,deltaMode:0,ctrlKey:false});
+const key=(key,target=window,extra={})=>emit('keydown',{key,...extra},target);
+const navigate=index=>window.dispatchEvent(new window.CustomEvent('pnc:navigate',{detail:{index}}));
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+let last;window.addEventListener('pnc:page',e=>last=e.detail);
+let stop=installSnap();assert.deepEqual(last,{index:0,count:3});
+async function midway(){navigate(0);end();await pause(180);wheel();await pause(65);tick(0);tick(350);assert(scrollY>0&&scrollY<800);}
+for(const k of ['Shift','a','Control','Meta','Alt']){await midway();key(k);tick(700);assert.equal(scrollY,800,k+' must not strand animation');}
+await midway();const beforeLayout=scrollY;emit('pnc:layout');assert.equal(scrollY,beforeLayout,'unchanged layout must not jump to destination');assert.equal(frames.size,1);tick(700);assert.equal(scrollY,800);
+for(const k of ['Escape','Tab']){await midway();key(k);assert.equal(scrollY,800);assert.equal(frames.size,0);}
+await midway();key('ArrowDown');end();assert.equal(scrollY,1600,'navigation interruption resolves to a complete next page');
+key('Home');end();assert.equal(scrollY,0);key('PageDown');end();assert.equal(scrollY,800);key('ArrowUp');end();assert.equal(scrollY,0);key('End');end();assert.equal(scrollY,1600);
+navigate(1);end();const tab=document.querySelector('[role=tab]');assert.equal(key('ArrowRight',tab).defaultPrevented,false);assert.equal(key('ArrowDown',tab).defaultPrevented,false);assert.equal(scrollY,800);
+assert.equal(key('ArrowDown',document.querySelector('input')).defaultPrevented,false);
+await midway();emit('touchstart',{touches:[{clientX:0,clientY:100}]});assert(emit('touchmove',{touches:[{clientX:0,clientY:50}]}).defaultPrevented,'locked touch must prevent native drift');assert(!emit('touchmove',{touches:[{},{}]}).defaultPrevented,'pinch stays native');tick(700);assert.equal(scrollY,800);
+navigate(0);end();await pause(180);wheel();await pause(65);end();wheel();await pause(65);assert.equal(scrollY,800,'momentum cannot advance second page');
+await pause(180);emit('touchstart',{touches:[{clientX:0,clientY:100}]});emit('touchmove',{touches:[{clientX:0,clientY:91}]});assert(scrollY>800&&scrollY<810);emit('touchend',{touches:[]});end();assert.equal(scrollY,1600,'light touch release advances');
+reduce=true;navigate(0);assert.equal(scrollY,0);await pause(180);wheel();await pause(65);assert.equal(scrollY,800,'reduced motion still pages');assert.equal(frames.size,0);
+emit('focusin',{},screens[2].querySelector('button'));assert.equal(scrollY,1600,'focus cannot leave page between screens');
+emit('click',{button:0},document.querySelector('a'));assert.equal(location.hash,'#install');assert.equal(scrollY,1600);
+location.hash='#helper';emit('hashchange');assert.equal(scrollY,800);
+const inserted=document.createElement('section');inserted.className='screen';inserted.id='inserted';screens[0].after(inserted);screens=[...document.querySelectorAll('.screen')];screens.forEach((s,i)=>s.getBoundingClientRect=()=>({top:i*800-scrollY}));emit('pnc:layout');assert.deepEqual(last,{index:2,count:4});assert.equal(scrollY,1600,'layout preserves current section identity');
+const current=screens[2];current.dataset.screenKey='helper-content';emit('pnc:layout');
+const replacement=current.cloneNode(true);replacement.dataset.screenKey='helper-content.0';current.replaceWith(replacement);replacement.getBoundingClientRect=()=>({top:1600-scrollY});
+const split=document.createElement('section');split.className='screen';split.dataset.screenKey='earlier-content.0';replacement.before(split);
+const measure=()=>[...document.querySelectorAll('.screen')].forEach((s,i)=>s.getBoundingClientRect=()=>({top:i*800-scrollY}));measure();emit('pnc:layout');assert.equal(last.index,3,'split page retains logical identity even after preceding pages change');
+replacement.dataset.screenKey='helper-content';split.remove();measure();emit('pnc:layout');assert.equal(last.index,2,'merged page retains logical identity');
+const field=document.querySelector('input');assert(!emit('wheel',{deltaX:0,deltaY:25,deltaMode:0},field).defaultPrevented,'native field wheel stays available');scrollY=1725;emit('scrollend');assert.equal(scrollY,1600,'native document scrolling settles back to nearest screen');
+scrollY=1735;emit('scroll');await pause(180);assert.equal(scrollY,1600,'scroll debounce recovers when scrollend is unavailable');
+reduce=false;navigate(3);tick(0);tick(350);const moving=scrollY;emit('scrollend');assert.equal(scrollY,moving,'scroll recovery cannot interrupt active animation');tick(700);assert.equal(scrollY,2400);
+stop();assert.equal(frames.size,0);console.log('PASS: keyboard interruption, local tabs, locked touch, pinch, momentum, reduced motion, focus, anchors, layout identity');
