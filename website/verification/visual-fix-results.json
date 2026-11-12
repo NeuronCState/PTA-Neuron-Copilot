@@ -1,0 +1,1098 @@
+[
+  {
+    "name": "no horizontal overflow 2048/1056/1/light",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 2048/1056/1/light",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 2048/1056/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 403
+  },
+  {
+    "name": "shared background experience 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 403
+  },
+  {
+    "name": "shared background rhythm 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 403
+  },
+  {
+    "name": "shared background helper 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 403
+  },
+  {
+    "name": "shared background reminder-notes 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 403
+  },
+  {
+    "name": "shared background install 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 425
+  },
+  {
+    "name": "shared background about 2048/1056/1/light",
+    "pass": true,
+    "paintedSamples": 425
+  },
+  {
+    "name": "background keeps animating 2048/1056/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 2048/1056/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 2048/1056/1/dark",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 2048/1056/1/dark",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 2048/1056/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "shared background experience 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "shared background rhythm 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "shared background helper 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "shared background reminder-notes 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "shared background install 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "shared background about 2048/1056/1/dark",
+    "pass": true,
+    "paintedSamples": 404
+  },
+  {
+    "name": "background keeps animating 2048/1056/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 2048/1056/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1440/900/1/light",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 1440/900/1/light",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 1440/900/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 299
+  },
+  {
+    "name": "shared background experience 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 299
+  },
+  {
+    "name": "shared background rhythm 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 299
+  },
+  {
+    "name": "shared background helper 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 299
+  },
+  {
+    "name": "shared background reminder-notes 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 299
+  },
+  {
+    "name": "shared background install 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 271
+  },
+  {
+    "name": "shared background about 1440/900/1/light",
+    "pass": true,
+    "paintedSamples": 271
+  },
+  {
+    "name": "background keeps animating 1440/900/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1440/900/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1440/900/1/dark",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 1440/900/1/dark",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 1440/900/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background experience 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background rhythm 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background helper 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background reminder-notes 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background install 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 308
+  },
+  {
+    "name": "shared background about 1440/900/1/dark",
+    "pass": true,
+    "paintedSamples": 322
+  },
+  {
+    "name": "background keeps animating 1440/900/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1440/900/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1024/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 1024/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 1024/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 225
+  },
+  {
+    "name": "shared background experience 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 250
+  },
+  {
+    "name": "shared background rhythm 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 250
+  },
+  {
+    "name": "shared background helper 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 250
+  },
+  {
+    "name": "shared background reminder-notes 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 254
+  },
+  {
+    "name": "shared background install 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 254
+  },
+  {
+    "name": "shared background about 1024/768/1/light",
+    "pass": true,
+    "paintedSamples": 254
+  },
+  {
+    "name": "background keeps animating 1024/768/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1024/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1024/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 1024/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 1024/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 237
+  },
+  {
+    "name": "shared background experience 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 237
+  },
+  {
+    "name": "shared background rhythm 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 237
+  },
+  {
+    "name": "shared background helper 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 237
+  },
+  {
+    "name": "shared background reminder-notes 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 241
+  },
+  {
+    "name": "shared background install 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 241
+  },
+  {
+    "name": "shared background about 1024/768/1/dark",
+    "pass": true,
+    "paintedSamples": 241
+  },
+  {
+    "name": "background keeps animating 1024/768/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1024/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1000/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 1000/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "shared background experience 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "shared background rhythm 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "shared background helper 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "shared background reminder-notes 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "shared background install 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "shared background about 1000/768/1/light",
+    "pass": true,
+    "paintedSamples": 262
+  },
+  {
+    "name": "background keeps animating 1000/768/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1000/768/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1000/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 1000/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 265
+  },
+  {
+    "name": "shared background experience 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 265
+  },
+  {
+    "name": "shared background rhythm 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 278
+  },
+  {
+    "name": "shared background helper 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 278
+  },
+  {
+    "name": "shared background reminder-notes 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 278
+  },
+  {
+    "name": "shared background install 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 278
+  },
+  {
+    "name": "shared background about 1000/768/1/dark",
+    "pass": true,
+    "paintedSamples": 251
+  },
+  {
+    "name": "background keeps animating 1000/768/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1000/768/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 390/844/1/light",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 390/844/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background experience 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 122
+  },
+  {
+    "name": "shared background rhythm 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 122
+  },
+  {
+    "name": "shared background helper 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 122
+  },
+  {
+    "name": "shared background reminder-notes 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 122
+  },
+  {
+    "name": "shared background install 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 113
+  },
+  {
+    "name": "shared background about 390/844/1/light",
+    "pass": true,
+    "paintedSamples": 113
+  },
+  {
+    "name": "background keeps animating 390/844/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 390/844/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 390/844/1/dark",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 390/844/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 120
+  },
+  {
+    "name": "shared background experience 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "shared background rhythm 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "shared background helper 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "shared background reminder-notes 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "shared background install 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "shared background about 390/844/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "background keeps animating 390/844/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 390/844/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 320/568/1/light",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 320/568/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 86
+  },
+  {
+    "name": "shared background experience 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 86
+  },
+  {
+    "name": "shared background rhythm 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 86
+  },
+  {
+    "name": "shared background helper 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 86
+  },
+  {
+    "name": "shared background reminder-notes 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 86
+  },
+  {
+    "name": "shared background install 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 97
+  },
+  {
+    "name": "shared background about 320/568/1/light",
+    "pass": true,
+    "paintedSamples": 98
+  },
+  {
+    "name": "background keeps animating 320/568/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 320/568/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 320/568/1/dark",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 320/568/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background experience 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background rhythm 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background helper 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background reminder-notes 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background install 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 104
+  },
+  {
+    "name": "shared background about 320/568/1/dark",
+    "pass": true,
+    "paintedSamples": 82
+  },
+  {
+    "name": "background keeps animating 320/568/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 320/568/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 844/390/1/light",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 844/390/1/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 152
+  },
+  {
+    "name": "shared background experience 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 162
+  },
+  {
+    "name": "shared background rhythm 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 162
+  },
+  {
+    "name": "shared background helper 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 162
+  },
+  {
+    "name": "shared background reminder-notes 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 162
+  },
+  {
+    "name": "shared background install 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 150
+  },
+  {
+    "name": "shared background about 844/390/1/light",
+    "pass": true,
+    "paintedSamples": 150
+  },
+  {
+    "name": "background keeps animating 844/390/1/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 844/390/1/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 844/390/1/dark",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 844/390/1/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "shared background experience 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "shared background rhythm 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "shared background helper 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "shared background reminder-notes 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "shared background install 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "shared background about 844/390/1/dark",
+    "pass": true,
+    "paintedSamples": 153
+  },
+  {
+    "name": "background keeps animating 844/390/1/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 844/390/1/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1440/900/2/light",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 1440/900/2/light",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 1440/900/2/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background experience 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background rhythm 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background helper 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background reminder-notes 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 319
+  },
+  {
+    "name": "shared background install 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 319
+  },
+  {
+    "name": "shared background about 1440/900/2/light",
+    "pass": true,
+    "paintedSamples": 319
+  },
+  {
+    "name": "background keeps animating 1440/900/2/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1440/900/2/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 1440/900/2/dark",
+    "pass": true
+  },
+  {
+    "name": "icon centred in both orbit frames 1440/900/2/dark",
+    "pass": true
+  },
+  {
+    "name": "illustration inside hero 1440/900/2/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background experience 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background rhythm 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background helper 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background reminder-notes 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background install 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "shared background about 1440/900/2/dark",
+    "pass": true,
+    "paintedSamples": 294
+  },
+  {
+    "name": "background keeps animating 1440/900/2/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 1440/900/2/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 390/844/2/light",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 390/844/2/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background experience 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background rhythm 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 112
+  },
+  {
+    "name": "shared background helper 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 112
+  },
+  {
+    "name": "shared background reminder-notes 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 112
+  },
+  {
+    "name": "shared background install 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 100
+  },
+  {
+    "name": "shared background about 390/844/2/light",
+    "pass": true,
+    "paintedSamples": 100
+  },
+  {
+    "name": "background keeps animating 390/844/2/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 390/844/2/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 390/844/2/dark",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 390/844/2/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background experience 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background rhythm 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background helper 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background reminder-notes 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 107
+  },
+  {
+    "name": "shared background install 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 119
+  },
+  {
+    "name": "shared background about 390/844/2/dark",
+    "pass": true,
+    "paintedSamples": 119
+  },
+  {
+    "name": "background keeps animating 390/844/2/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 390/844/2/dark",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 320/568/2/light",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 320/568/2/light",
+    "pass": true
+  },
+  {
+    "name": "shared background home 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 85
+  },
+  {
+    "name": "shared background experience 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 85
+  },
+  {
+    "name": "shared background rhythm 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 85
+  },
+  {
+    "name": "shared background helper 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 85
+  },
+  {
+    "name": "shared background reminder-notes 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 85
+  },
+  {
+    "name": "shared background install 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 89
+  },
+  {
+    "name": "shared background about 320/568/2/light",
+    "pass": true,
+    "paintedSamples": 89
+  },
+  {
+    "name": "background keeps animating 320/568/2/light",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 320/568/2/light",
+    "pass": true
+  },
+  {
+    "name": "no horizontal overflow 320/568/2/dark",
+    "pass": true
+  },
+  {
+    "name": "compact hero hides complete illustration 320/568/2/dark",
+    "pass": true
+  },
+  {
+    "name": "shared background home 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background experience 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background rhythm 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background helper 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background reminder-notes 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background install 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "shared background about 320/568/2/dark",
+    "pass": true,
+    "paintedSamples": 79
+  },
+  {
+    "name": "background keeps animating 320/568/2/dark",
+    "pass": true,
+    "visibility": "visible",
+    "reduced": false
+  },
+  {
+    "name": "bounded resolution 320/568/2/dark",
+    "pass": true
+  },
+  {
+    "name": "reduced motion keeps a visible static background",
+    "pass": true
+  }
+]

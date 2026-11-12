@@ -167,3 +167,55 @@ preview interactions, installation URLs and renderer mathematics. The new
 non-cancelled gestures, arbitrary scroll positions, anchor history, persistent
 canvases, details focus and sample notification reversal. Browser results must
 be reported separately from node checks; synthetic input is not physical-device QA.
+
+### Centred hero icon and continuous background (2026-11-10)
+
+The hero mark and both orbit frames now share one grid-centred illustration
+wrapper inside the content column. They cannot drift apart as the viewport
+widens. The whole decoration is hidden together on compact screens, preserving
+the existing uncluttered mobile layout. The workflow stylesheet no longer hides
+the singleton fixed neural background when PNC or Helper is visible, so it
+continues through all seven chapters. Normal document scrolling, theme colours,
+canvas frame/DPR caps, hidden-tab suspension and reduced-motion fallback remain
+unchanged. The userscripts and separate terminal are not modified.
+
+Validation: `npm run build && npm test` pass. `visual-fix-qa.html` checks computed
+centres, shared fixed background visibility and actual canvas pixels while
+scrolling each chapter. All 229 checks pass across 20 light/dark viewport and
+font-size combinations (320–2048px, landscape, and 200% root text), including
+continued motion, bounded canvas resolution and a visible static reduced-motion
+background. The fixture is development-only and is not included in the
+production build. Physical mobile devices, Safari and native GPU rendering were
+not tested. Existing dependency directive and bundle warnings remain.
+
+The retained native-scroll browser harness also passes all 140 checks: native
+wheel/touch events, arbitrary scroll position, anchor history, preview controls,
+persistent journey canvases, details focus return and reversible notifications.
+Synthetic gestures do not replace physical device testing.
+
+### Product-led homepage refresh (2026-11-12)
+
+The homepage now leads with an existing, authentic PNC catalogue screenshot in
+an original floating composition. A keyboard-operable gallery offers the three
+repository screenshots, with explicit historical-version notices. The beta.20
+review switch is not presented as a current feature. Three reversible workflow
+comparisons explain catalogue lookup, analysis and optional Helper reminders;
+these are qualitative diagrams, not invented performance measurements.
+
+The existing seven-stop 3D journeys, native scrolling, installation URLs,
+terminal route and production userscripts are preserved. The neural background
+is visible across every chapter and now has a separate pause/resume button.
+Reduced-motion and hidden-tab suspension remain in place. New animations use
+only opacity and transform, with static readable defaults and no autoplay
+carousel. The hero image is preloaded in the original HTML, has high fetch
+priority and explicit dimensions; below-fold screenshots use native lazy load.
+
+Frontend Craft informed the evidence-first composition, hierarchy and comparison
+pattern. GoogleChrome/modern-web-guidance informed image priority, progressive
+CSS enhancement, native interaction and motion controls. No code, assets or
+written guide passages from either reference were copied or installed. Existing
+Astryx/Motion licenses are unchanged, and no runtime dependency was added.
+
+Run `npm run build && npm test`. `craft-qa.html` is a development-only browser
+harness for responsive layout, screenshot loading, preview interactions,
+comparison controls, pause/resume, native anchors/history and workflow dialogs.

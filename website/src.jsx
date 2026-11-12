@@ -15,6 +15,8 @@ import './style.css';
 import NeuronBackground from './NeuronBackground.jsx';
 import {observeSections} from './native-scroll.mjs';
 import {WorkflowTabs,workflowBlocks} from './WorkflowShowcase.jsx';
+import {ProductHero,ProductEvidence,PracticeComparison} from './CraftShowcase.jsx';
+import './craft.css';
 const repo='https://github.com/NeuronCState/PTA-Neuron-Copilot';
 const raw='https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/';
 const Arrow=()=> <span aria-hidden="true">↗</span>;
@@ -29,7 +31,7 @@ function NaturalSections({groups,tab}){
  return <main id="main" ref={host} tabIndex={-1}>{groups.map(group=><section className={'screen screen-'+group.id} key={group.id} id={group.id} aria-label={group.label}>
   {group.toolbar&&<div className="chapter-toolbar">{group.toolbar}</div>}
   <div className="chapter-slide">
-   {group.id==='home'&&<div className="hero-art" aria-hidden="true"><Mark/></div>}
+   {group.id==='home'&&<ProductHero/>}
    <div className="screen-content">{group.blocks.map(item=><div className={'content-block'+(item.wide?' block-wide':'')} hidden={!!item.feature&&item.feature!==tab} data-block={item.id} key={item.id}>{item.node}</div>)}</div>
   </div>
  </section>)}</main>;
@@ -37,10 +39,12 @@ function NaturalSections({groups,tab}){
 
 function App(){
  const reduce=useReducedMotion();
+ useEffect(()=>{const header=document.querySelector('.header');if(!header||typeof ResizeObserver==='undefined')return;const update=()=>document.documentElement.style.setProperty('--header-height',header.getBoundingClientRect().height+'px');const observer=new ResizeObserver(update);observer.observe(header);update();return()=>observer.disconnect();},[]);
+ const [backgroundPaused,setBackgroundPaused]=useState(false);
  const [theme,setTheme]=useState('system'),[tab,setTab]=useState('catalogue'),[answer,setAnswer]=useState(false),[open,setOpen]=useState(true),[provider,setProvider]=useState('DeepSeek'),[concurrency,setConcurrency]=useState(3);
  const tabs=[['catalogue','班级题集'],['assistance','解析辅助'],['settings','模型设置']];
  const chooseTab=id=>setTab(id);
- const previewToolbar=<><div className="preview-heading"><span className="eyebrow">ONE PANEL. LESS FRICTION.</span><span className="preview-disclaimer">交互示意 · 不请求模型，不提交答案</span></div><div className="tabs" role="tablist" aria-label="功能预览">{tabs.map(([id,label])=><button key={id} role="tab" id={'tab-'+id} aria-selected={tab===id} aria-controls={'panel-'+id} tabIndex={tab===id?0:-1} onKeyDown={e=>{if(!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const i=tabs.findIndex(t=>t[0]===id),n=e.key==='Home'?0:e.key==='End'?2:(i+(['ArrowRight','ArrowDown'].includes(e.key)?1:2))%3;chooseTab(tabs[n][0]);document.getElementById('tab-'+tabs[n][0])?.focus()}} onClick={()=>chooseTab(id)}>{tab===id&&<motion.span aria-hidden="true" className="tab-selection" layoutId="selected-preview-tab" transition={{duration:reduce?0:.34,ease:[.22,1,.36,1]}}/>}{label}</button>)}</div></>;
+ const previewToolbar=<><ProductEvidence/><div className="preview-heading"><span className="eyebrow">ONE PANEL. LESS FRICTION.</span><span className="preview-disclaimer">交互示意 · 不请求模型，不提交答案</span></div><div className="tabs" role="tablist" aria-label="功能预览">{tabs.map(([id,label])=><button key={id} role="tab" id={'tab-'+id} aria-selected={tab===id} aria-controls={'panel-'+id} tabIndex={tab===id?0:-1} onKeyDown={e=>{if(!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const i=tabs.findIndex(t=>t[0]===id),n=e.key==='Home'?0:e.key==='End'?2:(i+(['ArrowRight','ArrowDown'].includes(e.key)?1:2))%3;chooseTab(tabs[n][0]);document.getElementById('tab-'+tabs[n][0])?.focus()}} onClick={()=>chooseTab(id)}>{tab===id&&<motion.span aria-hidden="true" className="tab-selection" layoutId="selected-preview-tab" transition={{duration:reduce?0:.34,ease:[.22,1,.36,1]}}/>}{label}</button>)}</div></>;
  const previewBlocks=[];
  const addPreview=(feature,...items)=>previewBlocks.push(...items.map(item=>({...item,feature})));
  addPreview('catalogue',
@@ -58,12 +62,13 @@ function App(){
  );
  const groups=[
   {id:'home',label:'首页',blocks:[
-   block('hero-title',<div className="hero-title"><p className="eyebrow"><span className="dot"/>PNC 2.1.0 · 现已发布</p><h1>少一点重复，<br/>多一点理解。</h1></div>,true),
-   block('hero-copy',<div className="hero-copy"><p>题集、解析、模型和截止时间。<br/>让 PTA 练习中的琐事，留在一个轻巧的面板里。</p></div>,true),
-   block('hero-actions',<div className="hero-actions"><div className="actions"><Button href={raw+'PNC.user.js'} label="安装 PNC 2.1.0 ↗" variant="primary" size="lg"/><a className="text-link" href="https://scriptcat.org/zh-CN/script-show-page/7287" target="_blank" rel="noreferrer">脚本猫发布页 <Arrow/></a></div><p className="fine">需要脚本猫或 Tampermonkey · 自备模型 API 配置</p></div>,true),
-   block('hero-models',<div className="provider-ribbon"><span>你的模型，你的选择</span><b>DeepSeek</b><b>MiMo</b><b>OpenCode</b></div>,true)
+   block('hero-title',<div className="hero-title"><p className="eyebrow"><span className="dot"/>PNC 2.1.0 · 现已发布</p><h1>少一点重复，<br/><span>多一点理解。</span></h1></div>,true),
+   block('hero-copy',<div className="hero-copy"><p>题集、解析、模型和截止时间。<br/>把 PTA 练习中的琐事，留在一个轻巧的面板里。</p></div>,true),
+   block('hero-actions',<div className="hero-actions"><div className="actions"><Button href={raw+'PNC.user.js'} label="安装 PNC 2.1.0 ↗" variant="primary" size="lg"/><a className="text-link" href="#experience">先看看界面 <span aria-hidden="true">↓</span></a></div><p className="fine">需要脚本猫或 Tampermonkey · 自备模型 API 配置</p></div>,true),
+   block('hero-models',<div className="provider-ribbon"><span>按自己的节奏练习</span><b>DeepSeek</b><b>MiMo</b><b>OpenCode</b></div>,true)
   ]},
   {id:'experience',label:'功能预览',toolbar:previewToolbar,blocks:previewBlocks},
+  {id:'comparison',label:'使用前后对比',blocks:[block('practice-comparison',<PracticeComparison/>,true)]},
   {id:'rhythm',label:'PNC 工作原理',toolbar:<WorkflowTabs kind="pnc"/>,blocks:workflowBlocks('pnc',block)},
   {id:'helper',label:'Helper 工作原理',toolbar:<WorkflowTabs kind="helper"/>,blocks:workflowBlocks('helper',block)},
   {id:'reminder-notes',label:'提醒边界',blocks:[
@@ -82,9 +87,9 @@ function App(){
    block('privacy',<article className="detail-card"><h3>关于数据与记录</h3><p>模型请求会将题目及必要凭据发送给你选择的供应商。自动提交会留下真实 PTA 记录。</p></article>),
    block('local-input',<article className="detail-card"><h3>关于未保存的输入</h3><p>未保存的网页输入不保证刷新恢复。请先保存重要内容，再刷新或离开页面。</p></article>),
    block('links',<div className="resource-links"><a href={repo+'/blob/main/README.md'}>查看 README <Arrow/></a><a href={repo+'/tree/main/legacy'}>历史版本 <Arrow/></a><a href={repo+'/issues'}>反馈问题 <Arrow/></a></div>,true),
-   block('footer',<footer className="footer"><span>© 2026 NeuronCState</span><span>界面基于 <a href="https://github.com/meta/astryx">Astryx</a> · <a href="THIRD-PARTY-NOTICES.txt">第三方许可</a></span></footer>,true)
+   block('footer',<footer className="footer"><span>© 2026 NeuronCState</span><span><a href="https://scriptcat.org/zh-CN/script-show-page/7287" target="_blank" rel="noreferrer">脚本猫发布页 ↗</a> · 界面基于 <a href="https://github.com/meta/astryx">Astryx</a> · <a href="THIRD-PARTY-NOTICES.txt">第三方许可</a></span></footer>,true)
   ]}
  ];
- return <Theme theme={neutralTheme} mode={theme}><div className="page"><NeuronBackground/><a className="skip" href="#main">跳到正文</a><header className="header"><a className="brand" href="#home" aria-label="PTA Neuron Copilot 首页"><Mark/><span>PNC</span></a><nav aria-label="主导航"><a href="#experience">功能预览</a><a href="#rhythm">工作原理</a><a href="#helper">Helper</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Arrow/></a></nav><select className="theme-select" aria-label="页面配色" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select><Button href="#install" label="获取脚本" variant="secondary" size="sm"/><a className="terminal-entry" href="./terminal/">3D 终端 <Arrow/></a></header><NaturalSections groups={groups} tab={tab}/></div></Theme>;
+ return <Theme theme={neutralTheme} mode={theme}><div className="page"><NeuronBackground paused={backgroundPaused}/><a className="skip" href="#main">跳到正文</a><header className="header"><a className="brand" href="#home" aria-label="PTA Neuron Copilot 首页"><Mark/><span>PNC</span></a><nav aria-label="主导航"><a href="#experience">真实界面</a><a href="#comparison">使用对比</a><a href="#rhythm">工作原理</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Arrow/></a></nav><button className="background-toggle" onClick={()=>setBackgroundPaused(v=>!v)} aria-pressed={backgroundPaused} aria-label={backgroundPaused?'继续背景动画':'暂停背景动画'} title={backgroundPaused?'继续背景动画':'暂停背景动画'}>{backgroundPaused?'▷':'Ⅱ'}</button><select className="theme-select" aria-label="页面配色" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select><Button href="#install" label="获取脚本" variant="secondary" size="sm"/><a className="terminal-entry" href="./terminal/">3D 终端 <Arrow/></a></header><NaturalSections groups={groups} tab={tab}/></div></Theme>;
 }
 createRoot(document.getElementById('root')).render(<App/>);

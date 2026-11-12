@@ -1,0 +1,576 @@
+[
+  {
+    "name": "no document overflow 1440,900,1",
+    "pass": true,
+    "scrollWidth": 1425
+  },
+  {
+    "name": "all content in flow 1440,900,1",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 1440,900,1",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 1440",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 1440",
+    "pass": true
+  },
+  {
+    "name": "preview settings 1440",
+    "pass": true
+  },
+  {
+    "name": "answer expands 1440",
+    "pass": true
+  },
+  {
+    "name": "native wheel 1440",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 1440",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 1440",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 1440",
+    "pass": true
+  },
+  {
+    "name": "native back 1440",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 1440",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 1440",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 1440",
+    "pass": true
+  },
+  {
+    "name": "details 1440",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 1440",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 1440",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 1440",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 1440,900,1",
+    "pass": true
+  },
+  {
+    "name": "no document overflow 1024,768,1",
+    "pass": true,
+    "scrollWidth": 1009
+  },
+  {
+    "name": "all content in flow 1024,768,1",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 1024,768,1",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 1024",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 1024",
+    "pass": true
+  },
+  {
+    "name": "preview settings 1024",
+    "pass": true
+  },
+  {
+    "name": "answer expands 1024",
+    "pass": true
+  },
+  {
+    "name": "native wheel 1024",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 1024",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 1024",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 1024",
+    "pass": true
+  },
+  {
+    "name": "native back 1024",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 1024",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 1024",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 1024",
+    "pass": true
+  },
+  {
+    "name": "details 1024",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 1024",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 1024",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 1024",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 1024,768,1",
+    "pass": true
+  },
+  {
+    "name": "no document overflow 390,844,1",
+    "pass": true,
+    "scrollWidth": 375
+  },
+  {
+    "name": "all content in flow 390,844,1",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 390,844,1",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 390",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 390",
+    "pass": true
+  },
+  {
+    "name": "preview settings 390",
+    "pass": true
+  },
+  {
+    "name": "answer expands 390",
+    "pass": true
+  },
+  {
+    "name": "native wheel 390",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 390",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 390",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 390",
+    "pass": true
+  },
+  {
+    "name": "native back 390",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 390",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 390",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 390",
+    "pass": true
+  },
+  {
+    "name": "details 390",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 390",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 390",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 390",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 390,844,1",
+    "pass": true
+  },
+  {
+    "name": "no document overflow 320,568,1",
+    "pass": true,
+    "scrollWidth": 305
+  },
+  {
+    "name": "all content in flow 320,568,1",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 320,568,1",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 320",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 320",
+    "pass": true
+  },
+  {
+    "name": "preview settings 320",
+    "pass": true
+  },
+  {
+    "name": "answer expands 320",
+    "pass": true
+  },
+  {
+    "name": "native wheel 320",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 320",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 320",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 320",
+    "pass": true
+  },
+  {
+    "name": "native back 320",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 320",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 320",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 320",
+    "pass": true
+  },
+  {
+    "name": "details 320",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 320",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 320",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 320",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 320,568,1",
+    "pass": true
+  },
+  {
+    "name": "no document overflow 844,390,1",
+    "pass": true,
+    "scrollWidth": 829
+  },
+  {
+    "name": "all content in flow 844,390,1",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 844,390,1",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 844",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 844",
+    "pass": true
+  },
+  {
+    "name": "preview settings 844",
+    "pass": true
+  },
+  {
+    "name": "answer expands 844",
+    "pass": true
+  },
+  {
+    "name": "native wheel 844",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 844",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 844",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 844",
+    "pass": true
+  },
+  {
+    "name": "native back 844",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 844",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 844",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 844",
+    "pass": true
+  },
+  {
+    "name": "details 844",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 844",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 844",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 844",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 844,390,1",
+    "pass": true
+  },
+  {
+    "name": "no document overflow 390,844,2",
+    "pass": true,
+    "scrollWidth": 375
+  },
+  {
+    "name": "all content in flow 390,844,2",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 390,844,2",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 390",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 390",
+    "pass": true
+  },
+  {
+    "name": "preview settings 390",
+    "pass": true
+  },
+  {
+    "name": "answer expands 390",
+    "pass": true
+  },
+  {
+    "name": "native wheel 390",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 390",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 390",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 390",
+    "pass": true
+  },
+  {
+    "name": "native back 390",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 390",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 390",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 390",
+    "pass": true
+  },
+  {
+    "name": "details 390",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 390",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 390",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 390",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 390,844,2",
+    "pass": true
+  },
+  {
+    "name": "no document overflow 320,568,2",
+    "pass": true,
+    "scrollWidth": 305
+  },
+  {
+    "name": "all content in flow 320,568,2",
+    "pass": true
+  },
+  {
+    "name": "visible terminal entry 320,568,2",
+    "pass": true
+  },
+  {
+    "name": "preview catalogue 320",
+    "pass": true
+  },
+  {
+    "name": "preview assistance 320",
+    "pass": true
+  },
+  {
+    "name": "preview settings 320",
+    "pass": true
+  },
+  {
+    "name": "answer expands 320",
+    "pass": true
+  },
+  {
+    "name": "native wheel 320",
+    "pass": true
+  },
+  {
+    "name": "native touchmove 320",
+    "pass": true
+  },
+  {
+    "name": "arbitrary scroll stays 320",
+    "pass": true,
+    "y": 157
+  },
+  {
+    "name": "native anchor 320",
+    "pass": true
+  },
+  {
+    "name": "native back 320",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC read 320",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC model 320",
+    "pass": true
+  },
+  {
+    "name": "persistent PNC write 320",
+    "pass": true
+  },
+  {
+    "name": "details 320",
+    "pass": true
+  },
+  {
+    "name": "detail focus returns 320",
+    "pass": true
+  },
+  {
+    "name": "sample notification opens 320",
+    "pass": true
+  },
+  {
+    "name": "sample notification closes 320",
+    "pass": true
+  },
+  {
+    "name": "no overflow after interactions 320,568,2",
+    "pass": true
+  }
+]

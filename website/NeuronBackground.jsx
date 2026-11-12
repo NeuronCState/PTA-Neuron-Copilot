@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import './neuron-background.css';
 
 // Original procedural artwork. No third-party geometry, shaders or assets.
-export default function NeuronBackground() {
+export default function NeuronBackground({paused=false}) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function NeuronBackground() {
 
     function animate(now) {
       frame = 0;
-      if (disposed || document.hidden || reduced.matches) return;
+      if (disposed || document.hidden || reduced.matches || paused) return;
       // Cap drawing at 30fps (24 on touch). Geometry is small and DPR is bounded.
       const interval = coarse.matches ? 1000 / 24 : 1000 / 30;
       if (!last || now - last >= interval) {
@@ -155,7 +155,7 @@ export default function NeuronBackground() {
       }
       if (!document.hidden) {
         draw();
-        if (!reduced.matches) frame = requestAnimationFrame(animate);
+        if (!reduced.matches && !paused) frame = requestAnimationFrame(animate);
       }
     }
 
@@ -173,7 +173,7 @@ export default function NeuronBackground() {
     }
 
     function pointer(event) {
-      if (coarse.matches || reduced.matches || event.pointerType === 'touch') return;
+      if (coarse.matches || reduced.matches || paused || event.pointerType === 'touch') return;
       targetX = Math.max(-1, Math.min(1, event.clientX / width * 2 - 1));
       targetY = Math.max(-1, Math.min(1, event.clientY / height * 2 - 1));
     }
@@ -207,7 +207,7 @@ export default function NeuronBackground() {
       window.removeEventListener('blur', resetPointer);
       window.removeEventListener('resize', resize);
     };
-  }, []);
+  }, [paused]);
 
-  return <div className="neuron-background" aria-hidden="true"><canvas ref={canvasRef} /></div>;
+  return <div className="neuron-background" data-paused={paused||undefined} aria-hidden="true"><canvas ref={canvasRef} /></div>;
 }

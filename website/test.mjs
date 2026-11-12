@@ -12,14 +12,23 @@ globalThis.innerHeight=900;globalThis.innerWidth=1440;globalThis.scrollY=0;globa
 const js=fs.readFileSync('../docs/index.html','utf8').match(/assets-pnc\/(index-[^"]+\.js)/)[1];
 await import('../docs/assets-pnc/'+js);await new Promise(r=>setTimeout(r,150));
 assert(document.querySelector('h1').textContent.includes('少一点重复'));
+assert.equal(document.querySelectorAll('.neuron-background').length,1);
+assert(document.querySelector('.product-hero .hero-screenshot img'));
+assert.equal(document.querySelector('.hero-screenshot img').getAttribute('fetchpriority'),'high');
+assert(!fs.readFileSync('workflow-3d.css','utf8').includes('.neuron-background{opacity:0}'));
+assert(!fs.readFileSync('style.css','utf8').includes('.screen-home::before'));
+
 assert.equal(document.querySelector('.terminal-entry').getAttribute('href'),'./terminal/');
 assert.equal(document.querySelector('.page-nav'),null);
-assert.equal(document.querySelectorAll('main > section').length,7);
+assert.equal(document.querySelectorAll('main > section').length,8);
 assert.equal(document.querySelector('[data-block=preview-main-assistance]').hidden,true);
 const click=async el=>{assert(el);el.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));await new Promise(r=>setTimeout(r,450));};
 await click(document.querySelector('#tab-assistance'));assert.equal(document.querySelector('[data-block=preview-main-assistance]').hidden,false);assert.equal(document.querySelector('[data-block=preview-main-catalogue]').hidden,true);await click([...document.querySelectorAll('button')].find(x=>x.textContent.includes('查看解析')));assert(document.querySelector('.answer').textContent.includes('B：1'));
 await click(document.querySelector('#tab-settings'));await click([...document.querySelectorAll('[role=radio]')].find(x=>x.textContent==='MiMo'));assert(document.querySelector('.model-note b').textContent==='MiMo');
 await click(document.querySelector('#tab-catalogue'));await click(document.querySelector('.class-toggle'));assert(document.querySelector('#class-sets').hidden);await click(document.querySelector('.class-toggle'));assert(!document.querySelector('#class-sets').hidden);
+await click(document.querySelector('#shot-tab-model'));assert(document.querySelector('#shot-panel img').alt.includes('历史版本'));
+await click(document.querySelector('#shot-tab-catalogue'));assert(document.querySelector('#screenshot-version-note').textContent.includes('beta.20'));
+await click([...document.querySelectorAll('.comparison-picker button')].find(b=>b.textContent==='记截止'));assert(document.querySelector('.comparison-after').textContent.includes('WITH PNC + HELPER'));assert(document.querySelector('.comparison-note').textContent.includes('唯一提醒'));
 const links=[...document.querySelectorAll('a[href]')].map(x=>x.getAttribute('href'));assert(links.includes('https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC.user.js'));assert(links.includes('https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC%20Helper.user.js'));assert(!document.body.textContent.includes('OPEN SOURCE'));assert(document.body.textContent.includes('默认新标签页不能运行'));assert(document.querySelectorAll('.astryx-button').length>0);
 const stages=['read','model','write','pair','sync','remind','jump'];
 for(const id of stages){await click(document.getElementById('wf-tab-'+id));assert.equal(document.getElementById('wf-tab-'+id).getAttribute('aria-selected'),'true');assert(document.querySelector('#wf-panel-'+(['read','model','write'].includes(id)?'pnc':'helper')).dataset.stage===id);}

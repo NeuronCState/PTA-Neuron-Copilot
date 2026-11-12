@@ -1,0 +1,39 @@
+<!doctype html><meta charset="utf-8"><title>PNC icon and shared background QA</title>
+<style>body{margin:0;font:14px system-ui;background:#ddd}iframe{display:block;border:0;transform-origin:top left}aside{padding:10px;position:fixed;right:0;top:0;max-width:280px;background:#fffffff0}pre{white-space:pre-wrap;max-height:60vh;overflow:auto}button{padding:8px}</style>
+<iframe title="Homepage visual fixture"></iframe><aside><button id="run">Run visual regression matrix</button><pre id="results">Loading fixture…</pre></aside>
+<script>
+const f=document.querySelector('iframe'),r=document.querySelector('pre'),q=new URLSearchParams(location.search),sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),logs=[];
+const check=(name,pass,extra={})=>{logs.push({name,pass,...extra});r.textContent=JSON.stringify(logs,null,2)};
+async function load(width,height,theme='light',scale=1,reduce=false){
+ f.width=width;f.height=height;f.src=(reduce?'./reduced-qa.html':'./')+'?visualFixQA='+Date.now();
+ await new Promise(resolve=>f.onload=resolve);await sleep(400);
+ const d=f.contentDocument,s=d.querySelector('.theme-select');s.value=theme;s.dispatchEvent(new f.contentWindow.Event('change',{bubbles:true}));d.documentElement.style.fontSize=16*scale+'px';await sleep(250);
+}
+const pixels=canvas=>{const a=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let count=0,hash=0;for(let i=3;i<a.length;i+=388){count+=a[i]>0;hash=(hash*31+a[i])>>>0}return{count,hash}};
+window.runVisualFixQA=async()=>{
+ logs.length=0;
+ for(const [width,height,scale] of [[2048,1056,1],[1440,900,1],[1024,768,1],[1000,768,1],[390,844,1],[320,568,1],[844,390,1],[1440,900,2],[390,844,2],[320,568,2]]){
+  for(const theme of ['light','dark']){
+   await load(width,height,theme,scale);const d=f.contentDocument,w=f.contentWindow,suffix=[width,height,scale,theme].join('/');
+   check('no horizontal overflow '+suffix,d.documentElement.scrollWidth<=width+1);
+   const group=d.querySelector('.hero-illustration'),icon=d.querySelector('.hero-art'),g=group.getBoundingClientRect(),i=icon.getBoundingClientRect();
+   if(width>1000){
+    const outer=w.getComputedStyle(group,'::before'),inner=w.getComputedStyle(group,'::after');
+    check('icon centred in both orbit frames '+suffix,Math.abs((i.left+i.right-g.left-g.right)/2)<1&&Math.abs((i.top+i.bottom-g.top-g.bottom)/2)<1&&outer.gridArea==='1 / 1'&&inner.gridArea==='1 / 1');
+    check('illustration inside hero '+suffix,g.left>=0&&g.right<=width&&g.top>=d.querySelector('.screen-home').getBoundingClientRect().top);
+   }else check('compact hero hides complete illustration '+suffix,w.getComputedStyle(group).display==='none');
+   const canvas=d.querySelector('.neuron-background canvas');
+   for(const section of d.querySelectorAll('.screen')){
+    section.scrollIntoView();await sleep(200);const bg=d.querySelector('.neuron-background'),rect=bg.getBoundingClientRect(),style=w.getComputedStyle(bg),ink=pixels(canvas);
+    check('shared background '+section.id+' '+suffix,d.querySelectorAll('.neuron-background').length===1&&d.querySelector('.neuron-background canvas')===canvas&&+style.opacity>.95&&style.display!=='none'&&style.position==='fixed'&&rect.top===0&&rect.height>=height-1&&ink.count>10,{paintedSamples:ink.count});
+   }
+   const first=pixels(canvas);let animated=false;for(let attempt=0;attempt<25&&!animated;attempt++){await sleep(100);animated=pixels(canvas).hash!==first.hash}check('background keeps animating '+suffix,animated,{visibility:d.visibilityState,reduced:w.matchMedia('(prefers-reduced-motion: reduce)').matches});
+   check('bounded resolution '+suffix,canvas.width<=width*1.5+1&&canvas.height<=height*1.5+1);
+  }
+ }
+ await load(390,844,'dark',1,true);const d=f.contentDocument,canvas=d.querySelector('.neuron-background canvas');d.getElementById('helper').scrollIntoView();await sleep(200);const first=pixels(canvas);await sleep(200);check('reduced motion keeps a visible static background',first.count>10&&pixels(canvas).hash===first.hash&&+f.contentWindow.getComputedStyle(canvas.parentElement).opacity===1);
+ r.textContent='DONE '+logs.filter(l=>!l.pass).length+' FAILURES\n'+JSON.stringify(logs,null,2);return logs;
+};
+document.getElementById('run').onclick=window.runVisualFixQA;
+load(+(q.get('width')||1197),+(q.get('height')||799),q.get('theme')||'light',+(q.get('scale')||1),q.has('reduce')).then(()=>{const d=f.contentDocument,section=q.get('section')||'home';d.getElementById(section).scrollIntoView();r.textContent='Ready: '+section+' / '+(q.get('theme')||'light');if(q.has('view'))document.querySelector('aside').hidden=true;if(q.get('fit'))f.style.transform='scale('+q.get('fit')+')'});
+</script>
