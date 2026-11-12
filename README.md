@@ -1,10 +1,15 @@
 # PTA Neuron Copilot
 
-**PNC · 2.1.0**：面向[拼题 A（PTA）](https://pintia.cn/) 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。可选安装 **PNC Helper · 1.0.0**，接收题集截止提醒。
+**PNC · 2.1.1**：面向[拼题 A（PTA）](https://pintia.cn/) 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。可选安装 **PNC Helper · 1.0.0**，接收题集截止提醒。
 
-[安装 PNC 2.1.0](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC.user.js) · [安装 Helper 1.0.0](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC%20Helper.user.js) · [脚本猫发布页](https://scriptcat.org/zh-CN/script-show-page/7287) · [项目主页](https://neuroncstate.github.io/PTA-Neuron-Copilot/) · [使用指南](https://neuroncstate.github.io/PTA-Neuron-Copilot/guide.html) · [反馈问题](https://github.com/NeuronCState/PTA-Neuron-Copilot/issues)
+[安装 PNC 2.1.1](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC.user.js) · [安装 Helper 1.0.0](https://raw.githubusercontent.com/NeuronCState/PTA-Neuron-Copilot/main/PNC%20Helper.user.js) · [脚本猫发布页](https://scriptcat.org/zh-CN/script-show-page/7287) · [项目主页](https://neuroncstate.github.io/PTA-Neuron-Copilot/) · [使用指南](https://neuroncstate.github.io/PTA-Neuron-Copilot/guide.html) · [反馈问题](https://github.com/NeuronCState/PTA-Neuron-Copilot/issues)
 
 需要 [脚本猫](https://docs.scriptcat.org/) 或 [Tampermonkey](https://www.tampermonkey.net/) 用户脚本管理器。PNC 仅运行于 `https://pintia.cn/*`；Helper 在普通 HTTP/HTTPS 顶层网页运行，以便离开 PTA 后仍能根据缓存检查截止时间。脚本猫发布页由维护者单独更新，请核对页面上的版本号。
+
+## 2.1.1 更新
+
+- 修复填空题中嵌入代码块的输入框被漏识别，支持同题多个空和 textarea，避免误填代码编辑器的搜索框。
+- 保持正式版开发者选项隐藏；不改变 Helper、API Key、缓存及配对设置。
 
 ## 截止提醒
 

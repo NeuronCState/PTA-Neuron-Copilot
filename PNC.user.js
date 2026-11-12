@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PTA-Neuron-Copilot
 // @namespace    https://pintia.cn/
-// @version      2.1.0
+// @version      2.1.1
 // @description  面向拼题 A 的 AI 辅助答题脚本，支持多模型、小题并发、解析辅助、班级题集管理与本地缓存。
 // @author       NeuronCState
 // @match        https://pintia.cn/*
@@ -362,7 +362,8 @@ return module.exports;})();
     function writeInput(input, value) {
         if (!input) return false;
         try {
-            var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+            var prototype = input.tagName === 'TEXTAREA' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+            var setter = Object.getOwnPropertyDescriptor(prototype, 'value').set;
             setter.call(input, value);
         } catch (e) { input.value = value; }
         input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -640,9 +641,22 @@ return module.exports;})();
         return changed;
     }
 
+    function isFillControl(input) {
+        if (!input || input.closest('#pta-root,.pta-assist,.pta-local-review') || !/^(INPUT|TEXTAREA)$/.test(input.tagName)) return false;
+        if (input.tagName === 'INPUT' && !/^(?:text|number)?$/.test(input.type || '')) return false;
+        var editor = editorForInput(input);
+        if (!editor) return true;
+        // PTA type/4 also embeds real blank widgets in read-only code blocks.
+        // Exclude CodeMirror search/replace panels, but retain the blank's native
+        // control and its existing application event handlers. Never edit the code.
+        if (!input.closest('.cm-content') || input.closest('.cm-panels,.cm-search')) return false;
+        var marker = input.closest('[id^="blank"],[data-blank-index]');
+        return !!(marker && editor.contains(marker) || input.matches('.cm-widgetBuffer + span input, .cm-widgetBuffer + span textarea'));
+    }
+
     function groupFillInputs() {
-        var inputs = queryAll('input').filter(function (input) {
-            return !(input.closest && input.closest('#pta-root')) && !/hidden|radio|checkbox|button|submit|file|password|image|range|color/i.test(input.type || '') && !editorForInput(input);
+        var inputs = queryAll('input, textarea').filter(function (input) {
+            return isFillControl(input);
         });
         var groups = [];
         inputs.forEach(function (input) {
@@ -5073,7 +5087,13 @@ return module.exports; } catch (unavailable) { return null; } })();
                 });
             });
             var html=diagnosticRedact(clone.outerHTML);if(html.length>200000){limit=true;return {html:'[question exceeds size limit]',possiblyTruncated:true};}
-            return {html:html};
+            var editorBlanks = queryAll('.cm-editor',root).map(function(editor){
+                return {code:diagnosticRedact(getEditorDoc(editor)), controls:queryAll('input, textarea',editor).filter(isFillControl).map(function(input){
+                    var marker=input.closest('[id^="blank"],[data-blank-index]');
+                    return {tag:input.tagName,type:input.type,blankId:marker&&marker.id||'',blankIndex:marker&&marker.getAttribute('data-blank-index'),value:diagnosticRedact(input.value||''),disabled:!!input.disabled,readOnly:!!input.readOnly};
+                })};
+            });
+            return {html:html,editorBlanks:editorBlanks};
         });
         return {questions:questions,possiblyTruncated:limit,note:'Visible question content including options, entered blanks, selected options and visible code; not proof of official answers. Resource URL queries removed.'};
     }
